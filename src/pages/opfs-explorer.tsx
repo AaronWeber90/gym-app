@@ -1,6 +1,5 @@
 import { createResource, For, Show } from "solid-js";
 
-// --- Utilities to read OPFS ---
 async function readDirectoryEntries(dirHandle, path = "") {
     const entries = [];
     for await (const [name, handle] of dirHandle.entries()) {
