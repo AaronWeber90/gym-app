@@ -1,5 +1,6 @@
 import { createResource, For, Show } from "solid-js";
 
+
 async function readDirectoryEntries(dirHandle, path = "") {
     const entries = [];
     for await (const [name, handle] of dirHandle.entries()) {

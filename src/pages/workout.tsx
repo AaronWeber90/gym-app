@@ -1,8 +1,6 @@
-import { useParams } from "@solidjs/router";
-import {createResource} from "solid-js";
 
 export const Workout = () => {
-    const params = useParams();
+
 
     const exercises = [
         {

@@ -1,12 +1,13 @@
 /* @refresh reload */
-import "./index.css";
-import { render } from "solid-js/web";
+import { A, Route, Router } from "@solidjs/router";
 import "solid-devtools";
-import { Route, Router, A } from "@solidjs/router";
+import { Component } from "solid-js";
+import { render } from "solid-js/web";
 import App from "./App";
-import { Workouts } from "./pages/workouts";
-import { Workout } from "./pages/workout";
+import "./index.css";
 import { OpfsExplorer } from "./pages/opfs-explorer";
+import { Workout } from "./pages/workout";
+import { Workouts } from "./pages/workouts";
 
 const root = document.getElementById("root");
 
@@ -16,14 +17,15 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
     );
 }
 
-// ✅ Layout component with DaisyUI navbar always visible
-const Layout = (props) => {
+type LayoutProps = {
+    children: Element
+}
+
+const Layout: Component<LayoutProps> = (props) => {
     return (
         <div class="min-h-screen flex flex-col bg-base-200">
-            {/* Navbar */}
             <div class="navbar bg-base-100 shadow-sm sticky top-0 z-10">
                 <div class="navbar-start">
-                    {/* Mobile dropdown */}
                     <div class="dropdown">
                         <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
                             <svg
@@ -51,13 +53,11 @@ const Layout = (props) => {
                         </ul>
                     </div>
 
-                    {/* Brand */}
                     <A href="/" class="btn btn-ghost text-xl">
                         GymTracker
                     </A>
                 </div>
 
-                {/* Desktop menu */}
                 <div class="navbar-center hidden lg:flex">
                     <ul class="menu menu-horizontal px-1">
                         <li><A href="/">Home</A></li>
@@ -66,18 +66,15 @@ const Layout = (props) => {
                     </ul>
                 </div>
 
-                {/* Navbar end */}
                 <div class="navbar-end">
                 </div>
             </div>
 
-            {/* Main content */}
             <main class="flex-1 p-4">{props.children}</main>
         </div>
     );
 };
 
-// ✅ Router setup
 render(
     () => (
         <Router root={Layout}>
