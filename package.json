@@ -9,7 +9,8 @@
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "gh:deploy": "pnpm build && gh-pages -d dist"
   },
   "license": "MIT",
   "devDependencies": {

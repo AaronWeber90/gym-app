@@ -1,5 +1,5 @@
 /* @refresh reload */
-import { A, Route, Router } from "@solidjs/router";
+import { Route, Router, useLocation, useNavigate } from "@solidjs/router";
 import "solid-devtools";
 import { Component } from "solid-js";
 import { render } from "solid-js/web";
@@ -8,6 +8,7 @@ import "./index.css";
 import { OpfsExplorer } from "./pages/opfs-explorer";
 import { Workout } from "./pages/workout";
 import { Workouts } from "./pages/workouts";
+
 
 const root = document.getElementById("root");
 
@@ -22,9 +23,12 @@ type LayoutProps = {
 }
 
 const Layout: Component<LayoutProps> = (props) => {
+const navigate = useNavigate();
+  const location = useLocation();
+
     return (
         <div class="min-h-screen flex flex-col bg-base-200">
-            <div class="navbar bg-base-100 shadow-sm sticky top-0 z-10">
+            {/* <div class="navbar bg-base-100 shadow-sm sticky top-0 z-10">
                 <div class="navbar-start">
                     <div class="dropdown">
                         <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -68,9 +72,34 @@ const Layout: Component<LayoutProps> = (props) => {
 
                 <div class="navbar-end">
                 </div>
-            </div>
+            </div> */}
 
             <main class="flex-1 p-4">{props.children}</main>
+            <div class="dock">
+
+  <button       onClick={() => {
+        navigate("/");
+      }} class={location.pathname === "/" ? "dock-active" : undefined}>
+    <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt"><polyline points="1 11 12 2 23 11" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"></polyline><path d="m5,13v7c0,1.105.895,2,2,2h10c1.105,0,2-.895,2-2v-7" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path><line x1="12" y1="22" x2="12" y2="18" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></line></g></svg>
+    <span class="dock-label">Home</span>
+  </button>
+  
+  <button class={location.pathname === "/workouts" ? "dock-active" : undefined} onClick={() => {
+        navigate("/workouts");
+      }}>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+</svg>
+    <span class="dock-label">Pläne</span>
+  </button>
+  
+  <button onClick={() => {
+        navigate("/file-explorer");
+      }} class={location.pathname === "/file-explorer" ? "dock-active" : undefined}>
+    <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></circle><path d="m22,13.25v-2.5l-2.318-.966c-.167-.581-.395-1.135-.682-1.654l.954-2.318-1.768-1.768-2.318.954c-.518-.287-1.073-.515-1.654-.682l-.966-2.318h-2.5l-.966,2.318c-.581.167-1.135.395-1.654.682l-2.318-.954-1.768,1.768.954,2.318c-.287.518-.515,1.073-.682,1.654l-2.318.966v2.5l2.318.966c.167.581.395,1.135.682,1.654l-.954,2.318,1.768,1.768,2.318-.954c.518.287,1.073.515,1.654.682l.966,2.318h2.5l.966-2.318c.581-.167,1.135-.395,1.654-.682l2.318.954,1.768-1.768-.954-2.318c.287-.518.515-1.073.682-1.654l2.318-.966Z" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path></g></svg>
+    <span class="dock-label">Files</span>
+  </button>
+</div>
         </div>
     );
 };
