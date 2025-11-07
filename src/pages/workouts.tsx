@@ -53,6 +53,12 @@ export const Workouts = () => {
     const [showModal, setShowModal] = createSignal(false);
     const [newWorkoutName, setNewWorkoutName] = createSignal("");
 
+
+    const cancelWorkoutCreation = () => {
+        setNewWorkoutName("")
+        setShowModal(false)
+    }
+
     const handleAddWorkout = async () => {
         const name = newWorkoutName().trim();
         if (!name) return;
@@ -146,7 +152,6 @@ Plan hinzuügen
                 </Match>
             </Switch>
 
-            {/* DaisyUI Modal */}
             <Show when={showModal()}>
                 <dialog class="modal modal-open">
                     <div class="modal-box">
@@ -159,7 +164,7 @@ Plan hinzuügen
                             onInput={(e) => setNewWorkoutName(e.currentTarget.value)}
                         />
                         <div class="modal-action">
-                            <button class="btn btn-ghost" onClick={() => setShowModal(false)}>
+                            <button class="btn btn-ghost" onClick={cancelWorkoutCreation}>
                                 Cancel
                             </button>
                             <button class="btn btn-primary" onClick={handleAddWorkout}>

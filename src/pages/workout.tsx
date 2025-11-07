@@ -94,10 +94,10 @@ Neue Einheit
                                     <tbody>
                                     {exercise.sets.map((s) => (
                                         <tr>
-                                            <td><input type="text" placeholder="Type here" class="input input-ghost " value={s.weight} />
+                                            <td><input type="number"   min="0" placeholder="Type here" class="input input-ghost " value={s.weight} />
                                             </td>
-                                            <td><input type="text" placeholder="Type here" class="input input-ghost " value={s.reps} /></td>
-                                            <td><input type="text" placeholder="Type here" class="input input-ghost " value={s.set} /></td>
+                                            <td><input type="number"   min="0" placeholder="Type here" class="input input-ghost " value={s.reps} /></td>
+                                            <td><input type="number"   min="0" placeholder="Type here" class="input input-ghost " value={s.set} /></td>
                                         </tr>
                                     ))}
                                     </tbody>
