@@ -3,7 +3,6 @@ import { Route, Router, useLocation, useNavigate } from "@solidjs/router";
 import "solid-devtools";
 import { Component } from "solid-js";
 import { render } from "solid-js/web";
-import App from "./App";
 import "./index.css";
 import { OpfsExplorer } from "./pages/opfs-explorer";
 import { Workout } from "./pages/workout";
@@ -25,6 +24,8 @@ type LayoutProps = {
 const Layout: Component<LayoutProps> = (props) => {
 const navigate = useNavigate();
   const location = useLocation();
+
+  console.log(location)
 
     return (
         <div class="min-h-screen flex flex-col bg-base-200">
@@ -77,14 +78,14 @@ const navigate = useNavigate();
             <main class="flex-1 p-4">{props.children}</main>
             <div class="dock">
 
-  <button       onClick={() => {
+  {/* <button       onClick={() => {
         navigate("/");
       }} class={location.pathname === "/" ? "dock-active" : undefined}>
     <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt"><polyline points="1 11 12 2 23 11" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="2"></polyline><path d="m5,13v7c0,1.105.895,2,2,2h10c1.105,0,2-.895,2-2v-7" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path><line x1="12" y1="22" x2="12" y2="18" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></line></g></svg>
     <span class="dock-label">Home</span>
-  </button>
+  </button> */}
   
-  <button class={location.pathname === "/workouts" ? "dock-active" : undefined} onClick={() => {
+  <button class={location.pathname.includes("/workouts") ? "dock-active" : undefined} onClick={() => {
         navigate("/workouts");
       }}>
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -95,7 +96,7 @@ const navigate = useNavigate();
   
   <button onClick={() => {
         navigate("/file-explorer");
-      }} class={location.pathname === "/file-explorer" ? "dock-active" : undefined}>
+      }} class={location.pathname.includes("/file-explorer") ? "dock-active" : undefined}>
     <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></circle><path d="m22,13.25v-2.5l-2.318-.966c-.167-.581-.395-1.135-.682-1.654l.954-2.318-1.768-1.768-2.318.954c-.518-.287-1.073-.515-1.654-.682l-.966-2.318h-2.5l-.966,2.318c-.581.167-1.135.395-1.654.682l-2.318-.954-1.768,1.768.954,2.318c-.287.518-.515,1.073-.682,1.654l-2.318.966v2.5l2.318.966c.167.581.395,1.135.682,1.654l-.954,2.318,1.768,1.768,2.318-.954c.518.287,1.073.515,1.654.682l.966,2.318h2.5l.966-2.318c.581-.167,1.135-.395,1.654-.682l2.318.954,1.768-1.768-.954-2.318c.287-.518.515-1.073.682-1.654l2.318-.966Z" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></path></g></svg>
     <span class="dock-label">Files</span>
   </button>
@@ -106,9 +107,9 @@ const navigate = useNavigate();
 
 render(
     () => (
-        <Router root={Layout}>
-            <Route path="/" component={App} />
-            <Route path="/workouts" component={Workouts} />
+        <Router root={Layout} base="/gym-app">
+            <Route path="/" component={Workouts} />
+            <Route path="/workouts" component={Workouts}/>
             <Route path="/workouts/:id" component={Workout} />
             <Route path="/file-explorer" component={OpfsExplorer} />
         </Router>
