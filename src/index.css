@@ -1,2 +1,6 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+
+.fab-overwrite {
+  bottom: calc(4rem + env(safe-area-inset-bottom));
+}
