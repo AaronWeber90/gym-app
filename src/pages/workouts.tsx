@@ -1,6 +1,8 @@
 import { A } from "@solidjs/router";
-import { createSignal, For, Match, Show, Switch } from "solid-js";
+import { createSignal, For, Match, Switch } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
+import { CreateWorkoutModal } from "../features/workout/create-workout-modal";
+import { Header } from "../features/workouts/header";
 
 const FolderIcon = () => (
 	<svg
@@ -64,13 +66,16 @@ export const Workouts = () => {
 
 	return (
 		<>
-			<div class="flex justify-between items-center mb-4">
-				<h1 class="text-3xl font-bold">Workouts</h1>
-			</div>
-
+			<Header />
 			<Switch>
 				<Match when={workouts.error}>
 					<span>Error: {workouts.error}</span>
+				</Match>
+				<Match when={workouts()?.length === 0}>
+					<div class="text-center text-base-content/50 py-8">
+						Keine Übungen vorhanden
+					</div>
+					<CreateWorkoutModal />
 				</Match>
 				<Match when={workouts()}>
 					<ul class="list bg-base-100 rounded-box shadow-md divide-y divide-base-300">
@@ -111,39 +116,9 @@ export const Workouts = () => {
 							)}
 						</For>
 					</ul>
-					<div class="fab fab-overwrite pb-4">
-						<button
-							class="btn btn-lg btn-circle btn-primary"
-							onClick={() => setShowModal(true)}
-						>
-							+
-						</button>
-					</div>
+					<CreateWorkoutModal />
 				</Match>
 			</Switch>
-
-			<Show when={showModal()}>
-				<dialog class="modal modal-open">
-					<div class="modal-box">
-						<h3 class="font-bold text-lg mb-2">Add New Workout</h3>
-						<input
-							type="text"
-							placeholder="Workout name"
-							class="input input-bordered w-full mb-4"
-							value={newWorkoutName()}
-							onInput={(e) => setNewWorkoutName(e.currentTarget.value)}
-						/>
-						<div class="modal-action">
-							<button class="btn btn-ghost" onClick={cancelWorkoutCreation}>
-								Cancel
-							</button>
-							<button class="btn btn-primary" onClick={handleAddWorkout}>
-								Save
-							</button>
-						</div>
-					</div>
-				</dialog>
-			</Show>
 		</>
 	);
 };

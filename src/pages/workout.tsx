@@ -1,10 +1,10 @@
-import { useParams } from "@solidjs/router";
+import { useNavigate, useParams } from "@solidjs/router";
 import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 
 export const Workout = () => {
 	const { workouts } = createWorkoutResource();
-
+	const navigate = useNavigate();
 	const params = useParams();
 	const [showModal, setShowModal] = createSignal(false);
 	const [workoutName, setWorkoutName] = createSignal("");
@@ -72,12 +72,31 @@ export const Workout = () => {
 		return data.find((workout) => workout.id === params.id);
 	});
 
+	const deleteWorkout = async () => {
+		try {
+			const root = await navigator.storage.getDirectory();
+			const workoutsDir = await root.getDirectoryHandle("workouts", {
+				create: false,
+			});
+			await workoutsDir.removeEntry(`${params.id}.json`);
+			// Redirect or update UI after deletion as needed
+			navigate("/workouts");
+		} catch (err) {
+			console.error("Failed to delete workout:", err);
+		}
+	};
+
 	return (
 		<>
 			<Show when={workouts()}>
 				<div class="overflow-x-auto w-full max-w-full">
+					<div class="flex flex-row justify-between items-center">
+						<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
+						<button class="btn btn-ghost" onClick={deleteWorkout} type="button">
+							Löschen
+						</button>
+					</div>
 					{/* Desktop Table */}
-					<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
 
 					<table class="hidden md:table table-sm table-pin-rows w-full">
 						<thead>
