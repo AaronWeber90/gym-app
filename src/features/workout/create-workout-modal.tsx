@@ -1,9 +1,10 @@
 import { createSignal } from "solid-js";
-import { createWorkoutResource } from "../create-workout-resource";
 
-export const CreateWorkoutModal = () => {
-	const { refetch } = createWorkoutResource();
+type CreateWorkoutModalProps = {
+	onCreated?: () => void | Promise<void>;
+};
 
+export const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 	const [showModal, setShowModal] = createSignal(false);
 	const [newWorkoutName, setNewWorkoutName] = createSignal("");
 
@@ -39,7 +40,7 @@ export const CreateWorkoutModal = () => {
 
 			setShowModal(false);
 			setNewWorkoutName("");
-			await refetch();
+			await props.onCreated?.();
 		} catch (err) {
 			console.error("Failed to add workout:", err);
 		}

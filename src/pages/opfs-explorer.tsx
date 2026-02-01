@@ -5,16 +5,39 @@ async function readDirectoryEntries(dirHandle, path = "") {
 	for await (const [name, handle] of dirHandle.entries()) {
 		const fullPath = path ? `${path}/${name}` : name;
 		if (handle.kind === "directory") {
+			let displayName = name;
+			try {
+				const metaHandle = await handle.getFileHandle("meta.json");
+				const metaFile = await metaHandle.getFile();
+				const metaText = await metaFile.text();
+				const meta = JSON.parse(metaText);
+				if (meta?.name) displayName = meta.name;
+			} catch (err) {
+				// ignore if no meta.json or invalid JSON
+			}
 			entries.push({
 				type: "folder",
 				name,
+				displayName,
 				path: fullPath,
 				children: await readDirectoryEntries(handle, fullPath),
 			});
 		} else {
+			let displayName = name;
+			try {
+				if (name.endsWith(".json")) {
+					const file = await handle.getFile();
+					const text = await file.text();
+					const data = JSON.parse(text);
+					if (data?.name) displayName = data.name;
+				}
+			} catch (err) {
+				// ignore invalid JSON
+			}
 			entries.push({
 				type: "file",
 				name,
+				displayName,
 				path: fullPath,
 			});
 		}
@@ -92,13 +115,13 @@ const FileTree = (props) => (
 					when={entry.type === "folder"}
 					fallback={
 						<a>
-							<FileIcon /> {entry.name}
+							<FileIcon /> {entry.displayName ?? entry.name}
 						</a>
 					}
 				>
 					<details open>
 						<summary class="flex items-center gap-1">
-							<FolderIcon /> {entry.name}
+							<FolderIcon /> {entry.displayName ?? entry.name}
 						</summary>
 						<ul>
 							<FileTree entries={entry.children} />

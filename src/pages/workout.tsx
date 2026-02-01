@@ -1,5 +1,13 @@
 import { useNavigate, useParams } from "@solidjs/router";
-import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
+import {
+	createMemo,
+	createResource,
+	createSignal,
+	For,
+	Match,
+	Show,
+	Switch,
+} from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 
 export const Workout = () => {
@@ -8,10 +16,56 @@ export const Workout = () => {
 	const params = useParams();
 	const [showModal, setShowModal] = createSignal(false);
 	const [workoutName, setWorkoutName] = createSignal("");
+	const [workoutDate, setWorkoutDate] = createSignal(
+		new Date().toISOString().slice(0, 10),
+	);
 	const [newExercises, setNewExercises] = createSignal([
 		{ name: "", sets: 1, reps: 10, weight: 0 },
 	]);
 	const [exercise, setExercise] = createSignal([]);
+
+	const fetchChildWorkouts = async () => {
+		if (!params.id) return [];
+		try {
+			const root = await navigator.storage.getDirectory();
+			const workoutsDir = await root.getDirectoryHandle("workouts", {
+				create: false,
+			});
+			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
+				create: false,
+			});
+			const items = [];
+			for await (const [name, handle] of parentDir.entries()) {
+				if (handle.kind === "file" && name.endsWith(".json")) {
+					try {
+						const file = await handle.getFile();
+						const text = await file.text();
+						const data = JSON.parse(text);
+						items.push({
+							id: data.id ?? name.replace(".json", ""),
+							name: data.name ?? "Unbenannt",
+							date: data.date,
+							created_at: data.created_at,
+						});
+					} catch (err) {
+						console.warn("Failed to read child workout:", err);
+					}
+				}
+			}
+			return items.sort(
+				(a, b) =>
+					new Date(b.created_at ?? 0).getTime() -
+					new Date(a.created_at ?? 0).getTime(),
+			);
+		} catch (err) {
+			console.error("Failed to load child workouts:", err);
+			return [];
+		}
+	};
+
+	const [childWorkouts, { refetch: refetchChildWorkouts }] = createResource(
+		fetchChildWorkouts,
+	);
 
 	const addExerciseInput = () => {
 		setNewExercises([
@@ -30,39 +84,77 @@ export const Workout = () => {
 		setNewExercises(updated);
 	};
 
-	const handleSaveWorkout = () => {
+	const handleSaveWorkout = async () => {
+		if (!params.id) {
+			alert("Kein Parent-Workout gefunden");
+			return;
+		}
 		if (!workoutName().trim()) {
 			alert("Bitte gib einen Namen für das Training ein");
 			return;
 		}
 
-		const validExercises = newExercises().filter((ex) => ex.name.trim());
-		if (validExercises.length === 0) {
-			alert("Bitte füge mindestens eine Übung hinzu");
-			return;
-		}
+		// const validExercises = newExercises().filter((ex) => ex.name.trim());
+		// if (validExercises.length === 0) {
+		// 	alert("Bitte füge mindestens eine Übung hinzu");
+		// 	return;
+		// }
 
 		// Transform exercises to match the expected format
-		const formattedExercises = validExercises.map((ex) => ({
-			name: ex.name,
-			sets: Array.from({ length: ex.sets }, (_, i) => ({
-				set: i + 1,
-				reps: ex.reps,
-				weight: ex.weight,
-			})),
-		}));
+		// const formattedExercises = validExercises.map((ex) => ({
+		// 	name: ex.name,
+		// 	sets: Array.from({ length: ex.sets }, (_, i) => ({
+		// 		set: i + 1,
+		// 		reps: ex.reps,
+		// 		weight: ex.weight,
+		// 	})),
+		// }));
 
-		setExercise([...exercise(), ...formattedExercises]);
+		setExercise([...exercise()]);
+
+		try {
+			const root = await navigator.storage.getDirectory();
+			const workoutsDir = await root.getDirectoryHandle("workouts", {
+				create: true,
+			});
+
+			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
+				create: true,
+			});
+			const childId = crypto.randomUUID();
+			const handle = await parentDir.getFileHandle(`${childId}.json`, {
+				create: true,
+			});
+			const writable = await handle.createWritable();
+
+			const data = {
+				id: childId,
+				parentId: params.id,
+				name: workoutName().trim(),
+				date: workoutDate(),
+				created_at: new Date(`${workoutDate()}T00:00:00`).toISOString(),
+			};
+
+			await writable.write(JSON.stringify(data, null, 2));
+			await writable.close();
+			await refetchChildWorkouts();
+		} catch (err) {
+			console.error("Failed to save child workout:", err);
+			alert("Fehler beim Speichern");
+			return;
+		}
 
 		// Reset modal state
 		setShowModal(false);
 		setWorkoutName("");
+		setWorkoutDate(new Date().toISOString().slice(0, 10));
 		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
 	};
 
 	const handleCancelModal = () => {
 		setShowModal(false);
 		setWorkoutName("");
+		setWorkoutDate(new Date().toISOString().slice(0, 10));
 		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
 	};
 
@@ -95,6 +187,35 @@ export const Workout = () => {
 						<button class="btn btn-ghost" onClick={deleteWorkout} type="button">
 							Löschen
 						</button>
+					</div>
+
+					<div class="mt-4">
+						<h2 class="text-lg font-semibold mb-2">Einheiten</h2>
+						<Show when={childWorkouts()}>
+							<Switch>
+								<Match when={childWorkouts().length < 1}>
+									<div class="text-base-content/60">
+										Noch keine Einheiten gespeichert.
+									</div>
+								</Match>
+								<Match when={childWorkouts().length > 0}>
+									<ul class="list bg-base-100 rounded-box shadow-sm divide-y divide-base-300">
+										<For each={childWorkouts()}>
+											{(item) => (
+												<li class="p-3 flex items-center justify-between">
+													<div>
+														<div class="font-medium">{item.name}</div>
+														<div class="text-xs opacity-60">
+															{item.date ?? ""}
+														</div>
+													</div>
+												</li>
+											)}
+										</For>
+									</ul>
+								</Match>
+							</Switch>
+						</Show>
 					</div>
 					{/* Desktop Table */}
 
@@ -199,6 +320,21 @@ export const Workout = () => {
 							onInput={(e) => setWorkoutName(e.target.value)}
 						/>
 
+						<div class="mb-4">
+							<label class="label" for="workout-date">
+								<span class="label-text">Datum</span>
+							</label>
+							<input
+								type="date"
+								id="workout-date"
+								class="input input-bordered w-full"
+								value={workoutDate()}
+								onInput={(e) => setWorkoutDate(e.target.value)}
+							/>
+						</div>
+
+						{/* TODO: Übungs-UI vorerst deaktiviert */}
+						{/*
 						<div class="divider">Übungen</div>
 
 						<div class="space-y-4 max-h-96 overflow-y-auto">
@@ -291,12 +427,21 @@ export const Workout = () => {
 						>
 							+ Weitere Übung hinzufügen
 						</button>
+						*/}
 
 						<div class="modal-action">
-							<button class="btn btn-ghost" onClick={handleCancelModal}>
+							<button
+								class="btn btn-ghost"
+								onClick={handleCancelModal}
+								type="button"
+							>
 								Abbrechen
 							</button>
-							<button class="btn btn-primary" onClick={handleSaveWorkout}>
+							<button
+								class="btn btn-primary"
+								onClick={handleSaveWorkout}
+								type="button"
+							>
 								Speichern
 							</button>
 						</div>
