@@ -13,10 +13,40 @@ const fetchWorkouts = async () => {
 				const file = await handle.getFile();
 				const text = await file.text();
 				const data = JSON.parse(text);
+				
+				// Fetch the most recent child workout date
+				let lastTrainedDate = null;
+				try {
+					const workoutId = data.id ?? name.replace(".json", "");
+					const parentDir = await workoutsDir.getDirectoryHandle(workoutId, {
+						create: false,
+					});
+					
+					for await (const [childName, childHandle] of parentDir.entries()) {
+						if (childHandle.kind === "file" && childName.endsWith(".json")) {
+							try {
+								const childFile = await childHandle.getFile();
+								const childText = await childFile.text();
+								const childData = JSON.parse(childText);
+								const childDate = new Date(childData.date || childData.created_at);
+								
+								if (!lastTrainedDate || childDate > lastTrainedDate) {
+									lastTrainedDate = childDate;
+								}
+							} catch (err) {
+								console.warn("Failed to read child workout:", err);
+							}
+						}
+					}
+				} catch (err) {
+					// No child workouts yet
+				}
+				
 				workouts.push({
 					id: data.id ?? name.replace(".json", ""),
 					name: data.name ?? "Unbenanntes Workout",
 					created_at: data.created_at ?? new Date().toISOString(),
+					lastTrainedAt: lastTrainedDate?.toISOString() ?? null,
 				});
 			}
 		}

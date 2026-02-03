@@ -3,13 +3,15 @@ import { For, Match, Switch } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { CreateWorkoutModal } from "../features/workout/create-workout-modal";
 import { Header } from "../features/workouts/header";
+import { ArrowRightIcon } from "../ui/icons/arrow-right";
 import { FolderIcon } from "../ui/icons/folder";
+import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
 
 export const Workouts = () => {
 	const { workouts, refetch } = createWorkoutResource();
 
-	const handleCreated = async () => {
-		await refetch();
+	const handleCreated = () => {
+		refetch();
 	};
 
 	return (
@@ -32,33 +34,24 @@ export const Workouts = () => {
 								<A href={`/workouts/${item.id}`}>
 									<li class="flex items-center justify-between p-3 hover:bg-base-200 transition">
 										<div class="flex items-center gap-3">
-											<FolderIcon />
+											{item.lastTrainedAt ? (
+												<FolderWithSheetsIcon />
+											) : (
+												<FolderIcon />
+											)}
 											<div>
 												<div class="font-medium">{item.name}</div>
-												<div class="text-xs uppercase font-semibold opacity-60">
-													{new Intl.DateTimeFormat("de-DE").format(
-														new Date(item.created_at),
-													)}
+												<div class="text-xs font-semibold opacity-60">
+													{item.lastTrainedAt
+														? `last trained at ${new Intl.DateTimeFormat(
+																"de-DE",
+															).format(new Date(item.lastTrainedAt))}`
+														: "not trained yet"}
 												</div>
 											</div>
 										</div>
 										<button class="btn btn-square btn-ghost" type="button">
-											<svg
-												class="size-[1.2em]"
-												xmlns="http://www.w3.org/2000/svg"
-												viewBox="0 0 24 24"
-											>
-												<title>right-arrow-icon</title>
-												<g
-													stroke-linejoin="round"
-													stroke-linecap="round"
-													stroke-width="2"
-													fill="none"
-													stroke="currentColor"
-												>
-													<path d="M6 3L20 12 6 21 6 3z"></path>
-												</g>
-											</svg>
+											<ArrowRightIcon />
 										</button>
 									</li>
 								</A>
