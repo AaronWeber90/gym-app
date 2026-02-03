@@ -9,6 +9,7 @@ import {
 	Switch,
 } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
+import { TableCellsIcon } from "../ui/icons/table-cells";
 
 export const Workout = () => {
 	const { workouts } = createWorkoutResource();
@@ -63,36 +64,35 @@ export const Workout = () => {
 		}
 	};
 
-	const [childWorkouts, { refetch: refetchChildWorkouts }] = createResource(
-		fetchChildWorkouts,
-	);
+	const [childWorkouts, { refetch: refetchChildWorkouts }] =
+		createResource(fetchChildWorkouts);
 
-	const addExerciseInput = () => {
-		setNewExercises([
-			...newExercises(),
-			{ name: "", sets: 1, reps: 10, weight: 0 },
-		]);
-	};
+	// const addExerciseInput = () => {
+	// 	setNewExercises([
+	// 		...newExercises(),
+	// 		{ name: "", sets: 1, reps: 10, weight: 0 },
+	// 	]);
+	// };
 
-	const removeExerciseInput = (index) => {
-		setNewExercises(newExercises().filter((_, i) => i !== index));
-	};
+	// const removeExerciseInput = (index) => {
+	// 	setNewExercises(newExercises().filter((_, i) => i !== index));
+	// };
 
-	const updateExerciseInput = (index, field, value) => {
-		const updated = [...newExercises()];
-		updated[index][field] = value;
-		setNewExercises(updated);
-	};
+	// const updateExerciseInput = (index, field, value) => {
+	// 	const updated = [...newExercises()];
+	// 	updated[index][field] = value;
+	// 	setNewExercises(updated);
+	// };
 
 	const handleSaveWorkout = async () => {
 		if (!params.id) {
 			alert("Kein Parent-Workout gefunden");
 			return;
 		}
-		if (!workoutName().trim()) {
-			alert("Bitte gib einen Namen für das Training ein");
-			return;
-		}
+		// if (!workoutName().trim()) {
+		// 	alert("Bitte gib einen Namen für das Training ein");
+		// 	return;
+		// }
 
 		// const validExercises = newExercises().filter((ex) => ex.name.trim());
 		// if (validExercises.length === 0) {
@@ -193,7 +193,7 @@ export const Workout = () => {
 						<h2 class="text-lg font-semibold mb-2">Einheiten</h2>
 						<Show when={childWorkouts()}>
 							<Switch>
-								<Match when={childWorkouts().length < 1}>
+								<Match when={childWorkouts()?.length < 1}>
 									<div class="text-base-content/60">
 										Noch keine Einheiten gespeichert.
 									</div>
@@ -203,10 +203,14 @@ export const Workout = () => {
 										<For each={childWorkouts()}>
 											{(item) => (
 												<li class="p-3 flex items-center justify-between">
-													<div>
-														<div class="font-medium">{item.name}</div>
-														<div class="text-xs opacity-60">
-															{item.date ?? ""}
+													<div class="flex items-center gap-3">
+														<TableCellsIcon />
+														<div class="font-medium">
+															{new Intl.DateTimeFormat("de-DE", {
+																day: "2-digit",
+																month: "2-digit",
+																year: "2-digit",
+															}).format(new Date(item.date)) ?? ""}
 														</div>
 													</div>
 												</li>
@@ -219,7 +223,7 @@ export const Workout = () => {
 					</div>
 					{/* Desktop Table */}
 
-					<table class="hidden md:table table-sm table-pin-rows w-full">
+					{/* <table class="hidden md:table table-sm table-pin-rows w-full">
 						<thead>
 							<tr>
 								<th>Übung</th>
@@ -240,7 +244,7 @@ export const Workout = () => {
 								)),
 							)}
 						</tbody>
-					</table>
+					</table> */}
 
 					{/* Mobile Cards */}
 					<div class="md:hidden">
@@ -248,13 +252,14 @@ export const Workout = () => {
 							<button
 								class="btn btn-lg btn-circle btn-primary"
 								onClick={() => setShowModal(true)}
+								type="button"
 							>
 								+
 							</button>
 						</div>
 
 						<Switch>
-							<Match when={exercise().length < 1}>
+							<Match when={childWorkouts()?.length < 1}>
 								<div class="text-center text-base-content/50 py-8">
 									Keine Übungen vorhanden
 								</div>
@@ -311,14 +316,14 @@ export const Workout = () => {
 				<dialog class="modal modal-open">
 					<div class="modal-box max-w-2xl">
 						<h3 class="font-bold text-lg mb-4">Neue Trainingseinheit</h3>
-
+						{/* 
 						<input
 							type="text"
 							placeholder="Name der Trainingseinheit"
 							class="input input-bordered w-full mb-4"
 							value={workoutName()}
 							onInput={(e) => setWorkoutName(e.target.value)}
-						/>
+						/> */}
 
 						<div class="mb-4">
 							<label class="label" for="workout-date">
