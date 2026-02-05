@@ -3,6 +3,7 @@ import { For, Match, Switch } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { CreateWorkoutModal } from "../features/workout/create-workout-modal";
 import { Header } from "../features/workouts/header";
+import { Button } from "../ui/button";
 import { ArrowRightIcon } from "../ui/icons/arrow-right";
 import { FolderIcon } from "../ui/icons/folder";
 import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
@@ -50,9 +51,9 @@ export const Workouts = () => {
 												</div>
 											</div>
 										</div>
-										<button class="btn btn-square btn-ghost" type="button">
+										<Button variant="ghost">
 											<ArrowRightIcon />
-										</button>
+										</Button>
 									</li>
 								</A>
 							)}

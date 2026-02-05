@@ -9,6 +9,7 @@ import {
 	Switch,
 } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
+import { Button } from "../ui/button";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 
 export const Workout = () => {
@@ -184,9 +185,9 @@ export const Workout = () => {
 				<div class="overflow-x-auto w-full max-w-full">
 					<div class="flex flex-row justify-between items-center">
 						<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
-						<button class="btn btn-ghost" onClick={deleteWorkout} type="button">
+						<Button onClick={deleteWorkout} variant="ghost">
 							Löschen
-						</button>
+						</Button>
 					</div>
 
 					<div class="mt-4">
