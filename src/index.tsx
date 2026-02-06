@@ -7,10 +7,11 @@ import "./index.css";
 import { OpfsExplorer } from "./pages/opfs-explorer";
 import { Workout } from "./pages/workout";
 import { Workouts } from "./pages/workouts";
+import { Button } from "./ui/button";
 
 const root = document.getElementById("root");
 
-if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
+if (!(root instanceof HTMLElement)) {
 	throw new Error(
 		"Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?",
 	);
@@ -24,13 +25,11 @@ const Layout: Component<LayoutProps> = (props) => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	console.log(location);
-
 	return (
 		<div class="min-h-screen flex flex-col bg-base-200">
 			<main class="flex-1 p-4">{props.children}</main>
 			<div class="dock">
-				<button
+				<Button
 					class={
 						location.pathname.includes("/workouts") ? "dock-active" : undefined
 					}
@@ -51,11 +50,12 @@ const Layout: Component<LayoutProps> = (props) => {
 							stroke-linejoin="round"
 							d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
 						/>
+						<title>workouts-icon</title>
 					</svg>
-					<span class="dock-label">Pläne</span>
-				</button>
+					<span class="dock-label">Workouts</span>
+				</Button>
 
-				<button
+				<Button
 					onClick={() => {
 						navigate("/file-explorer");
 					}}
@@ -93,10 +93,11 @@ const Layout: Component<LayoutProps> = (props) => {
 								stroke-miterlimit="10"
 								stroke-width="2"
 							></path>
+							<title>file-explorer-icon</title>
 						</g>
 					</svg>
 					<span class="dock-label">Files</span>
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

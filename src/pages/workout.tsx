@@ -171,7 +171,21 @@ export const Workout = () => {
 			const workoutsDir = await root.getDirectoryHandle("workouts", {
 				create: false,
 			});
+
+			// Delete the directory containing child workouts (if it exists)
+			try {
+				await workoutsDir.removeEntry(params.id, { recursive: true });
+			} catch (err) {
+				// Directory might not exist if no child workouts were created
+				console.warn(
+					"Child workouts directory not found or already deleted:",
+					err,
+				);
+			}
+
+			// Delete the parent workout JSON file
 			await workoutsDir.removeEntry(`${params.id}.json`);
+
 			// Redirect or update UI after deletion as needed
 			navigate("/workouts");
 		} catch (err) {
@@ -248,7 +262,7 @@ export const Workout = () => {
 					</table> */}
 
 					{/* Mobile Cards */}
-					<div class="md:hidden">
+					<div>
 						<div class="fab fab-overwrite pb-4">
 							<button
 								class="btn btn-lg btn-circle btn-primary"

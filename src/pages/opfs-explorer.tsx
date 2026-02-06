@@ -2,42 +2,101 @@ import { createResource, For, Show } from "solid-js";
 
 async function readDirectoryEntries(dirHandle, path = "") {
 	const entries = [];
+	const processedDirs = new Set();
+
 	for await (const [name, handle] of dirHandle.entries()) {
 		const fullPath = path ? `${path}/${name}` : name;
+
 		if (handle.kind === "directory") {
+			// Check if this directory has a corresponding .json file (parent workout)
 			let displayName = name;
+			let skipDir = false;
+
 			try {
-				const metaHandle = await handle.getFileHandle("meta.json");
-				const metaFile = await metaHandle.getFile();
-				const metaText = await metaFile.text();
-				const meta = JSON.parse(metaText);
-				if (meta?.name) displayName = meta.name;
+				const jsonFileName = `${name}.json`;
+				const jsonHandle = await dirHandle.getFileHandle(jsonFileName);
+				const jsonFile = await jsonHandle.getFile();
+				const jsonText = await jsonFile.text();
+				const data = JSON.parse(jsonText);
+
+				// This directory represents child workouts of a parent
+				if (data?.name) {
+					displayName = data.name;
+				}
+				processedDirs.add(name);
 			} catch (err) {
-				// ignore if no meta.json or invalid JSON
+				// No corresponding JSON file, just a regular directory
 			}
-			entries.push({
-				type: "folder",
-				name,
-				displayName,
-				path: fullPath,
-				children: await readDirectoryEntries(handle, fullPath),
-			});
+
+			// Skip if this directory already has a corresponding JSON file we'll process
+			const jsonExists = await dirHandle
+				.getFileHandle(`${name}.json`)
+				.then(() => true)
+				.catch(() => false);
+			if (jsonExists && !processedDirs.has(name)) {
+				skipDir = true;
+			}
+
+			if (!skipDir) {
+				entries.push({
+					type: "folder",
+					name,
+					displayName,
+					path: fullPath,
+					children: await readDirectoryEntries(handle, fullPath),
+				});
+			}
 		} else {
+			// It's a file
 			let displayName = name;
+			let additionalInfo = "";
+
 			try {
 				if (name.endsWith(".json")) {
 					const file = await handle.getFile();
 					const text = await file.text();
 					const data = JSON.parse(text);
+
+					// Check if this is a parent workout with a corresponding directory
+					const dirName = name.replace(".json", "");
+					const hasChildDir = await dirHandle
+						.getDirectoryHandle(dirName)
+						.then(() => true)
+						.catch(() => false);
+
+					if (hasChildDir) {
+						// This is a parent workout - show it as a folder with children
+						const childDir = await dirHandle.getDirectoryHandle(dirName);
+						entries.push({
+							type: "folder",
+							name: dirName,
+							displayName: data?.name || dirName,
+							path: fullPath.replace(".json", ""),
+							children: await readDirectoryEntries(
+								childDir,
+								fullPath.replace(".json", ""),
+							),
+						});
+						continue; // Skip adding as file
+					}
+
+					// Regular JSON file or child workout
 					if (data?.name) displayName = data.name;
+					if (data?.date) {
+						const formattedDate = new Intl.DateTimeFormat("de-DE").format(
+							new Date(data.date),
+						);
+						additionalInfo = ` (${formattedDate})`;
+					}
 				}
 			} catch (err) {
 				// ignore invalid JSON
 			}
+
 			entries.push({
 				type: "file",
 				name,
-				displayName,
+				displayName: displayName + additionalInfo,
 				path: fullPath,
 			});
 		}
@@ -94,11 +153,52 @@ const FileIcon = () => (
 
 // --- Components ---
 export const OpfsExplorer = () => {
-	const [entries] = createResource(fetchOpfsStructure);
+	const [entries, { refetch }] = createResource(fetchOpfsStructure);
+
+	const deleteAllData = async () => {
+		const confirmed = confirm(
+			"Are you sure you want to delete ALL data? This action cannot be undone.",
+		);
+		if (!confirmed) return;
+
+		try {
+			const root = await navigator.storage.getDirectory();
+
+			// Delete all entries in the root directory
+			for await (const [name, handle] of root.entries()) {
+				try {
+					if (handle.kind === "directory") {
+						await root.removeEntry(name, { recursive: true });
+					} else {
+						await root.removeEntry(name);
+					}
+					console.log(`Deleted: ${name}`);
+				} catch (err) {
+					console.error(`Failed to delete ${name}:`, err);
+				}
+			}
+
+			// Refresh the view
+			refetch();
+			alert("All data has been deleted successfully.");
+		} catch (err) {
+			console.error("Failed to delete OPFS data:", err);
+			alert("Failed to delete data. Check console for details.");
+		}
+	};
 
 	return (
 		<div class="p-6">
-			<h1 class="text-2xl font-bold mb-4">🗂️ OPFS File Explorer</h1>
+			<div class="flex justify-between items-center mb-4">
+				<h1 class="text-2xl font-bold">🗂️ OPFS File Explorer</h1>
+				<button
+					class="btn btn-error btn-sm"
+					onClick={deleteAllData}
+					type="button"
+				>
+					Delete All Data
+				</button>
+			</div>
 
 			<Show when={entries()} fallback={<p>No entries found.</p>}>
 				<ul class="menu menu-xs bg-base-200 rounded-box max-w-xs w-full">
