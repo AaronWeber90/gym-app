@@ -11,6 +11,7 @@ import {
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { Button } from "../ui/button";
 import { TableCellsIcon } from "../ui/icons/table-cells";
+import { Input } from "../ui/input";
 
 export const Workout = () => {
 	const { workouts } = createWorkoutResource();
@@ -18,13 +19,39 @@ export const Workout = () => {
 	const params = useParams();
 	const [showModal, setShowModal] = createSignal(false);
 	const [workoutName, setWorkoutName] = createSignal("");
-	const [workoutDate, setWorkoutDate] = createSignal(
-		new Date().toISOString().slice(0, 16),
-	);
-	const [newExercises, setNewExercises] = createSignal([
+	const [workoutDate, setWorkoutDate] = createSignal(new Date().toISOString());
+	const [_, setNewExercises] = createSignal([
 		{ name: "", sets: 1, reps: 10, weight: 0 },
 	]);
 	const [exercise, setExercise] = createSignal([]);
+
+	const getDateValue = () => {
+		try {
+			return new Date(workoutDate()).toISOString().slice(0, 10);
+		} catch {
+			return new Date().toISOString().slice(0, 10);
+		}
+	};
+
+	const getTimeValue = () => {
+		try {
+			return new Date(workoutDate()).toISOString().slice(11, 16);
+		} catch {
+			return new Date().toISOString().slice(11, 16);
+		}
+	};
+
+	const handleDateChange = (newDate: string) => {
+		const time = getTimeValue();
+		const combined = new Date(`${newDate}T${time}`).toISOString();
+		setWorkoutDate(combined);
+	};
+
+	const handleTimeChange = (newTime: string) => {
+		const date = getDateValue();
+		const combined = new Date(`${date}T${newTime}`).toISOString();
+		setWorkoutDate(combined);
+	};
 
 	const fetchChildWorkouts = async () => {
 		if (!params.id) return [];
@@ -148,14 +175,14 @@ export const Workout = () => {
 		// Reset modal state
 		setShowModal(false);
 		setWorkoutName("");
-		setWorkoutDate(new Date().toISOString().slice(0, 16));
+		setWorkoutDate(new Date().toISOString());
 		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
 	};
 
 	const handleCancelModal = () => {
 		setShowModal(false);
 		setWorkoutName("");
-		setWorkoutDate(new Date().toISOString().slice(0, 16));
+		setWorkoutDate(new Date().toISOString());
 		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
 	};
 
@@ -239,32 +266,6 @@ export const Workout = () => {
 							</Switch>
 						</Show>
 					</div>
-					{/* Desktop Table */}
-
-					{/* <table class="hidden md:table table-sm table-pin-rows w-full">
-						<thead>
-							<tr>
-								<th>Übung</th>
-								<th>Satz</th>
-								<th>Wdh</th>
-								<th>Gewicht (kg)</th>
-							</tr>
-						</thead>
-						<tbody>
-							{exercise().map((ex) =>
-								ex.sets.map((s) => (
-									<tr>
-										<td>{ex.name}</td>
-										<td>{s.set}</td>
-										<td>{s.reps}</td>
-										<td>{s.weight}</td>
-									</tr>
-								)),
-							)}
-						</tbody>
-					</table> */}
-
-					{/* Mobile Cards */}
 					<div>
 						<div class="fab fab-overwrite pb-4">
 							<button
@@ -334,27 +335,20 @@ export const Workout = () => {
 				<dialog class="modal modal-open">
 					<div class="modal-box max-w-2xl">
 						<h3 class="font-bold text-lg mb-4">Neue Trainingseinheit</h3>
-						{/* 
-						<input
-							type="text"
-							placeholder="Name der Trainingseinheit"
-							class="input input-bordered w-full mb-4"
-							value={workoutName()}
-							onInput={(e) => setWorkoutName(e.target.value)}
-						/> */}
-
-						<div class="mb-4">
-							<label class="label" for="workout-date">
-								<span class="label-text">Datum und Uhrzeit</span>
-							</label>
-							<input
-								type="datetime-local"
-								value={workoutDate()}
-								onInput={(e) => setWorkoutDate(e.target.value)}
+						<div class="flex flex-col gap-4">
+							<Input
+								type="date"
+								label="Datum"
+								value={getDateValue()}
+								onInput={(e) => handleDateChange(e.currentTarget.value)}
+							/>
+							<Input
+								type="time"
+								label="Uhrzeit"
+								value={getTimeValue()}
+								onInput={(e) => handleTimeChange(e.currentTarget.value)}
 							/>
 						</div>
-
-						{/* TODO: Übungs-UI vorerst deaktiviert */}
 						{/*
 						<div class="divider">Übungen</div>
 
@@ -451,20 +445,16 @@ export const Workout = () => {
 						*/}
 
 						<div class="modal-action">
-							<button
-								class="btn btn-ghost"
-								onClick={handleCancelModal}
-								type="button"
-							>
+							<Button variant="ghost" onClick={handleCancelModal}>
 								Abbrechen
-							</button>
-							<button
-								class="btn btn-primary"
+							</Button>
+							<Button
+								variant="primary"
 								onClick={handleSaveWorkout}
-								type="button"
+								type="submit"
 							>
 								Speichern
-							</button>
+							</Button>
 						</div>
 					</div>
 				</dialog>

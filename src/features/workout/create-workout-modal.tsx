@@ -51,7 +51,7 @@ export const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 		<>
 			<dialog class="modal" open={showModal()}>
 				<div class="modal-box">
-					<h3 class="font-bold text-lg mb-2">Add New Workout</h3>
+					<h3 class="font-bold text-lg mb-2">Neuer Trainingsplan</h3>
 					<form
 						onSubmit={(e) => {
 							e.preventDefault();
@@ -67,10 +67,10 @@ export const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 						/>
 						<div class="modal-action">
 							<Button variant="ghost" onClick={cancelWorkoutCreation}>
-								Cancel
+								Abbrechen
 							</Button>
 							<Button type="submit" variant="primary">
-								Save
+								Speichern
 							</Button>
 						</div>
 					</form>

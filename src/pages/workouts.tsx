@@ -3,6 +3,7 @@ import { For, Match, Switch } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { CreateWorkoutModal } from "../features/workout/create-workout-modal";
 import { Header } from "../features/workouts/header";
+import { WorkoutList } from "../features/workouts/workout-list";
 import { Button } from "../ui/button";
 import { ArrowRightIcon } from "../ui/icons/arrow-right";
 import { FolderIcon } from "../ui/icons/folder";
@@ -29,7 +30,7 @@ export const Workouts = () => {
 					<CreateWorkoutModal onCreated={handleCreated} />
 				</Match>
 				<Match when={workouts()}>
-					<ul class="list bg-base-100 rounded-box shadow-md divide-y divide-base-300">
+					<WorkoutList>
 						<For each={workouts()}>
 							{(item) => (
 								<A href={`/workouts/${item.id}`}>
@@ -58,7 +59,7 @@ export const Workouts = () => {
 								</A>
 							)}
 						</For>
-					</ul>
+					</WorkoutList>
 					<CreateWorkoutModal onCreated={handleCreated} />
 				</Match>
 			</Switch>
