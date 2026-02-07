@@ -1,15 +1,20 @@
 import { type JSX, splitProps } from "solid-js";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "square-ghost";
+type ButtonVariant =
+	| "primary"
+	| "secondary"
+	| "ghost"
+	| "square-ghost"
+	| "dock"
+	| "dock-active";
 
-type ButtonProps = {
+type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
 	variant?: ButtonVariant;
 	children: JSX.Element;
-	onClick?: () => void;
 };
 
 export const Button = (props: ButtonProps) => {
-	const [local] = splitProps(props, ["variant", "children", "onClick"]);
+	const [local, others] = splitProps(props, ["variant", "children", "class"]);
 
 	const variantClasses = () => {
 		switch (local.variant) {
@@ -21,13 +26,21 @@ export const Button = (props: ButtonProps) => {
 				return "btn btn-ghost";
 			case "square-ghost":
 				return "btn btn-square btn-ghost";
+			case "dock":
+				return "";
+			case "dock-active":
+				return "dock-active";
 			default:
 				return "btn";
 		}
 	};
 
 	return (
-		<button class={`${variantClasses()}`} onClick={local.onClick} type="button">
+		<button
+			{...others}
+			class={`${variantClasses()} ${local.class ?? ""}`}
+			type={others.type || "button"}
+		>
 			{local.children}
 		</button>
 	);

@@ -1,11 +1,13 @@
-export const FolderWithSheetsIcon = () => (
+import type { IconProps } from "./types";
+
+export const FolderWithSheetsIcon = (props: IconProps) => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 24 24"
 		fill="none"
 		stroke="currentColor"
 		stroke-width="1.5"
-		class="h-8 w-8 text-primary"
+		class={props.class || ""}
 	>
 		<title>folder-with-sheets-icon</title>
 		{/* Folder */}

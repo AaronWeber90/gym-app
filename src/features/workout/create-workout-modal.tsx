@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { Button } from "../../ui/button";
 
 type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
@@ -51,21 +52,28 @@ export const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 			<dialog class="modal" open={showModal()}>
 				<div class="modal-box">
 					<h3 class="font-bold text-lg mb-2">Add New Workout</h3>
-					<input
-						type="text"
-						placeholder="Workout name"
-						class="input input-bordered w-full mb-4"
-						value={newWorkoutName()}
-						onInput={(e) => setNewWorkoutName(e.currentTarget.value)}
-					/>
-					<div class="modal-action">
-						<button class="btn btn-ghost" onClick={cancelWorkoutCreation}>
-							Cancel
-						</button>
-						<button class="btn btn-primary" onClick={handleAddWorkout}>
-							Save
-						</button>
-					</div>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							handleAddWorkout();
+						}}
+					>
+						<input
+							type="text"
+							placeholder="Workout name"
+							class="input input-bordered w-full mb-4"
+							value={newWorkoutName()}
+							onInput={(e) => setNewWorkoutName(e.currentTarget.value)}
+						/>
+						<div class="modal-action">
+							<Button variant="ghost" onClick={cancelWorkoutCreation}>
+								Cancel
+							</Button>
+							<Button type="submit" variant="primary">
+								Save
+							</Button>
+						</div>
+					</form>
 				</div>
 			</dialog>
 			<div class="fab fab-overwrite pb-4">

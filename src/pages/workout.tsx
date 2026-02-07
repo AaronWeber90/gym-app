@@ -19,7 +19,7 @@ export const Workout = () => {
 	const [showModal, setShowModal] = createSignal(false);
 	const [workoutName, setWorkoutName] = createSignal("");
 	const [workoutDate, setWorkoutDate] = createSignal(
-		new Date().toISOString().slice(0, 10),
+		new Date().toISOString().slice(0, 16),
 	);
 	const [newExercises, setNewExercises] = createSignal([
 		{ name: "", sets: 1, reps: 10, weight: 0 },
@@ -132,8 +132,8 @@ export const Workout = () => {
 				id: childId,
 				parentId: params.id,
 				name: workoutName().trim(),
-				date: workoutDate(),
-				created_at: new Date(`${workoutDate()}T00:00:00`).toISOString(),
+				date: new Date(workoutDate()).toISOString(),
+				created_at: new Date(workoutDate()).toISOString(),
 			};
 
 			await writable.write(JSON.stringify(data, null, 2));
@@ -148,14 +148,14 @@ export const Workout = () => {
 		// Reset modal state
 		setShowModal(false);
 		setWorkoutName("");
-		setWorkoutDate(new Date().toISOString().slice(0, 10));
+		setWorkoutDate(new Date().toISOString().slice(0, 16));
 		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
 	};
 
 	const handleCancelModal = () => {
 		setShowModal(false);
 		setWorkoutName("");
-		setWorkoutDate(new Date().toISOString().slice(0, 10));
+		setWorkoutDate(new Date().toISOString().slice(0, 16));
 		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
 	};
 
@@ -205,14 +205,8 @@ export const Workout = () => {
 					</div>
 
 					<div class="mt-4">
-						<h2 class="text-lg font-semibold mb-2">Einheiten</h2>
 						<Show when={childWorkouts()}>
 							<Switch>
-								<Match when={childWorkouts()?.length < 1}>
-									<div class="text-base-content/60">
-										Noch keine Einheiten gespeichert.
-									</div>
-								</Match>
 								<Match when={childWorkouts().length > 0}>
 									<ul class="list bg-base-100 rounded-box shadow-sm divide-y divide-base-300">
 										<For each={childWorkouts()}>
@@ -220,12 +214,21 @@ export const Workout = () => {
 												<li class="p-3 flex items-center justify-between">
 													<div class="flex items-center gap-3">
 														<TableCellsIcon />
-														<div class="font-medium">
-															{new Intl.DateTimeFormat("de-DE", {
-																day: "2-digit",
-																month: "2-digit",
-																year: "2-digit",
-															}).format(new Date(item.date)) ?? ""}
+														<div>
+															<div class="font-medium">
+																{new Intl.DateTimeFormat("de-DE", {
+																	day: "2-digit",
+																	month: "2-digit",
+																	year: "2-digit",
+																}).format(new Date(item.date)) ?? ""}
+															</div>
+															<div class="text-xs font-semibold opacity-60">
+																started at{" "}
+																{new Intl.DateTimeFormat("de-DE", {
+																	hour: "2-digit",
+																	minute: "2-digit",
+																}).format(new Date(item.date)) ?? ""}
+															</div>
 														</div>
 													</div>
 												</li>
@@ -342,12 +345,10 @@ export const Workout = () => {
 
 						<div class="mb-4">
 							<label class="label" for="workout-date">
-								<span class="label-text">Datum</span>
+								<span class="label-text">Datum und Uhrzeit</span>
 							</label>
 							<input
-								type="date"
-								id="workout-date"
-								class="input input-bordered w-full"
+								type="datetime-local"
 								value={workoutDate()}
 								onInput={(e) => setWorkoutDate(e.target.value)}
 							/>

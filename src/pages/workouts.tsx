@@ -36,9 +36,9 @@ export const Workouts = () => {
 									<li class="flex items-center justify-between p-3 hover:bg-base-200 transition">
 										<div class="flex items-center gap-3">
 											{item.lastTrainedAt ? (
-												<FolderWithSheetsIcon />
+												<FolderWithSheetsIcon class="h-8 w-8 text-primary" />
 											) : (
-												<FolderIcon />
+												<FolderIcon class="h-8 w-8 text-primary" />
 											)}
 											<div>
 												<div class="font-medium">{item.name}</div>
