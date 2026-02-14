@@ -5,6 +5,7 @@ import { lazy } from "solid-js";
 import { render } from "solid-js/web";
 import "./index.css";
 import { Button } from "./ui/button";
+import { CalendarDays } from "./ui/icons/calender-days";
 import { FolderIcon } from "./ui/icons/folder";
 import { SettingsIcon } from "./ui/icons/settings";
 
@@ -19,6 +20,7 @@ if (!(root instanceof HTMLElement)) {
 const Workout = lazy(() => import("./pages/workout"));
 const Workouts = lazy(() => import("./pages/workouts"));
 const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
+const Overview = lazy(() => import("./pages/overview"));
 
 type LayoutProps = {
 	children: Element;
@@ -43,7 +45,6 @@ const Layout: Component<LayoutProps> = (props) => {
 					<FolderIcon class="size-[1.2em]" />
 					<span class="dock-label">Workouts</span>
 				</Button>
-
 				<Button
 					onClick={() => {
 						navigate("/file-explorer");
@@ -57,6 +58,17 @@ const Layout: Component<LayoutProps> = (props) => {
 					<SettingsIcon class="size-[1.2em]" />
 					<span class="dock-label">OPFS</span>
 				</Button>
+				<Button
+					onClick={() => {
+						navigate("/overview");
+					}}
+					variant={
+						location.pathname.includes("/overview") ? "dock-active" : "dock"
+					}
+				>
+					<CalendarDays class="size-[1.2em]" />
+					<span class="dock-label">Overview</span>
+				</Button>
 			</div>
 		</div>
 	);
@@ -69,6 +81,7 @@ render(
 			<Route path="/workouts" component={Workouts} />
 			<Route path="/workouts/:id" component={Workout} />
 			<Route path="/file-explorer" component={OpfsExplorer} />
+			<Route path="/overview" component={Overview} />
 		</HashRouter>
 	),
 	root,

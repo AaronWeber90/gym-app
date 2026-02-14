@@ -3,8 +3,6 @@ import { For, lazy, Match, Switch } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { Header } from "../features/workouts/header";
 import { WorkoutList } from "../features/workouts/workout-list";
-import { Button } from "../ui/button";
-import { ArrowRightIcon } from "../ui/icons/arrow-right";
 import { FolderIcon } from "../ui/icons/folder";
 import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
 
@@ -54,9 +52,6 @@ const Workouts = () => {
 												</div>
 											</div>
 										</div>
-										<Button variant="ghost">
-											<ArrowRightIcon />
-										</Button>
 									</li>
 								</A>
 							)}
