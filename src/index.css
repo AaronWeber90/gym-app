@@ -4,3 +4,9 @@
 .fab-overwrite {
   bottom: calc(4rem + env(safe-area-inset-bottom));
 }
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+}

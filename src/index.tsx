@@ -32,7 +32,7 @@ const Layout: Component<LayoutProps> = (props) => {
 
 	return (
 		<div class="min-h-screen flex flex-col bg-base-200">
-			<main class="flex-1 p-4">{props.children}</main>
+			<main class="flex-1 p-4 pb-safe">{props.children}</main>
 			<div class="dock">
 				<Button
 					variant={

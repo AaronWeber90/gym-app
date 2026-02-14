@@ -19,7 +19,7 @@ const Workouts = () => {
 
 	return (
 		<>
-			<Header />
+			<Header title="Workouts" />
 			<Switch>
 				<Match when={workouts.error}>
 					<span>Error: {workouts.error}</span>

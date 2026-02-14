@@ -3,11 +3,11 @@ import { createMemo, createSignal, For } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { Header } from "../features/workouts/header";
 
-interface WeekDay {
+type WeekDay = {
 	date: Date;
 	dayName: string;
 	workouts: Array<{ id: string; name: string }>;
-}
+};
 
 const WorkoutCalendar = () => {
 	const { workouts } = createWorkoutResource();
@@ -130,8 +130,8 @@ const WorkoutCalendar = () => {
 
 	return (
 		<>
-			<Header />
-			<div class="p-4 max-w-2xl mx-auto">
+			<Header title="Übersicht" />
+			<div class="mx-auto">
 				{/* Navigation */}
 				<div class="mb-6">
 					<div class="flex items-center justify-between mb-3">
@@ -288,7 +288,7 @@ const WorkoutCalendar = () => {
 											</For>
 										</div>
 									) : (
-										<div class="text-center py-4 text-base-content/40 text-sm">
+										<div class="text-center text-base-content/40 text-sm">
 											Kein Training
 										</div>
 									)}
