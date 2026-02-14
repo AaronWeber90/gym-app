@@ -152,7 +152,7 @@ const FileIcon = () => (
 );
 
 // --- Components ---
-export const OpfsExplorer = () => {
+const OpfsExplorer = () => {
 	const [entries, { refetch }] = createResource(fetchOpfsStructure);
 
 	const deleteAllData = async () => {
@@ -234,3 +234,5 @@ const FileTree = (props) => (
 		)}
 	</For>
 );
+
+export default OpfsExplorer;

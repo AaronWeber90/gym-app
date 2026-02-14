@@ -5,7 +5,7 @@ type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
 };
 
-export const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
+const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 	const [showModal, setShowModal] = createSignal(false);
 	const [newWorkoutName, setNewWorkoutName] = createSignal("");
 
@@ -88,3 +88,5 @@ export const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 		</>
 	);
 };
+
+export default CreateWorkoutModal;

@@ -13,7 +13,7 @@ import { Button } from "../ui/button";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { Input } from "../ui/input";
 
-export const Workout = () => {
+const Workout = () => {
 	const { workouts } = createWorkoutResource();
 	const navigate = useNavigate();
 	const params = useParams();
@@ -462,3 +462,5 @@ export const Workout = () => {
 		</>
 	);
 };
+
+export default Workout;

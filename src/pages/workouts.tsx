@@ -1,7 +1,6 @@
 import { A } from "@solidjs/router";
-import { For, Match, Switch } from "solid-js";
+import { For, lazy, Match, Switch } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
-import { CreateWorkoutModal } from "../features/workout/create-workout-modal";
 import { Header } from "../features/workouts/header";
 import { WorkoutList } from "../features/workouts/workout-list";
 import { Button } from "../ui/button";
@@ -9,7 +8,11 @@ import { ArrowRightIcon } from "../ui/icons/arrow-right";
 import { FolderIcon } from "../ui/icons/folder";
 import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
 
-export const Workouts = () => {
+const CreateWorkoutModal = lazy(
+	() => import("../features/workout/create-workout-modal"),
+);
+
+const Workouts = () => {
 	const { workouts, refetch } = createWorkoutResource();
 
 	const handleCreated = () => {
@@ -27,7 +30,6 @@ export const Workouts = () => {
 					<div class="text-center text-base-content/50 py-8">
 						Keine Übungen vorhanden
 					</div>
-					<CreateWorkoutModal onCreated={handleCreated} />
 				</Match>
 				<Match when={workouts()}>
 					<WorkoutList>
@@ -66,3 +68,5 @@ export const Workouts = () => {
 		</>
 	);
 };
+
+export default Workouts;

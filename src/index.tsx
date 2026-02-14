@@ -1,12 +1,10 @@
 /* @refresh reload */
-import { Route, Router, useLocation, useNavigate } from "@solidjs/router";
+import { HashRouter, Route, useLocation, useNavigate } from "@solidjs/router";
 import "solid-devtools";
 import type { Component } from "solid-js";
+import { lazy } from "solid-js";
 import { render } from "solid-js/web";
 import "./index.css";
-import { OpfsExplorer } from "./pages/opfs-explorer";
-import { Workout } from "./pages/workout";
-import { Workouts } from "./pages/workouts";
 import { Button } from "./ui/button";
 import { FolderIcon } from "./ui/icons/folder";
 import { SettingsIcon } from "./ui/icons/settings";
@@ -18,6 +16,10 @@ if (!(root instanceof HTMLElement)) {
 		"Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?",
 	);
 }
+
+const Workout = lazy(() => import("./pages/workout"));
+const Workouts = lazy(() => import("./pages/workouts"));
+const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
 
 type LayoutProps = {
 	children: Element;
@@ -63,12 +65,12 @@ const Layout: Component<LayoutProps> = (props) => {
 
 render(
 	() => (
-		<Router root={Layout} base="/gym-app">
+		<HashRouter root={Layout} base="/gym-app">
 			<Route path="/" component={Workouts} />
 			<Route path="/workouts" component={Workouts} />
 			<Route path="/workouts/:id" component={Workout} />
 			<Route path="/file-explorer" component={OpfsExplorer} />
-		</Router>
+		</HashRouter>
 	),
 	root,
 );
