@@ -1,6 +1,5 @@
 /* @refresh reload */
 import { HashRouter, Route, useLocation, useNavigate } from "@solidjs/router";
-import "solid-devtools";
 import type { Component } from "solid-js";
 import { lazy } from "solid-js";
 import { render } from "solid-js/web";
