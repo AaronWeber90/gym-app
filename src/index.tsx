@@ -64,7 +64,7 @@ const Layout: Component<LayoutProps> = (props) => {
 
 render(
 	() => (
-		<HashRouter root={Layout} base="/gym-app">
+		<HashRouter root={Layout}>
 			<Route path="/" component={Workouts} />
 			<Route path="/workouts" component={Workouts} />
 			<Route path="/workouts/:id" component={Workout} />
