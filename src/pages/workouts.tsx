@@ -15,6 +15,7 @@ const Workouts = () => {
 
 	const handleCreated = () => {
 		refetch();
+		console.log(workouts());
 	};
 
 	return (

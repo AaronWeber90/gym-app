@@ -1,6 +1,19 @@
 import { createResource } from "solid-js";
 
-const getLastTrainedDate = async (
+type WorkoutSession = {
+	id: string;
+	date: string;
+};
+
+type Workout = {
+	id: string;
+	name: string;
+	created_at: string;
+	lastTrainedAt: string | null;
+	sessions: WorkoutSession[];
+};
+
+const getSessionsAndLastTrainedDate = async (
 	workoutId: string,
 	workoutsDir: FileSystemDirectoryHandle,
 ) => {
@@ -10,6 +23,7 @@ const getLastTrainedDate = async (
 		});
 
 		let mostRecentDate = null;
+		const sessions: WorkoutSession[] = [];
 
 		for await (const [fileName, fileHandle] of childWorkoutsDir.entries()) {
 			if (fileHandle.kind === "file" && fileName.endsWith(".json")) {
@@ -21,6 +35,14 @@ const getLastTrainedDate = async (
 						childWorkout.date || childWorkout.created_at,
 					);
 
+					// Add to sessions array
+					sessions.push({
+						id: childWorkout.id || fileName.replace(".json", ""),
+						date: workoutDate.toISOString(),
+						// Add other properties from childWorkout as needed
+					});
+
+					// Keep old logic for mostRecentDate
 					if (!mostRecentDate || workoutDate > mostRecentDate) {
 						mostRecentDate = workoutDate;
 					}
@@ -30,10 +52,21 @@ const getLastTrainedDate = async (
 			}
 		}
 
-		return mostRecentDate?.toISOString() ?? null;
+		// Sort sessions by date (newest first)
+		sessions.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+		);
+
+		return {
+			lastTrainedAt: mostRecentDate?.toISOString() ?? null,
+			sessions,
+		};
 	} catch (error) {
 		// No child workouts directory exists yet
-		return null;
+		return {
+			lastTrainedAt: null,
+			sessions: [],
+		};
 	}
 };
 
@@ -41,30 +74,34 @@ const parseWorkoutFile = async (
 	fileName: string,
 	fileHandle: FileSystemFileHandle,
 	workoutsDir: FileSystemDirectoryHandle,
-) => {
+): Promise<Workout> => {
 	const file = await fileHandle.getFile();
 	const text = await file.text();
 	const workoutData = JSON.parse(text);
 
 	const workoutId = workoutData.id ?? fileName.replace(".json", "");
-	const lastTrainedAt = await getLastTrainedDate(workoutId, workoutsDir);
+	const { lastTrainedAt, sessions } = await getSessionsAndLastTrainedDate(
+		workoutId,
+		workoutsDir,
+	);
 
 	return {
 		id: workoutId,
-		name: workoutData.name ?? "Unbenanntes Workout",
+		name: workoutData.name,
 		created_at: workoutData.created_at ?? new Date().toISOString(),
 		lastTrainedAt,
+		sessions,
 	};
 };
 
-const fetchWorkouts = async () => {
+const fetchWorkouts = async (): Promise<Workout[]> => {
 	try {
 		const root = await navigator.storage.getDirectory();
 		const workoutsDir = await root.getDirectoryHandle("workouts", {
 			create: true,
 		});
 
-		const workouts = [];
+		const workouts: Workout[] = [];
 
 		for await (const [fileName, fileHandle] of workoutsDir.entries()) {
 			const isJsonFile =

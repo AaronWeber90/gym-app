@@ -2,41 +2,49 @@ import { A } from "@solidjs/router";
 import { createMemo, createSignal, For } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { Header } from "../features/workouts/header";
+import { Button } from "../ui/button";
+
+type WorkoutSession = {
+	id: string;
+	name: string;
+	sessionId: string;
+	timestamp: string;
+};
 
 type WeekDay = {
 	date: Date;
 	dayName: string;
-	workouts: Array<{ id: string; name: string }>;
+	workouts: WorkoutSession[];
 };
+
+const monthNames = [
+	"Januar",
+	"Februar",
+	"März",
+	"April",
+	"Mai",
+	"Juni",
+	"Juli",
+	"August",
+	"September",
+	"Oktober",
+	"November",
+	"Dezember",
+];
+
+const weekDayNames = [
+	"Montag",
+	"Dienstag",
+	"Mittwoch",
+	"Donnerstag",
+	"Freitag",
+	"Samstag",
+	"Sonntag",
+];
 
 const WorkoutCalendar = () => {
 	const { workouts } = createWorkoutResource();
 	const [weekOffset, setWeekOffset] = createSignal(0);
-
-	const monthNames = [
-		"Januar",
-		"Februar",
-		"März",
-		"April",
-		"Mai",
-		"Juni",
-		"Juli",
-		"August",
-		"September",
-		"Oktober",
-		"November",
-		"Dezember",
-	];
-
-	const weekDayNames = [
-		"Montag",
-		"Dienstag",
-		"Mittwoch",
-		"Donnerstag",
-		"Freitag",
-		"Samstag",
-		"Sonntag",
-	];
 
 	// Get the start of the week (Monday)
 	const getWeekStart = (date: Date) => {
@@ -61,18 +69,32 @@ const WorkoutCalendar = () => {
 			const date = new Date(weekStart);
 			date.setDate(weekStart.getDate() + i);
 
+			// NEW: Use sessions instead of lastTrainedAt
 			const dayWorkouts =
 				workouts()
-					?.filter((w) => {
-						if (!w.lastTrainedAt) return false;
-						const trainedDate = new Date(w.lastTrainedAt);
-						return (
-							trainedDate.getDate() === date.getDate() &&
-							trainedDate.getMonth() === date.getMonth() &&
-							trainedDate.getFullYear() === date.getFullYear()
-						);
+					?.flatMap((w) => {
+						if (!w.sessions || w.sessions.length === 0) return [];
+
+						return w.sessions
+							.filter((session) => {
+								const sessionDate = new Date(session.date);
+								return (
+									sessionDate.getDate() === date.getDate() &&
+									sessionDate.getMonth() === date.getMonth() &&
+									sessionDate.getFullYear() === date.getFullYear()
+								);
+							})
+							.map((session) => ({
+								id: w.id,
+								name: w.name,
+								sessionId: session.id,
+								timestamp: session.date,
+							}));
 					})
-					.map((w) => ({ id: w.id, name: w.name })) || [];
+					.sort(
+						(a, b) =>
+							new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+					) || [];
 
 			days.push({
 				date,
@@ -137,7 +159,7 @@ const WorkoutCalendar = () => {
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-xl font-bold tracking-tight">{weekRange()}</h2>
 						<div class="flex gap-2">
-							<button
+							<Button
 								onClick={previousWeek}
 								class="btn btn-sm btn-ghost"
 								aria-label="Vorherige Woche"
@@ -155,11 +177,11 @@ const WorkoutCalendar = () => {
 										d="M15 19l-7-7 7-7"
 									/>
 								</svg>
-							</button>
-							<button onClick={goToToday} class="btn btn-sm btn-primary">
+							</Button>
+							<Button onClick={goToToday} class="btn btn-sm btn-primary">
 								Heute
-							</button>
-							<button
+							</Button>
+							<Button
 								onClick={nextWeek}
 								class="btn btn-sm btn-ghost"
 								aria-label="Nächste Woche"
@@ -177,7 +199,7 @@ const WorkoutCalendar = () => {
 										d="M9 5l7 7-7 7"
 									/>
 								</svg>
-							</button>
+							</Button>
 						</div>
 					</div>
 
