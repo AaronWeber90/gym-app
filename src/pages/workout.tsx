@@ -9,6 +9,7 @@ import {
 	Switch,
 } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
+import { getDir, getRootDir } from "../features/opfs-storage/utils";
 import { Button } from "../ui/button";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { Input } from "../ui/input";
@@ -56,10 +57,8 @@ const Workout = () => {
 	const fetchChildWorkouts = async () => {
 		if (!params.id) return [];
 		try {
-			const root = await navigator.storage.getDirectory();
-			const workoutsDir = await root.getDirectoryHandle("workouts", {
-				create: false,
-			});
+			const root = await getRootDir();
+			const workoutsDir = await getDir(root, "workouts", true);
 			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
 				create: false,
 			});

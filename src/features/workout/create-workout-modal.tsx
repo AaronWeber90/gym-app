@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { Button } from "../../ui/button";
+import { getDir, getFile, getRootDir } from "../opfs-storage/utils";
 
 type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
@@ -19,14 +20,10 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 		if (!name) return;
 
 		try {
-			const root = await navigator.storage.getDirectory();
-			const workoutsDir = await root.getDirectoryHandle("workouts", {
-				create: true,
-			});
+			const root = await getRootDir();
+			const workoutsDir = await getDir(root, "workouts", true);
 			const id = crypto.randomUUID();
-			const handle = await workoutsDir.getFileHandle(`${id}.json`, {
-				create: true,
-			});
+			const handle = await getFile(workoutsDir, `${id}.json`, true);
 			const writable = await handle.createWritable();
 
 			const data = {

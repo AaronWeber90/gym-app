@@ -1,17 +1,6 @@
 import { createResource } from "solid-js";
-
-type WorkoutSession = {
-	id: string;
-	date: string;
-};
-
-type Workout = {
-	id: string;
-	name: string;
-	created_at: string;
-	lastTrainedAt: string | null;
-	sessions: WorkoutSession[];
-};
+import type { Workout, WorkoutSession } from "../api/types";
+import { getDir, getRootDir } from "./opfs-storage/utils";
 
 const getSessionsAndLastTrainedDate = async (
 	workoutId: string,
@@ -96,10 +85,8 @@ const parseWorkoutFile = async (
 
 const fetchWorkouts = async (): Promise<Workout[]> => {
 	try {
-		const root = await navigator.storage.getDirectory();
-		const workoutsDir = await root.getDirectoryHandle("workouts", {
-			create: true,
-		});
+		const root = await getRootDir();
+		const workoutsDir = await getDir(root, "workouts", true);
 
 		const workouts: Workout[] = [];
 
