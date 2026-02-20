@@ -29,6 +29,7 @@ const Workouts = () => {
 					<div class="text-center text-base-content/50 py-8">
 						Keine Übungen vorhanden
 					</div>
+					<CreateWorkoutModal onCreated={handleCreated} />
 				</Match>
 				<Match when={workouts()}>
 					<WorkoutList>
