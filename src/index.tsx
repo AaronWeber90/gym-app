@@ -26,6 +26,7 @@ if (!(root instanceof HTMLElement)) {
 }
 
 const Workout = lazy(() => import("./pages/workout"));
+const WorkoutSession = lazy(() => import("./pages/workout-session"));
 const Workouts = lazy(() => import("./pages/workouts"));
 const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
 const Overview = lazy(() => import("./pages/overview"));
@@ -91,6 +92,7 @@ render(
 				<Route path="/" component={Workouts} />
 				<Route path="/workouts" component={Workouts} />
 				<Route path="/workouts/:id" component={Workout} />
+				<Route path="/workouts/:id/:sessionId" component={WorkoutSession} />
 				<Route path="/file-explorer" component={OpfsExplorer} />
 				<Route path="/overview" component={Overview} />
 			</HashRouter>

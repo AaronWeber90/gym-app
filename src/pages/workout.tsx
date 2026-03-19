@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "@solidjs/router";
+import { A, useNavigate, useParams } from "@solidjs/router";
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
 import {
 	createMemo,
@@ -247,27 +247,29 @@ const Workout = () => {
 									<ul class="list bg-base-100 rounded-box shadow-sm divide-y divide-base-300">
 										<For each={childWorkouts()}>
 											{(item) => (
-												<li class="p-3 flex items-center justify-between">
-													<div class="flex items-center gap-3">
-														<TableCellsIcon />
-														<div>
-															<div class="font-medium">
-																{new Intl.DateTimeFormat("de-DE", {
-																	day: "2-digit",
-																	month: "2-digit",
-																	year: "2-digit",
-																}).format(new Date(item.date)) ?? ""}
-															</div>
-															<div class="text-xs font-semibold opacity-60">
-																started at{" "}
-																{new Intl.DateTimeFormat("de-DE", {
-																	hour: "2-digit",
-																	minute: "2-digit",
-																}).format(new Date(item.date)) ?? ""}
+												<A href={`/workouts/${params.id}/${item.id}`}>
+													<li class="p-3 flex items-center justify-between">
+														<div class="flex items-center gap-3">
+															<TableCellsIcon />
+															<div>
+																<div class="font-medium">
+																	{new Intl.DateTimeFormat("de-DE", {
+																		day: "2-digit",
+																		month: "2-digit",
+																		year: "2-digit",
+																	}).format(new Date(item.date)) ?? ""}
+																</div>
+																<div class="text-xs font-semibold opacity-60">
+																	started at{" "}
+																	{new Intl.DateTimeFormat("de-DE", {
+																		hour: "2-digit",
+																		minute: "2-digit",
+																	}).format(new Date(item.date)) ?? ""}
+																</div>
 															</div>
 														</div>
-													</div>
-												</li>
+													</li>
+												</A>
 											)}
 										</For>
 									</ul>
