@@ -1,6 +1,14 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
-import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
+import {
+	createMemo,
+	createSignal,
+	For,
+	Index,
+	Match,
+	Show,
+	Switch,
+} from "solid-js";
 import {
 	createWorkoutResource,
 	workoutsQueryKey,
@@ -10,15 +18,10 @@ import { Button } from "../ui/button";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { Input } from "../ui/input";
 
-type ExerciseSet = {
-	set: number;
-	reps: number;
-	weight: number;
-};
-
-type Exercise = {
+type ExerciseInput = {
 	name: string;
-	sets: ExerciseSet[];
+	weight: number;
+	sets: number;
 };
 
 const Workout = () => {
@@ -29,10 +32,9 @@ const Workout = () => {
 	const [showModal, setShowModal] = createSignal(false);
 	const [workoutName, setWorkoutName] = createSignal("");
 	const [workoutDate, setWorkoutDate] = createSignal(new Date().toISOString());
-	const [_, setNewExercises] = createSignal([
-		{ name: "", sets: 1, reps: 10, weight: 0 },
+	const [exercises, setExercises] = createSignal<ExerciseInput[]>([
+		{ name: "", weight: 0, sets: 1 },
 	]);
-	const [exercise, setExercise] = createSignal<Exercise[]>([]);
 
 	const getDateValue = () => {
 		try {
@@ -117,13 +119,33 @@ const Workout = () => {
 			queryKey: ["childWorkouts", params.id],
 		});
 
+	const addExercise = () => {
+		setExercises([...exercises(), { name: "", weight: 0, sets: 1 }]);
+	};
+
+	const removeExercise = (index: number) => {
+		setExercises(exercises().filter((_, i) => i !== index));
+	};
+
+	const updateExercise = (
+		index: number,
+		field: keyof ExerciseInput,
+		value: string | number,
+	) => {
+		setExercises(
+			exercises().map((ex, i) =>
+				i === index ? { ...ex, [field]: value } : ex,
+			),
+		);
+	};
+
 	const handleSaveWorkout = async () => {
 		if (!params.id) {
 			alert("Kein Parent-Workout gefunden");
 			return;
 		}
 
-		setExercise([...exercise()]);
+		const validExercises = exercises().filter((ex) => ex.name.trim());
 
 		try {
 			const root = await navigator.storage.getDirectory();
@@ -146,6 +168,7 @@ const Workout = () => {
 				name: workoutName().trim(),
 				date: new Date(workoutDate()).toISOString(),
 				created_at: new Date(workoutDate()).toISOString(),
+				exercises: validExercises,
 			};
 
 			await writable.write(JSON.stringify(data, null, 2));
@@ -162,14 +185,14 @@ const Workout = () => {
 		setShowModal(false);
 		setWorkoutName("");
 		setWorkoutDate(new Date().toISOString());
-		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
+		setExercises([{ name: "", weight: 0, sets: 1 }]);
 	};
 
 	const handleCancelModal = () => {
 		setShowModal(false);
 		setWorkoutName("");
 		setWorkoutDate(new Date().toISOString());
-		setNewExercises([{ name: "", sets: 1, reps: 10, weight: 0 }]);
+		setExercises([{ name: "", weight: 0, sets: 1 }]);
 	};
 
 	const currentWorkout = createMemo(() => {
@@ -270,49 +293,6 @@ const Workout = () => {
 								</div>
 							</Match>
 						</Switch>
-						{exercise().map((ex) => (
-							<div class="card bg-base-200 shadow-sm">
-								<div class="card-body p-4">
-									<h3 class="font-bold text-lg mb-2">{ex.name}</h3>
-									<div class="overflow-x-auto">
-										<table class="table table-xs">
-											<thead>
-												<tr>
-													<th>Satz</th>
-													<th>Gewicht</th>
-													<th>Whd.</th>
-												</tr>
-											</thead>
-											<tbody>
-												{ex.sets.map((s) => (
-													<tr>
-														<td>{s.set}</td>
-														<td>
-															<input
-																type="number"
-																min="0"
-																placeholder="Type here"
-																class="input input-ghost input-xs w-20"
-																value={s.weight}
-															/>
-														</td>
-														<td>
-															<input
-																type="number"
-																min="0"
-																placeholder="Type here"
-																class="input input-ghost input-xs w-20"
-																value={s.reps}
-															/>
-														</td>
-													</tr>
-												))}
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-						))}
 					</div>
 				</div>
 			</Show>
@@ -335,100 +315,73 @@ const Workout = () => {
 								onInput={(e) => handleTimeChange(e.currentTarget.value)}
 							/>
 						</div>
-						{/*
 						<div class="divider">Übungen</div>
 
-						<div class="space-y-4 max-h-96 overflow-y-auto">
-							<For each={newExercises()}>
+						<div class="space-y-4">
+							<Index each={exercises()}>
 								{(ex, index) => (
 									<div class="card bg-base-200 p-4">
 										<div class="flex justify-between items-start mb-2">
-											<span class="font-semibold">Übung {index() + 1}</span>
-											<Show when={newExercises().length > 1}>
+											<span class="font-semibold">Übung {index + 1}</span>
+											<Show when={exercises().length > 1}>
 												<button
 													class="btn btn-ghost btn-xs btn-circle"
-													onClick={() => removeExerciseInput(index())}
+													onClick={() => removeExercise(index)}
+													type="button"
 												>
 													✕
 												</button>
 											</Show>
 										</div>
-
-										<input
+										<Input
 											type="text"
-											placeholder="Übungsname"
-											class="input input-bordered input-sm w-full mb-2"
-											value={ex.name}
+											label="Name"
+											value={ex().name}
 											onInput={(e) =>
-												updateExerciseInput(index(), "name", e.target.value)
+												updateExercise(index, "name", e.currentTarget.value)
 											}
 										/>
-
-										<div class="grid grid-cols-3 gap-2">
-											<div>
-												<label class="label label-text text-xs">Sätze</label>
-												<input
-													type="number"
-													min="1"
-													class="input input-bordered input-sm w-full"
-													value={ex.sets}
-													onInput={(e) =>
-														updateExerciseInput(
-															index(),
-															"sets",
-															parseInt(e.target.value) || 1,
-														)
-													}
-												/>
-											</div>
-											<div>
-												<label class="label label-text text-xs">Wdh</label>
-												<input
-													type="number"
-													min="1"
-													class="input input-bordered input-sm w-full"
-													value={ex.reps}
-													onInput={(e) =>
-														updateExerciseInput(
-															index(),
-															"reps",
-															parseInt(e.target.value) || 1,
-														)
-													}
-												/>
-											</div>
-											<div>
-												<label class="label label-text text-xs">
-													Gewicht (kg)
-												</label>
-												<input
-													type="number"
-													min="0"
-													step="2.5"
-													class="input input-bordered input-sm w-full"
-													value={ex.weight}
-													onInput={(e) =>
-														updateExerciseInput(
-															index(),
-															"weight",
-															parseFloat(e.target.value) || 0,
-														)
-													}
-												/>
-											</div>
+										<div class="grid grid-cols-2 gap-3 mt-2">
+											<Input
+												type="number"
+												label="Gewicht (kg)"
+												value={ex().weight}
+												min={0}
+												step={2.5}
+												onInput={(e) =>
+													updateExercise(
+														index,
+														"weight",
+														Number.parseFloat(e.currentTarget.value) || 0,
+													)
+												}
+											/>
+											<Input
+												type="number"
+												label="Sätze"
+												value={ex().sets}
+												min={1}
+												onInput={(e) =>
+													updateExercise(
+														index,
+														"sets",
+														Number.parseInt(e.currentTarget.value) || 1,
+													)
+												}
+											/>
 										</div>
 									</div>
 								)}
-							</For>
+							</Index>
 						</div>
 
-						<button
+						<Button
+							variant="ghost"
 							class="btn btn-outline btn-sm w-full mt-4"
-							onClick={addExerciseInput}
+							onClick={addExercise}
 						>
-							+ Weitere Übung hinzufügen
-						</button>
-						*/}
+							+ Übung hinzufügen
+						</Button>
 
 						<div class="modal-action">
 							<Button variant="ghost" onClick={handleCancelModal}>
