@@ -12,6 +12,8 @@
 		"serve": "vite preview",
 		"gh:deploy": "pnpm build && gh-pages -d dist",
 		"typecheck": "tsc --noEmit",
+		"format": "biome format --write .",
+		"lint": "biome lint --write .",
 		"prepare": "husky"
 	},
 	"license": "MIT",
