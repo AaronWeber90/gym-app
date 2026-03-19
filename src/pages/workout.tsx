@@ -1,21 +1,29 @@
 import { useNavigate, useParams } from "@solidjs/router";
+import { createQuery, useQueryClient } from "@tanstack/solid-query";
+import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
 import {
-	createMemo,
-	createResource,
-	createSignal,
-	For,
-	Match,
-	Show,
-	Switch,
-} from "solid-js";
-import { createWorkoutResource } from "../features/create-workout-resource";
+	createWorkoutResource,
+	workoutsQueryKey,
+} from "../features/create-workout-resource";
 import { getDir, getRootDir } from "../features/opfs-storage/utils";
 import { Button } from "../ui/button";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { Input } from "../ui/input";
 
+type ExerciseSet = {
+	set: number;
+	reps: number;
+	weight: number;
+};
+
+type Exercise = {
+	name: string;
+	sets: ExerciseSet[];
+};
+
 const Workout = () => {
 	const { workouts } = createWorkoutResource();
+	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 	const params = useParams();
 	const [showModal, setShowModal] = createSignal(false);
@@ -24,7 +32,7 @@ const Workout = () => {
 	const [_, setNewExercises] = createSignal([
 		{ name: "", sets: 1, reps: 10, weight: 0 },
 	]);
-	const [exercise, setExercise] = createSignal([]);
+	const [exercise, setExercise] = createSignal<Exercise[]>([]);
 
 	const getDateValue = () => {
 		try {
@@ -62,14 +70,20 @@ const Workout = () => {
 			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
 				create: false,
 			});
-			const items = [];
+			const result: {
+				id: string;
+				name: string;
+				date: string;
+				created_at: string;
+			}[] = [];
 			for await (const [name, handle] of parentDir.entries()) {
 				if (handle.kind === "file" && name.endsWith(".json")) {
 					try {
+						// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
 						const file = await handle.getFile();
 						const text = await file.text();
 						const data = JSON.parse(text);
-						items.push({
+						result.push({
 							id: data.id ?? name.replace(".json", ""),
 							name: data.name ?? "Unbenannt",
 							date: data.date,
@@ -80,7 +94,7 @@ const Workout = () => {
 					}
 				}
 			}
-			return items.sort(
+			return result.toSorted(
 				(a, b) =>
 					new Date(b.created_at ?? 0).getTime() -
 					new Date(a.created_at ?? 0).getTime(),
@@ -91,51 +105,23 @@ const Workout = () => {
 		}
 	};
 
-	const [childWorkouts, { refetch: refetchChildWorkouts }] =
-		createResource(fetchChildWorkouts);
-
-	// const addExerciseInput = () => {
-	// 	setNewExercises([
-	// 		...newExercises(),
-	// 		{ name: "", sets: 1, reps: 10, weight: 0 },
-	// 	]);
-	// };
-
-	// const removeExerciseInput = (index) => {
-	// 	setNewExercises(newExercises().filter((_, i) => i !== index));
-	// };
-
-	// const updateExerciseInput = (index, field, value) => {
-	// 	const updated = [...newExercises()];
-	// 	updated[index][field] = value;
-	// 	setNewExercises(updated);
-	// };
+	const childWorkoutsQuery = createQuery(() => ({
+		queryKey: ["childWorkouts", params.id],
+		queryFn: fetchChildWorkouts,
+		enabled: !!params.id,
+		throwOnError: true,
+	}));
+	const childWorkouts = () => childWorkoutsQuery.data;
+	const refetchChildWorkouts = () =>
+		queryClient.invalidateQueries({
+			queryKey: ["childWorkouts", params.id],
+		});
 
 	const handleSaveWorkout = async () => {
 		if (!params.id) {
 			alert("Kein Parent-Workout gefunden");
 			return;
 		}
-		// if (!workoutName().trim()) {
-		// 	alert("Bitte gib einen Namen für das Training ein");
-		// 	return;
-		// }
-
-		// const validExercises = newExercises().filter((ex) => ex.name.trim());
-		// if (validExercises.length === 0) {
-		// 	alert("Bitte füge mindestens eine Übung hinzu");
-		// 	return;
-		// }
-
-		// Transform exercises to match the expected format
-		// const formattedExercises = validExercises.map((ex) => ({
-		// 	name: ex.name,
-		// 	sets: Array.from({ length: ex.sets }, (_, i) => ({
-		// 		set: i + 1,
-		// 		reps: ex.reps,
-		// 		weight: ex.weight,
-		// 	})),
-		// }));
 
 		setExercise([...exercise()]);
 
@@ -165,6 +151,7 @@ const Workout = () => {
 			await writable.write(JSON.stringify(data, null, 2));
 			await writable.close();
 			await refetchChildWorkouts();
+			await queryClient.invalidateQueries({ queryKey: workoutsQueryKey });
 		} catch (err) {
 			console.error("Failed to save child workout:", err);
 			alert("Fehler beim Speichern");
@@ -233,7 +220,7 @@ const Workout = () => {
 					<div class="mt-4">
 						<Show when={childWorkouts()}>
 							<Switch>
-								<Match when={childWorkouts().length > 0}>
+								<Match when={(childWorkouts()?.length ?? 0) > 0}>
 									<ul class="list bg-base-100 rounded-box shadow-sm divide-y divide-base-300">
 										<For each={childWorkouts()}>
 											{(item) => (
@@ -277,7 +264,7 @@ const Workout = () => {
 						</div>
 
 						<Switch>
-							<Match when={childWorkouts()?.length < 1}>
+							<Match when={(childWorkouts()?.length ?? 0) < 1}>
 								<div class="text-center text-base-content/50 py-8">
 									Keine Übungen vorhanden
 								</div>

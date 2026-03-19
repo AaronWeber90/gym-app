@@ -1,4 +1,4 @@
-import { createResource } from "solid-js";
+import { createQuery, useQueryClient } from "@tanstack/solid-query";
 import type { Workout, WorkoutSession } from "../api/types";
 import { getDir, getRootDir } from "./opfs-storage/utils";
 
@@ -17,6 +17,7 @@ const getSessionsAndLastTrainedDate = async (
 		for await (const [fileName, fileHandle] of childWorkoutsDir.entries()) {
 			if (fileHandle.kind === "file" && fileName.endsWith(".json")) {
 				try {
+					// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
 					const file = await fileHandle.getFile();
 					const text = await file.text();
 					const childWorkout = JSON.parse(text);
@@ -50,7 +51,7 @@ const getSessionsAndLastTrainedDate = async (
 			lastTrainedAt: mostRecentDate?.toISOString() ?? null,
 			sessions,
 		};
-	} catch (error) {
+	} catch {
 		// No child workouts directory exists yet
 		return {
 			lastTrainedAt: null,
@@ -97,6 +98,7 @@ const fetchWorkouts = async (): Promise<Workout[]> => {
 			if (isJsonFile) {
 				const workout = await parseWorkoutFile(
 					fileName,
+					// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
 					fileHandle,
 					workoutsDir,
 				);
@@ -104,20 +106,31 @@ const fetchWorkouts = async (): Promise<Workout[]> => {
 			}
 		}
 
-		const sortedWorkouts = workouts.sort((a, b) => {
+		return workouts.toSorted((a, b) => {
 			const dateA = new Date(a.created_at).getTime();
 			const dateB = new Date(b.created_at).getTime();
 			return dateB - dateA;
 		});
-
-		return sortedWorkouts;
 	} catch (error) {
 		console.error("Failed to read workouts from OPFS:", error);
 		return [];
 	}
 };
 
+export const workoutsQueryKey = ["workouts"] as const;
+
 export const createWorkoutResource = () => {
-	const [workouts, { refetch }] = createResource(fetchWorkouts);
-	return { workouts, refetch };
+	const queryClient = useQueryClient();
+	const workoutsQuery = createQuery(() => ({
+		queryKey: workoutsQueryKey,
+		queryFn: fetchWorkouts,
+		throwOnError: true,
+	}));
+	return {
+		workouts: () => workoutsQuery.data,
+		error: () => workoutsQuery.error,
+		isLoading: () => workoutsQuery.isLoading,
+		refetch: () =>
+			queryClient.invalidateQueries({ queryKey: workoutsQueryKey }),
+	};
 };

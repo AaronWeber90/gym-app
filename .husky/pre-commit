@@ -1,1 +1,1 @@
-echo "Run some tests here"
+pnpm typecheck

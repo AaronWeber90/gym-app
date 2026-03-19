@@ -1,7 +1,19 @@
-import { createResource, For, Show } from "solid-js";
+import { createQuery, useQueryClient } from "@tanstack/solid-query";
+import { For, Show } from "solid-js";
 
-async function readDirectoryEntries(dirHandle, path = "") {
-	const entries = [];
+type OpfsEntry = {
+	type: "folder" | "file";
+	name: string;
+	displayName: string;
+	path: string;
+	children?: OpfsEntry[];
+};
+
+async function readDirectoryEntries(
+	dirHandle: FileSystemDirectoryHandle,
+	path = "",
+): Promise<OpfsEntry[]> {
+	const entries: OpfsEntry[] = [];
 	const processedDirs = new Set();
 
 	for await (const [name, handle] of dirHandle.entries()) {
@@ -43,7 +55,10 @@ async function readDirectoryEntries(dirHandle, path = "") {
 					name,
 					displayName,
 					path: fullPath,
-					children: await readDirectoryEntries(handle, fullPath),
+					children: await readDirectoryEntries(
+						handle as FileSystemDirectoryHandle,
+						fullPath,
+					),
 				});
 			}
 		} else {
@@ -53,6 +68,7 @@ async function readDirectoryEntries(dirHandle, path = "") {
 
 			try {
 				if (name.endsWith(".json")) {
+					// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
 					const file = await handle.getFile();
 					const text = await file.text();
 					const data = JSON.parse(text);
@@ -153,7 +169,15 @@ const FileIcon = () => (
 
 // --- Components ---
 const OpfsExplorer = () => {
-	const [entries, { refetch }] = createResource(fetchOpfsStructure);
+	const queryClient = useQueryClient();
+	const entriesQuery = createQuery(() => ({
+		queryKey: ["opfs-structure"],
+		queryFn: fetchOpfsStructure,
+		throwOnError: true,
+	}));
+	const entries = () => entriesQuery.data;
+	const refetch = () =>
+		queryClient.invalidateQueries({ queryKey: ["opfs-structure"] });
 
 	const deleteAllData = async () => {
 		const confirmed = confirm(
@@ -202,23 +226,23 @@ const OpfsExplorer = () => {
 
 			<Show when={entries()} fallback={<p>No entries found.</p>}>
 				<ul class="menu menu-xs bg-base-200 rounded-box max-w-xs w-full">
-					<FileTree entries={entries()} />
+					<FileTree entries={entries() ?? []} />
 				</ul>
 			</Show>
 		</div>
 	);
 };
 
-const FileTree = (props) => (
+const FileTree = (props: { entries: OpfsEntry[] }) => (
 	<For each={props.entries}>
 		{(entry) => (
 			<li>
 				<Show
 					when={entry.type === "folder"}
 					fallback={
-						<a>
+						<button class="btn btn-ghost btn-sm" type="button">
 							<FileIcon /> {entry.displayName ?? entry.name}
-						</a>
+						</button>
 					}
 				>
 					<details open>
@@ -226,7 +250,7 @@ const FileTree = (props) => (
 							<FolderIcon /> {entry.displayName ?? entry.name}
 						</summary>
 						<ul>
-							<FileTree entries={entry.children} />
+							<FileTree entries={entry.children ?? []} />
 						</ul>
 					</details>
 				</Show>

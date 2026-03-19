@@ -170,6 +170,7 @@ const WorkoutCalendar = () => {
 									stroke="currentColor"
 									viewBox="0 0 24 24"
 								>
+									<title>Vorherige Woche</title>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -192,6 +193,7 @@ const WorkoutCalendar = () => {
 									stroke="currentColor"
 									viewBox="0 0 24 24"
 								>
+									<title>Nächste Woche</title>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -297,6 +299,7 @@ const WorkoutCalendar = () => {
 																stroke="currentColor"
 																viewBox="0 0 24 24"
 															>
+																<title>Zum Workout</title>
 																<path
 																	stroke-linecap="round"
 																	stroke-linejoin="round"

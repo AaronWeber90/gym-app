@@ -1,7 +1,15 @@
 /* @refresh reload */
-import { HashRouter, Route, useLocation, useNavigate } from "@solidjs/router";
+
+import {
+	HashRouter,
+	Route,
+	type RouteSectionProps,
+	useLocation,
+	useNavigate,
+} from "@solidjs/router";
+import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import type { Component } from "solid-js";
-import { lazy } from "solid-js";
+import { ErrorBoundary, lazy, Suspense } from "solid-js";
 import { render } from "solid-js/web";
 import "./index.css";
 import { Button } from "./ui/button";
@@ -12,7 +20,7 @@ import { SettingsIcon } from "./ui/icons/settings";
 const root = document.getElementById("root");
 
 if (!(root instanceof HTMLElement)) {
-	throw new Error(
+	throw new TypeError(
 		"Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?",
 	);
 }
@@ -22,17 +30,17 @@ const Workouts = lazy(() => import("./pages/workouts"));
 const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
 const Overview = lazy(() => import("./pages/overview"));
 
-type LayoutProps = {
-	children: Element;
-};
-
-const Layout: Component<LayoutProps> = (props) => {
+const Layout: Component<RouteSectionProps> = (props) => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	return (
 		<div class="min-h-screen flex flex-col bg-base-200">
-			<main class="flex-1 p-4 pb-safe">{props.children}</main>
+			<main class="flex-1 p-4 pb-safe">
+				<ErrorBoundary fallback={(err) => <span>Error: {err.message}</span>}>
+					<Suspense>{props.children}</Suspense>
+				</ErrorBoundary>
+			</main>
 			<div class="dock">
 				<Button
 					variant={
@@ -74,15 +82,19 @@ const Layout: Component<LayoutProps> = (props) => {
 	);
 };
 
+const queryClient = new QueryClient();
+
 render(
 	() => (
-		<HashRouter root={Layout}>
-			<Route path="/" component={Workouts} />
-			<Route path="/workouts" component={Workouts} />
-			<Route path="/workouts/:id" component={Workout} />
-			<Route path="/file-explorer" component={OpfsExplorer} />
-			<Route path="/overview" component={Overview} />
-		</HashRouter>
+		<QueryClientProvider client={queryClient}>
+			<HashRouter root={Layout}>
+				<Route path="/" component={Workouts} />
+				<Route path="/workouts" component={Workouts} />
+				<Route path="/workouts/:id" component={Workout} />
+				<Route path="/file-explorer" component={OpfsExplorer} />
+				<Route path="/overview" component={Overview} />
+			</HashRouter>
+		</QueryClientProvider>
 	),
 	root,
 );
