@@ -30,6 +30,7 @@ const WorkoutSession = lazy(() => import("./pages/workout-session"));
 const Workouts = lazy(() => import("./pages/workouts"));
 const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
 const Overview = lazy(() => import("./pages/overview"));
+const Settings = lazy(() => import("./pages/settings"));
 
 const Layout: Component<RouteSectionProps> = (props) => {
 	const navigate = useNavigate();
@@ -56,16 +57,16 @@ const Layout: Component<RouteSectionProps> = (props) => {
 				</Button>
 				<Button
 					onClick={() => {
-						navigate("/file-explorer");
+						navigate("/settings");
 					}}
 					variant={
-						location.pathname.includes("/file-explorer")
+						location.pathname.includes("/settings")
 							? "dock-active"
 							: "dock"
 					}
 				>
 					<SettingsIcon class="size-[1.2em]" />
-					<span class="dock-label">OPFS</span>
+					<span class="dock-label">Settings</span>
 				</Button>
 				<Button
 					onClick={() => {
@@ -100,6 +101,7 @@ render(
 				<Route path="/workouts/:id" component={Workout} />
 				<Route path="/workouts/:id/:sessionId" component={WorkoutSession} />
 				<Route path="/file-explorer" component={OpfsExplorer} />
+				<Route path="/settings" component={Settings} />
 				<Route path="/overview" component={Overview} />
 			</HashRouter>
 		</QueryClientProvider>
