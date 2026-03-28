@@ -1,4 +1,4 @@
-import { createQuery, useQueryClient } from "@tanstack/solid-query";
+import { useQuery, useQueryClient } from "@tanstack/solid-query";
 import type { Workout, WorkoutSession } from "../api/types";
 import { getDir, getRootDir } from "./opfs-storage/utils";
 
@@ -121,7 +121,7 @@ export const workoutsQueryKey = ["workouts"] as const;
 
 export const createWorkoutResource = () => {
 	const queryClient = useQueryClient();
-	const workoutsQuery = createQuery(() => ({
+	const workoutsQuery = useQuery(() => ({
 		queryKey: workoutsQueryKey,
 		queryFn: fetchWorkouts,
 		throwOnError: true,

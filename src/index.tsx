@@ -83,7 +83,13 @@ const Layout: Component<RouteSectionProps> = (props) => {
 	);
 };
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: Infinity,
+		},
+	},
+});
 
 render(
 	() => (

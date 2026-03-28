@@ -63,14 +63,7 @@ const WorkoutSession = () => {
 				</div>
 			}
 		>
-			<Show
-				when={session()}
-				fallback={
-					<div class="flex justify-center py-12">
-						<span class="loading loading-spinner loading-md" />
-					</div>
-				}
-			>
+			<Show when={session()} fallback={<div class="min-h-screen" />}>
 				{(s) => (
 					<div>
 						<h1 class="text-2xl font-bold mb-1">{formatDate(s().date)}</h1>

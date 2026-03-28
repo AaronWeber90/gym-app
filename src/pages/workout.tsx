@@ -25,7 +25,7 @@ type ExerciseInput = {
 };
 
 const Workout = () => {
-	const { workouts } = createWorkoutResource();
+	const { workouts, isLoading } = createWorkoutResource();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 	const params = useParams();
@@ -85,8 +85,16 @@ const Workout = () => {
 						const file = await handle.getFile();
 						const text = await file.text();
 						const data = JSON.parse(text);
+						const sessionId = data.id ?? name.replace(".json", "");
+
+						// Seed session query cache so navigation is instant
+						queryClient.setQueryData(
+							["workoutSession", params.id, sessionId],
+							data,
+						);
+
 						result.push({
-							id: data.id ?? name.replace(".json", ""),
+							id: sessionId,
 							name: data.name ?? "Unbenannt",
 							date: data.date,
 							created_at: data.created_at,
@@ -114,6 +122,7 @@ const Workout = () => {
 		throwOnError: true,
 	}));
 	const childWorkouts = () => childWorkoutsQuery.data;
+	const isChildWorkoutsLoading = () => childWorkoutsQuery.isLoading;
 	const refetchChildWorkouts = () =>
 		queryClient.invalidateQueries({
 			queryKey: ["childWorkouts", params.id],
@@ -231,7 +240,14 @@ const Workout = () => {
 
 	return (
 		<>
-			<Show when={workouts()}>
+			<Show
+				when={!isLoading()}
+				fallback={
+					<div class="text-center py-8">
+						<span class="loading loading-spinner loading-md" />
+					</div>
+				}
+			>
 				<div class="overflow-x-auto w-full max-w-full">
 					<div class="flex flex-row justify-between items-center">
 						<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
@@ -241,7 +257,7 @@ const Workout = () => {
 					</div>
 
 					<div class="mt-4">
-						<Show when={childWorkouts()}>
+						<Show when={!isChildWorkoutsLoading() && childWorkouts()}>
 							<Switch>
 								<Match when={(childWorkouts()?.length ?? 0) > 0}>
 									<ul class="list bg-base-100 rounded-box shadow-sm divide-y divide-base-300">
@@ -288,13 +304,15 @@ const Workout = () => {
 							</button>
 						</div>
 
-						<Switch>
-							<Match when={(childWorkouts()?.length ?? 0) < 1}>
-								<div class="text-center text-base-content/50 py-8">
-									Keine Übungen vorhanden
-								</div>
-							</Match>
-						</Switch>
+						<Show
+							when={
+								!isChildWorkoutsLoading() && (childWorkouts()?.length ?? 0) < 1
+							}
+						>
+							<div class="text-center text-base-content/50 py-8">
+								Keine Übungen vorhanden
+							</div>
+						</Show>
 					</div>
 				</div>
 			</Show>
