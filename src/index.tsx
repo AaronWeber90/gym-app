@@ -60,9 +60,7 @@ const Layout: Component<RouteSectionProps> = (props) => {
 						navigate("/settings");
 					}}
 					variant={
-						location.pathname.includes("/settings")
-							? "dock-active"
-							: "dock"
+						location.pathname.includes("/settings") ? "dock-active" : "dock"
 					}
 				>
 					<SettingsIcon class="size-[1.2em]" />
