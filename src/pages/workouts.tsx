@@ -1,10 +1,11 @@
-import { A } from "@solidjs/router";
-import { For, lazy } from "solid-js";
+import { For, lazy, Show } from "solid-js";
 import { createWorkoutResource } from "../features/create-workout-resource";
 import { Header } from "../features/workouts/header";
-import { WorkoutList } from "../features/workouts/workout-list";
+import { EmptyState } from "../ui/empty-state";
 import { FolderIcon } from "../ui/icons/folder";
 import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
+import { ListGroup } from "../ui/list-group";
+import { ListItem } from "../ui/list-item";
 
 const CreateWorkoutModal = lazy(
 	() => import("../features/workout/create-workout-modal"),
@@ -20,45 +21,39 @@ const Workouts = () => {
 	return (
 		<>
 			<Header title="Workouts" />
-			{workouts()?.length === 0 ? (
-				<>
-					<div class="text-center text-base-content/50 py-8">
-						Keine Übungen vorhanden
-					</div>
-					<CreateWorkoutModal onCreated={handleCreated} />
-				</>
-			) : (
-				<>
-					<WorkoutList>
-						<For each={workouts()}>
-							{(item) => (
-								<A href={`/workouts/${item.id}`}>
-									<li class="flex items-center justify-between p-3 hover:bg-base-200 transition">
-										<div class="flex items-center gap-3">
-											{item.lastTrainedAt ? (
-												<FolderWithSheetsIcon class="h-8 w-8 text-primary" />
-											) : (
-												<FolderIcon class="h-8 w-8 text-primary" />
-											)}
-											<div>
-												<div class="font-medium">{item.name}</div>
-												<div class="text-xs font-semibold opacity-60">
-													{item.lastTrainedAt
-														? `last trained at ${new Intl.DateTimeFormat(
-																"de-DE",
-															).format(new Date(item.lastTrainedAt))}`
-														: "not trained yet"}
-												</div>
-											</div>
-										</div>
-									</li>
-								</A>
-							)}
-						</For>
-					</WorkoutList>
-					<CreateWorkoutModal onCreated={handleCreated} />
-				</>
-			)}
+			<Show
+				when={(workouts()?.length ?? 0) > 0}
+				fallback={
+					<>
+						<EmptyState message="Keine Übungen vorhanden" />
+						<CreateWorkoutModal onCreated={handleCreated} />
+					</>
+				}
+			>
+				<ListGroup>
+					<For each={workouts()}>
+						{(item) => (
+							<ListItem
+								href={`/workouts/${item.id}`}
+								icon={
+									item.lastTrainedAt ? (
+										<FolderWithSheetsIcon class="h-8 w-8 text-primary" />
+									) : (
+										<FolderIcon class="h-8 w-8 text-primary" />
+									)
+								}
+								title={item.name}
+								subtitle={
+									item.lastTrainedAt
+										? `last trained at ${new Intl.DateTimeFormat("de-DE").format(new Date(item.lastTrainedAt))}`
+										: "not trained yet"
+								}
+							/>
+						)}
+					</For>
+				</ListGroup>
+				<CreateWorkoutModal onCreated={handleCreated} />
+			</Show>
 		</>
 	);
 };

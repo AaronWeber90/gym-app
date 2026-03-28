@@ -1,22 +1,17 @@
-import { A, useNavigate, useParams } from "@solidjs/router";
+import { useNavigate, useParams } from "@solidjs/router";
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
-import {
-	createMemo,
-	createSignal,
-	For,
-	Index,
-	Match,
-	Show,
-	Switch,
-} from "solid-js";
+import { createMemo, createSignal, For, Index, Show } from "solid-js";
 import {
 	createWorkoutResource,
 	workoutsQueryKey,
 } from "../features/create-workout-resource";
 import { getDir, getRootDir } from "../features/opfs-storage/utils";
 import { Button } from "../ui/button";
+import { EmptyState } from "../ui/empty-state";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { Input } from "../ui/input";
+import { ListGroup } from "../ui/list-group";
+import { ListItem } from "../ui/list-item";
 
 type ExerciseInput = {
 	name: string;
@@ -25,7 +20,7 @@ type ExerciseInput = {
 };
 
 const Workout = () => {
-	const { workouts, isLoading } = createWorkoutResource();
+	const { workouts } = createWorkoutResource();
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 	const params = useParams();
@@ -240,82 +235,59 @@ const Workout = () => {
 
 	return (
 		<>
-			<Show
-				when={!isLoading()}
-				fallback={
-					<div class="text-center py-8">
-						<span class="loading loading-spinner loading-md" />
-					</div>
-				}
-			>
-				<div class="overflow-x-auto w-full max-w-full">
-					<div class="flex flex-row justify-between items-center">
-						<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
-						<Button onClick={deleteWorkout} variant="ghost">
-							Löschen
-						</Button>
-					</div>
-
-					<div class="mt-4">
-						<Show when={!isChildWorkoutsLoading() && childWorkouts()}>
-							<Switch>
-								<Match when={(childWorkouts()?.length ?? 0) > 0}>
-									<ul class="list bg-base-100 rounded-box shadow-sm divide-y divide-base-300">
-										<For each={childWorkouts()}>
-											{(item) => (
-												<A href={`/workouts/${params.id}/${item.id}`}>
-													<li class="p-3 flex items-center justify-between">
-														<div class="flex items-center gap-3">
-															<TableCellsIcon />
-															<div>
-																<div class="font-medium">
-																	{new Intl.DateTimeFormat("de-DE", {
-																		day: "2-digit",
-																		month: "2-digit",
-																		year: "2-digit",
-																	}).format(new Date(item.date)) ?? ""}
-																</div>
-																<div class="text-xs font-semibold opacity-60">
-																	started at{" "}
-																	{new Intl.DateTimeFormat("de-DE", {
-																		hour: "2-digit",
-																		minute: "2-digit",
-																	}).format(new Date(item.date)) ?? ""}
-																</div>
-															</div>
-														</div>
-													</li>
-												</A>
-											)}
-										</For>
-									</ul>
-								</Match>
-							</Switch>
-						</Show>
-					</div>
-					<div>
-						<div class="fab fab-overwrite pb-4">
-							<button
-								class="btn btn-lg btn-circle btn-primary"
-								onClick={() => setShowModal(true)}
-								type="button"
-							>
-								+
-							</button>
-						</div>
-
-						<Show
-							when={
-								!isChildWorkoutsLoading() && (childWorkouts()?.length ?? 0) < 1
-							}
-						>
-							<div class="text-center text-base-content/50 py-8">
-								Keine Übungen vorhanden
-							</div>
-						</Show>
-					</div>
+			<div class="overflow-x-auto w-full max-w-full">
+				<div class="flex flex-row justify-between items-center">
+					<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
+					<Button onClick={deleteWorkout} variant="ghost">
+						Löschen
+					</Button>
 				</div>
-			</Show>
+
+				<div class="mt-4">
+					<Show when={!isChildWorkoutsLoading() && childWorkouts()}>
+						<Show when={(childWorkouts()?.length ?? 0) > 0}>
+							<ListGroup>
+								<For each={childWorkouts()}>
+									{(item) => (
+										<ListItem
+											href={`/workouts/${params.id}/${item.id}`}
+											icon={<TableCellsIcon />}
+											title={new Intl.DateTimeFormat("de-DE", {
+												day: "2-digit",
+												month: "2-digit",
+												year: "2-digit",
+											}).format(new Date(item.date))}
+											subtitle={`started at ${new Intl.DateTimeFormat("de-DE", {
+												hour: "2-digit",
+												minute: "2-digit",
+											}).format(new Date(item.date))}`}
+										/>
+									)}
+								</For>
+							</ListGroup>
+						</Show>
+					</Show>
+				</div>
+				<div>
+					<div class="fab fab-overwrite pb-4">
+						<button
+							class="btn btn-lg btn-circle btn-primary"
+							onClick={() => setShowModal(true)}
+							type="button"
+						>
+							+
+						</button>
+					</div>
+
+					<Show
+						when={
+							!isChildWorkoutsLoading() && (childWorkouts()?.length ?? 0) < 1
+						}
+					>
+						<EmptyState message="Keine Übungen vorhanden" />
+					</Show>
+				</div>
+			</div>
 
 			<Show when={showModal()}>
 				<dialog class="modal modal-open">
