@@ -1,0 +1,1 @@
+import{c as e,r as t}from"./web-ah-dulVO.js";var n=e(`<div class="flex justify-between items-center mb-4"><h1 class="text-3xl font-bold">`),r=e=>(()=>{var r=n(),i=r.firstChild;return t(i,()=>e.title),r})();export{r as t};
