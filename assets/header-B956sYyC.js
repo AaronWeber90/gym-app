@@ -1,0 +1,1 @@
+import{t as s,i as l}from"./index-Bqkw5wQl.js";var a=s('<div class="flex justify-between items-center mb-4"><h1 class="text-3xl font-bold">');const n=e=>(()=>{var t=a(),r=t.firstChild;return l(r,()=>e.title),t})();export{n as H};
