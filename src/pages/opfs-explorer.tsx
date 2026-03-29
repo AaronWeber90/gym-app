@@ -1,5 +1,6 @@
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
 import { For, Show } from "solid-js";
+import { formatDate } from "../utils/format-date";
 
 type OpfsEntry = {
 	type: "folder" | "file";
@@ -9,112 +10,136 @@ type OpfsEntry = {
 	children?: OpfsEntry[];
 };
 
+async function tryReadJsonFile(
+	dirHandle: FileSystemDirectoryHandle,
+	fileName: string,
+): Promise<{ name?: string; date?: string } | null> {
+	try {
+		const fileHandle = await dirHandle.getFileHandle(fileName);
+		const file = await fileHandle.getFile();
+		const text = await file.text();
+		return JSON.parse(text);
+	} catch {
+		return null;
+	}
+}
+
+async function hasHandle(
+	dirHandle: FileSystemDirectoryHandle,
+	name: string,
+	kind: "file" | "directory",
+): Promise<boolean> {
+	try {
+		if (kind === "file") {
+			await dirHandle.getFileHandle(name);
+		} else {
+			await dirHandle.getDirectoryHandle(name);
+		}
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+async function processDirectoryEntry(
+	name: string,
+	handle: FileSystemDirectoryHandle,
+	dirHandle: FileSystemDirectoryHandle,
+	fullPath: string,
+	processedDirs: Set<string>,
+): Promise<OpfsEntry | null> {
+	const data = await tryReadJsonFile(dirHandle, `${name}.json`);
+	const displayName = data?.name ?? name;
+
+	if (data) {
+		processedDirs.add(name);
+	}
+
+	const jsonExists = await hasHandle(dirHandle, `${name}.json`, "file");
+	if (jsonExists && !processedDirs.has(name)) {
+		return null;
+	}
+
+	return {
+		type: "folder",
+		name,
+		displayName,
+		path: fullPath,
+		children: await readDirectoryEntries(handle, fullPath),
+	};
+}
+
+function buildFileEntry(
+	name: string,
+	fullPath: string,
+	data: { name?: string; date?: string } | null,
+): OpfsEntry {
+	const displayName = data?.name ?? name;
+	const additionalInfo = data?.date ? ` (${formatDate(data.date)})` : "";
+	return {
+		type: "file",
+		name,
+		displayName: displayName + additionalInfo,
+		path: fullPath,
+	};
+}
+
+async function processFileEntry(
+	name: string,
+	dirHandle: FileSystemDirectoryHandle,
+	fullPath: string,
+): Promise<OpfsEntry> {
+	if (!name.endsWith(".json")) {
+		return buildFileEntry(name, fullPath, null);
+	}
+
+	const data = await tryReadJsonFile(dirHandle, name);
+	if (!data) {
+		return buildFileEntry(name, fullPath, null);
+	}
+
+	const dirName = name.replace(".json", "");
+	const childDirExists = await hasHandle(dirHandle, dirName, "directory");
+
+	if (childDirExists) {
+		const childDir = await dirHandle.getDirectoryHandle(dirName);
+		return {
+			type: "folder",
+			name: dirName,
+			displayName: data.name ?? dirName,
+			path: fullPath.replace(".json", ""),
+			children: await readDirectoryEntries(
+				childDir,
+				fullPath.replace(".json", ""),
+			),
+		};
+	}
+
+	return buildFileEntry(name, fullPath, data);
+}
+
 async function readDirectoryEntries(
 	dirHandle: FileSystemDirectoryHandle,
 	path = "",
 ): Promise<OpfsEntry[]> {
 	const entries: OpfsEntry[] = [];
-	const processedDirs = new Set();
+	const processedDirs = new Set<string>();
 
 	for await (const [name, handle] of dirHandle.entries()) {
 		const fullPath = path ? `${path}/${name}` : name;
 
 		if (handle.kind === "directory") {
-			// Check if this directory has a corresponding .json file (parent workout)
-			let displayName = name;
-			let skipDir = false;
-
-			try {
-				const jsonFileName = `${name}.json`;
-				const jsonHandle = await dirHandle.getFileHandle(jsonFileName);
-				const jsonFile = await jsonHandle.getFile();
-				const jsonText = await jsonFile.text();
-				const data = JSON.parse(jsonText);
-
-				// This directory represents child workouts of a parent
-				if (data?.name) {
-					displayName = data.name;
-				}
-				processedDirs.add(name);
-			} catch (err) {
-				// No corresponding JSON file, just a regular directory
-			}
-
-			// Skip if this directory already has a corresponding JSON file we'll process
-			const jsonExists = await dirHandle
-				.getFileHandle(`${name}.json`)
-				.then(() => true)
-				.catch(() => false);
-			if (jsonExists && !processedDirs.has(name)) {
-				skipDir = true;
-			}
-
-			if (!skipDir) {
-				entries.push({
-					type: "folder",
-					name,
-					displayName,
-					path: fullPath,
-					children: await readDirectoryEntries(
-						handle as FileSystemDirectoryHandle,
-						fullPath,
-					),
-				});
-			}
-		} else {
-			// It's a file
-			let displayName = name;
-			let additionalInfo = "";
-
-			try {
-				if (name.endsWith(".json")) {
-					// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
-					const file = await handle.getFile();
-					const text = await file.text();
-					const data = JSON.parse(text);
-
-					// Check if this is a parent workout with a corresponding directory
-					const dirName = name.replace(".json", "");
-					const hasChildDir = await dirHandle
-						.getDirectoryHandle(dirName)
-						.then(() => true)
-						.catch(() => false);
-
-					if (hasChildDir) {
-						// This is a parent workout - show it as a folder with children
-						const childDir = await dirHandle.getDirectoryHandle(dirName);
-						entries.push({
-							type: "folder",
-							name: dirName,
-							displayName: data?.name || dirName,
-							path: fullPath.replace(".json", ""),
-							children: await readDirectoryEntries(
-								childDir,
-								fullPath.replace(".json", ""),
-							),
-						});
-						continue; // Skip adding as file
-					}
-
-					// Regular JSON file or child workout
-					if (data?.name) displayName = data.name;
-					if (data?.date) {
-						const formattedDate = new Intl.DateTimeFormat("de-DE").format(
-							new Date(data.date),
-						);
-						additionalInfo = ` (${formattedDate})`;
-					}
-				}
-			} catch (err) {
-				// ignore invalid JSON
-			}
-
-			entries.push({
-				type: "file",
+			const entry = await processDirectoryEntry(
 				name,
-				displayName: displayName + additionalInfo,
-				path: fullPath,
-			});
+				handle as FileSystemDirectoryHandle,
+				dirHandle,
+				fullPath,
+				processedDirs,
+			);
+			if (entry) entries.push(entry);
+		} else {
+			const entry = await processFileEntry(name, dirHandle, fullPath);
+			if (entry) entries.push(entry);
 		}
 	}
 	return entries;

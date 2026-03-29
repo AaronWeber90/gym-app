@@ -6,6 +6,7 @@ import { FolderIcon } from "../ui/icons/folder";
 import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
 import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
+import { formatDate } from "../utils/format-date";
 
 const CreateWorkoutModal = lazy(
 	() => import("../features/workout/create-workout-modal"),
@@ -45,7 +46,7 @@ const Workouts = () => {
 								title={item.name}
 								subtitle={
 									item.lastTrainedAt
-										? `last trained at ${new Intl.DateTimeFormat("de-DE").format(new Date(item.lastTrainedAt))}`
+										? `last trained at ${formatDate(item.lastTrainedAt)}`
 										: "not trained yet"
 								}
 							/>

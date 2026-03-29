@@ -2,6 +2,7 @@ import { useParams } from "@solidjs/router";
 import { createQuery } from "@tanstack/solid-query";
 import { For, Show } from "solid-js";
 import { getDir, getRootDir } from "../features/opfs-storage/utils";
+import { formatDate } from "../utils/format-date";
 
 type ExerciseData = {
 	name: string;
@@ -41,18 +42,18 @@ const WorkoutSession = () => {
 
 	const session = () => sessionQuery.data;
 
-	const formatDate = (dateStr: string) =>
-		new Intl.DateTimeFormat("de-DE", {
+	const fmtDate = (dateStr: string) =>
+		formatDate(dateStr, {
 			day: "2-digit",
 			month: "2-digit",
 			year: "numeric",
-		}).format(new Date(dateStr));
+		});
 
-	const formatTime = (dateStr: string) =>
-		new Intl.DateTimeFormat("de-DE", {
+	const fmtTime = (dateStr: string) =>
+		formatDate(dateStr, {
 			hour: "2-digit",
 			minute: "2-digit",
-		}).format(new Date(dateStr));
+		});
 
 	return (
 		<Show
@@ -66,9 +67,9 @@ const WorkoutSession = () => {
 			<Show when={session()} fallback={<div class="min-h-screen" />}>
 				{(s) => (
 					<div>
-						<h1 class="text-2xl font-bold mb-1">{formatDate(s().date)}</h1>
+						<h1 class="text-2xl font-bold mb-1">{fmtDate(s().date)}</h1>
 						<p class="text-sm text-base-content/60 mb-6">
-							Gestartet um {formatTime(s().date)}
+							Gestartet um {fmtTime(s().date)}
 						</p>
 
 						<Show
