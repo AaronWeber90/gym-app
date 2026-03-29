@@ -8,17 +8,44 @@ type ExerciseInput = {
 	sets: number;
 };
 
-type CreateSessionModalProps = {
+type SessionData = {
+	id: string;
 	parentId: string;
-	onCreated?: () => void | Promise<void>;
+	name: string;
+	date: string;
+	created_at: string;
+	exercises: ExerciseInput[];
 };
 
-const CreateSessionModal = (props: CreateSessionModalProps) => {
+type SessionModalProps = {
+	parentId: string;
+	session?: SessionData;
+	onSaved?: () => void | Promise<void>;
+};
+
+const SessionModal = (props: SessionModalProps) => {
+	const isEdit = () => !!props.session;
+
 	const [showModal, setShowModal] = createSignal(false);
 	const [workoutDate, setWorkoutDate] = createSignal(new Date().toISOString());
 	const [exercises, setExercises] = createSignal<ExerciseInput[]>([
 		{ name: "", weight: 0, sets: 1 },
 	]);
+
+	const openModal = () => {
+		if (props.session) {
+			setWorkoutDate(props.session.date);
+			setExercises(
+				props.session.exercises.length > 0
+					? props.session.exercises.map((ex) => ({ ...ex }))
+					: [{ name: "", weight: 0, sets: 1 }],
+			);
+		} else {
+			setWorkoutDate(new Date().toISOString());
+			setExercises([{ name: "", weight: 0, sets: 1 }]);
+		}
+		setShowModal(true);
+	};
 
 	const getDateValue = () => {
 		try {
@@ -80,7 +107,8 @@ const CreateSessionModal = (props: CreateSessionModalProps) => {
 			const parentDir = await workoutsDir.getDirectoryHandle(props.parentId, {
 				create: true,
 			});
-			const childId = crypto.randomUUID();
+
+			const childId = props.session?.id ?? crypto.randomUUID();
 			const handle = await parentDir.getFileHandle(`${childId}.json`, {
 				create: true,
 			});
@@ -89,30 +117,27 @@ const CreateSessionModal = (props: CreateSessionModalProps) => {
 			const data = {
 				id: childId,
 				parentId: props.parentId,
-				name: "",
+				name: props.session?.name ?? "",
 				date: new Date(workoutDate()).toISOString(),
-				created_at: new Date(workoutDate()).toISOString(),
+				created_at:
+					props.session?.created_at ?? new Date(workoutDate()).toISOString(),
 				exercises: validExercises,
 			};
 
 			await writable.write(JSON.stringify(data, null, 2));
 			await writable.close();
-			await props.onCreated?.();
+			await props.onSaved?.();
 		} catch (err) {
-			console.error("Failed to save child workout:", err);
+			console.error("Failed to save workout session:", err);
 			alert("Fehler beim Speichern");
 			return;
 		}
 
 		setShowModal(false);
-		setWorkoutDate(new Date().toISOString());
-		setExercises([{ name: "", weight: 0, sets: 1 }]);
 	};
 
 	const handleCancel = () => {
 		setShowModal(false);
-		setWorkoutDate(new Date().toISOString());
-		setExercises([{ name: "", weight: 0, sets: 1 }]);
 	};
 
 	return (
@@ -120,7 +145,11 @@ const CreateSessionModal = (props: CreateSessionModalProps) => {
 			<Show when={showModal()}>
 				<dialog class="modal modal-open">
 					<div class="modal-box max-w-2xl">
-						<h3 class="font-bold text-lg mb-4">Neue Trainingseinheit</h3>
+						<h3 class="font-bold text-lg mb-4">
+							{isEdit()
+								? "Trainingseinheit bearbeiten"
+								: "Neue Trainingseinheit"}
+						</h3>
 						<div class="flex flex-col gap-4">
 							<Input
 								type="date"
@@ -214,17 +243,26 @@ const CreateSessionModal = (props: CreateSessionModalProps) => {
 					</div>
 				</dialog>
 			</Show>
-			<div class="fab fab-overwrite pb-4">
-				<button
-					class="btn btn-lg btn-circle btn-primary"
-					onClick={() => setShowModal(true)}
-					type="button"
-				>
-					+
-				</button>
-			</div>
+			<Show
+				when={!isEdit()}
+				fallback={
+					<Button variant="ghost" onClick={openModal}>
+						Bearbeiten
+					</Button>
+				}
+			>
+				<div class="fab fab-overwrite pb-4">
+					<button
+						class="btn btn-lg btn-circle btn-primary"
+						onClick={openModal}
+						type="button"
+					>
+						+
+					</button>
+				</div>
+			</Show>
 		</>
 	);
 };
 
-export default CreateSessionModal;
+export default SessionModal;

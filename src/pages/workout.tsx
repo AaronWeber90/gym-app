@@ -12,7 +12,7 @@ import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
 import { formatDate } from "../utils/format-date";
 
-const CreateSessionModal = lazy(
+const SessionModal = lazy(
 	() => import("../features/workout/create-session-modal"),
 );
 
@@ -69,9 +69,9 @@ const Workout = () => {
 					<EmptyState message="Keine Übungen vorhanden" />
 				</Show>
 			</div>
-			<CreateSessionModal
+			<SessionModal
 				parentId={params.id}
-				onCreated={async () => {
+				onSaved={async () => {
 					await refetchChildWorkouts();
 					await queryClient.invalidateQueries({ queryKey: workoutsQueryKey });
 				}}

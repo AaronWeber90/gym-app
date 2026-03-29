@@ -1,8 +1,13 @@
 import { useParams } from "@solidjs/router";
-import { createQuery } from "@tanstack/solid-query";
-import { For, Show } from "solid-js";
+import { createQuery, useQueryClient } from "@tanstack/solid-query";
+import { For, lazy, Show } from "solid-js";
 import { getDir, getRootDir } from "../features/opfs-storage/utils";
+import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
+
+const SessionModal = lazy(
+	() => import("../features/workout/create-session-modal"),
+);
 
 type ExerciseData = {
 	name: string;
@@ -21,6 +26,7 @@ type SessionData = {
 
 const WorkoutSession = () => {
 	const params = useParams();
+	const queryClient = useQueryClient();
 
 	const sessionQuery = createQuery(() => ({
 		queryKey: ["workoutSession", params.id, params.sessionId],
@@ -53,6 +59,16 @@ const WorkoutSession = () => {
 		formatDate(dateStr, {
 			hour: "2-digit",
 			minute: "2-digit",
+		});
+
+	const refetch = () =>
+		queryClient.invalidateQueries({
+			queryKey: ["workoutSession", params.id, params.sessionId],
+		});
+
+	const refetchParent = () =>
+		queryClient.invalidateQueries({
+			queryKey: childWorkoutsQueryKey(params.id),
 		});
 
 	return (
@@ -99,6 +115,14 @@ const WorkoutSession = () => {
 								</For>
 							</div>
 						</Show>
+						<SessionModal
+							parentId={params.id}
+							session={s()}
+							onSaved={async () => {
+								await refetch();
+								await refetchParent();
+							}}
+						/>
 					</div>
 				)}
 			</Show>
