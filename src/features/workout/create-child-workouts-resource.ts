@@ -34,10 +34,7 @@ export const createChildWorkoutsResource = (parentId: () => string) => {
 						const sessionId = data.id ?? name.replace(".json", "");
 
 						// Seed session query cache so navigation is instant
-						queryClient.setQueryData(
-							["workoutSession", id, sessionId],
-							data,
-						);
+						queryClient.setQueryData(["workoutSession", id, sessionId], data);
 
 						result.push({
 							id: sessionId,
