@@ -1,0 +1,1 @@
+var e=(e,t)=>new Intl.DateTimeFormat(`de-DE`,t).format(new Date(e));export{e as t};
