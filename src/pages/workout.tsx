@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { useQueryClient } from "@tanstack/solid-query";
-import { For, lazy, Show } from "solid-js";
+import { createMemo, For, lazy, Show } from "solid-js";
 import { workoutsQueryKey } from "../features/create-workout-resource";
 import { createChildWorkoutsResource } from "../features/workout/create-child-workouts-resource";
 import { createCurrentWorkout } from "../features/workout/create-current-workout";
@@ -23,6 +23,19 @@ const Workout = () => {
 	const currentWorkout = createCurrentWorkout(() => params.id);
 	const { childWorkouts, refetch: refetchChildWorkouts } =
 		createChildWorkoutsResource(() => params.id);
+
+	const latestExercises = createMemo(() => {
+		const sessions = childWorkouts();
+		if (!sessions?.length) return undefined;
+		const latestId = sessions[0].id;
+		const cached = queryClient.getQueryData<{ exercises?: unknown[] }>([
+			"workoutSession",
+			params.id,
+			latestId,
+		]);
+		if (!cached?.exercises?.length) return undefined;
+		return cached.exercises as { name: string; sets: { weight: number; reps: number }[] }[];
+	});
 
 	const handleDelete = async () => {
 		try {
@@ -71,6 +84,7 @@ const Workout = () => {
 			</div>
 			<SessionModal
 				parentId={params.id}
+				previousExercises={latestExercises()}
 				onSaved={async () => {
 					await refetchChildWorkouts();
 					await queryClient.invalidateQueries({ queryKey: workoutsQueryKey });

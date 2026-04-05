@@ -2,10 +2,14 @@ import { createSignal, Index, Show } from "solid-js";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 
+type SetInput = {
+	weight: number;
+	reps: number;
+};
+
 type ExerciseInput = {
 	name: string;
-	weight: number;
-	sets: number;
+	sets: SetInput[];
 };
 
 type SessionData = {
@@ -20,29 +24,67 @@ type SessionData = {
 type SessionModalProps = {
 	parentId: string;
 	session?: SessionData;
+	previousExercises?: ExerciseInput[];
 	onSaved?: () => void | Promise<void>;
 };
 
 const SessionModal = (props: SessionModalProps) => {
 	const isEdit = () => !!props.session;
 
+	const defaultExercise = (): ExerciseInput => ({
+		name: "",
+		sets: [{ weight: 0, reps: 1 }],
+	});
+
 	const [showModal, setShowModal] = createSignal(false);
 	const [workoutDate, setWorkoutDate] = createSignal(new Date().toISOString());
 	const [exercises, setExercises] = createSignal<ExerciseInput[]>([
-		{ name: "", weight: 0, sets: 1 },
+		defaultExercise(),
 	]);
+
+	const normalizeExercises = (
+		exercises: Record<string, unknown>[],
+	): ExerciseInput[] =>
+		exercises.map((ex) => {
+			const name = typeof ex.name === "string" ? ex.name : "";
+			// New format: sets is an array of { weight, reps }
+			if (Array.isArray(ex.sets)) {
+				return {
+					name,
+					sets: ex.sets.map((s: Record<string, unknown>) => ({
+						weight: Number(s.weight) || 0,
+						reps: Number(s.reps) || 1,
+					})),
+				};
+			}
+			// Old format: { name, weight, sets (number) }
+			const count = Number(ex.sets) || 1;
+			const weight = Number(ex.weight) || 0;
+			return {
+				name,
+				sets: Array.from({ length: count }, () => ({ weight, reps: 1 })),
+			};
+		});
 
 	const openModal = () => {
 		if (props.session) {
 			setWorkoutDate(props.session.date);
+			const raw = props.session.exercises as Record<string, unknown>[];
 			setExercises(
-				props.session.exercises.length > 0
-					? props.session.exercises.map((ex) => ({ ...ex }))
-					: [{ name: "", weight: 0, sets: 1 }],
+				raw.length > 0 ? normalizeExercises(raw) : [defaultExercise()],
 			);
 		} else {
 			setWorkoutDate(new Date().toISOString());
-			setExercises([{ name: "", weight: 0, sets: 1 }]);
+			if (props.previousExercises?.length) {
+				setExercises(
+					props.previousExercises.map((ex) => ({
+						name: ex.name,
+						sets: ex.sets.map((s) => ({ weight: 0, reps: s.reps })),
+					})),
+				);
+			} else {
+				setExercises([defaultExercise()]);
+			}
 		}
 		setShowModal(true);
 	};
@@ -76,21 +118,57 @@ const SessionModal = (props: SessionModalProps) => {
 	};
 
 	const addExercise = () => {
-		setExercises([...exercises(), { name: "", weight: 0, sets: 1 }]);
+		setExercises([...exercises(), defaultExercise()]);
 	};
 
 	const removeExercise = (index: number) => {
 		setExercises(exercises().filter((_, i) => i !== index));
 	};
 
-	const updateExercise = (
-		index: number,
-		field: keyof ExerciseInput,
-		value: string | number,
+	const updateExerciseName = (index: number, name: string) => {
+		setExercises(
+			exercises().map((ex, i) => (i === index ? { ...ex, name } : ex)),
+		);
+	};
+
+	const addSet = (exIndex: number) => {
+		const lastSet = exercises()[exIndex].sets.at(-1);
+		const newSet = lastSet
+			? { weight: lastSet.weight, reps: lastSet.reps }
+			: { weight: 0, reps: 1 };
+		setExercises(
+			exercises().map((ex, i) =>
+				i === exIndex ? { ...ex, sets: [...ex.sets, newSet] } : ex,
+			),
+		);
+	};
+
+	const removeSet = (exIndex: number, setIndex: number) => {
+		setExercises(
+			exercises().map((ex, i) =>
+				i === exIndex
+					? { ...ex, sets: ex.sets.filter((_, si) => si !== setIndex) }
+					: ex,
+			),
+		);
+	};
+
+	const updateSet = (
+		exIndex: number,
+		setIndex: number,
+		field: keyof SetInput,
+		value: number,
 	) => {
 		setExercises(
 			exercises().map((ex, i) =>
-				i === index ? { ...ex, [field]: value } : ex,
+				i === exIndex
+					? {
+							...ex,
+							sets: ex.sets.map((s, si) =>
+								si === setIndex ? { ...s, [field]: value } : s,
+							),
+						}
+					: ex,
 			),
 		);
 	};
@@ -143,8 +221,8 @@ const SessionModal = (props: SessionModalProps) => {
 	return (
 		<>
 			<Show when={showModal()}>
-				<dialog class="modal modal-open">
-					<div class="modal-box max-w-2xl">
+				<dialog class="modal modal-open z-[1000]">
+					<div class="modal-box w-full sm:w-11/12 max-w-5xl">
 						<h3 class="font-bold text-lg mb-4">
 							{isEdit()
 								? "Trainingseinheit bearbeiten"
@@ -187,38 +265,94 @@ const SessionModal = (props: SessionModalProps) => {
 											label="Name"
 											value={ex().name}
 											onInput={(e) =>
-												updateExercise(index, "name", e.currentTarget.value)
+												updateExerciseName(index, e.currentTarget.value)
 											}
 										/>
-										<div class="grid grid-cols-2 gap-3 mt-2">
-											<Input
-												type="number"
-												label="Gewicht (kg)"
-												value={ex().weight}
-												min={0}
-												step={2.5}
-												onInput={(e) =>
-													updateExercise(
-														index,
-														"weight",
-														Number.parseFloat(e.currentTarget.value) || 0,
-													)
-												}
-											/>
-											<Input
-												type="number"
-												label="Sätze"
-												value={ex().sets}
-												min={1}
-												onInput={(e) =>
-													updateExercise(
-														index,
-														"sets",
-														Number.parseInt(e.currentTarget.value) || 1,
-													)
-												}
-											/>
+										<div class="mt-3 space-y-2">
+											<Index each={ex().sets}>
+												{(set, setIndex) => {
+													const prevSet = () =>
+														props.previousExercises?.[index]?.sets?.[setIndex];
+													return (
+														<div class="flex items-end gap-2">
+															<div class="flex-1">
+																<Input
+																	type="number"
+																	label={
+																		setIndex === 0 ? "Gewicht (kg)" : undefined
+																	}
+																	value={set().weight}
+																	min={0}
+																	step={2.5}
+																	placeholder={
+																		prevSet()?.weight === undefined
+																			? undefined
+																			: `${prevSet()?.weight}`
+																	}
+																	onInput={(e) =>
+																		updateSet(
+																			index,
+																			setIndex,
+																			"weight",
+																			Number.parseFloat(
+																				e.currentTarget.value,
+																			) || 0,
+																		)
+																	}
+																/>
+																<Show
+																	when={!isEdit() && prevSet()?.weight != null}
+																>
+																	<span class="text-xs text-base-content/50">
+																		vorher: {prevSet()?.weight} kg
+																	</span>
+																</Show>
+															</div>
+															<div class="flex-1">
+																<Input
+																	type="number"
+																	label={setIndex === 0 ? "Wdh." : undefined}
+																	value={set().reps}
+																	min={1}
+																	onInput={(e) =>
+																		updateSet(
+																			index,
+																			setIndex,
+																			"reps",
+																			Number.parseInt(e.currentTarget.value) ||
+																				1,
+																		)
+																	}
+																/>
+																<Show
+																	when={!isEdit() && prevSet()?.reps != null}
+																>
+																	<span class="text-xs text-base-content/50">
+																		vorher: {prevSet()?.reps}
+																	</span>
+																</Show>
+															</div>
+															<Show when={ex().sets.length > 1}>
+																<button
+																	class="btn btn-ghost btn-xs btn-circle mb-1"
+																	onClick={() => removeSet(index, setIndex)}
+																	type="button"
+																>
+																	✕
+																</button>
+															</Show>
+														</div>
+													);
+												}}
+											</Index>
 										</div>
+										<button
+											class="btn btn-ghost btn-xs mt-2"
+											onClick={() => addSet(index)}
+											type="button"
+										>
+											+ Satz
+										</button>
 									</div>
 								)}
 							</Index>

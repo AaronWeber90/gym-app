@@ -30,7 +30,7 @@ const monthNames = [
 	"Oktober",
 	"November",
 	"Dezember",
-];
+] as const;
 
 const weekDayNames = [
 	"Montag",
@@ -40,7 +40,7 @@ const weekDayNames = [
 	"Freitag",
 	"Samstag",
 	"Sonntag",
-];
+] as const;
 
 const WorkoutCalendar = () => {
 	const { workouts } = createWorkoutResource();

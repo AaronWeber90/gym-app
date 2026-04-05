@@ -9,10 +9,14 @@ const SessionModal = lazy(
 	() => import("../features/workout/create-session-modal"),
 );
 
+type SetData = {
+	weight: number;
+	reps: number;
+};
+
 type ExerciseData = {
 	name: string;
-	weight: number;
-	sets: number;
+	sets: SetData[];
 };
 
 type SessionData = {
@@ -90,20 +94,31 @@ const WorkoutSession = () => {
 								</div>
 							}
 						>
-							<div class="space-y-3">
+							<div class="space-y-6">
 								<For each={s().exercises}>
 									{(exercise) => (
-										<div class="card bg-base-100 shadow-sm">
-											<div class="card-body p-4">
-												<h3 class="font-bold text-lg">{exercise.name}</h3>
-												<div class="flex gap-4 text-sm text-base-content/70">
-													<span>{exercise.weight} kg</span>
-													<span>
-														{exercise.sets}{" "}
-														{exercise.sets === 1 ? "Satz" : "Sätze"}
-													</span>
-												</div>
-											</div>
+										<div>
+											<h3 class="font-bold text-lg mb-2">{exercise.name}</h3>
+											<table class="table">
+												<thead>
+													<tr>
+														<th>Satz</th>
+														<th>Gewicht (kg)</th>
+														<th>Wdh.</th>
+													</tr>
+												</thead>
+												<tbody>
+													<For each={exercise.sets}>
+														{(set, i) => (
+															<tr>
+																<td>{i() + 1}</td>
+																<td>{set.weight}</td>
+																<td>{set.reps}</td>
+															</tr>
+														)}
+													</For>
+												</tbody>
+											</table>
 										</div>
 									)}
 								</For>
