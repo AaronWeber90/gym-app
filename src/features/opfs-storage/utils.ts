@@ -1,4 +1,7 @@
 export const getRootDir = async (): Promise<FileSystemDirectoryHandle> => {
+	if (navigator.storage.persist) {
+		await navigator.storage.persist();
+	}
 	return navigator.storage.getDirectory();
 };
 

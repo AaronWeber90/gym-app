@@ -1,9 +1,6 @@
 import { createUniqueId, type JSX } from "solid-js";
 
-type InputProps = Omit<
-	JSX.InputHTMLAttributes<HTMLInputElement>,
-	"label"
-> & {
+type InputProps = Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "label"> & {
 	label?: string;
 	value: string | number | readonly string[] | undefined;
 	type: "date" | "text" | "number" | "password" | "email" | "search" | "time";

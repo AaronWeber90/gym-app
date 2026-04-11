@@ -34,7 +34,10 @@ const Workout = () => {
 			latestId,
 		]);
 		if (!cached?.exercises?.length) return undefined;
-		return cached.exercises as { name: string; sets: { weight: number; reps: number }[] }[];
+		return cached.exercises as {
+			name: string;
+			sets: { weight: number; reps: number }[];
+		}[];
 	});
 
 	const handleDelete = async () => {
