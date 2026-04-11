@@ -1,16 +1,31 @@
 import { useQueryClient } from "@tanstack/solid-query";
-import { createSignal } from "solid-js";
+import { createResource, createSignal, Show } from "solid-js";
 import {
 	exportAllData,
 	importAllData,
 } from "../features/opfs-storage/export-import";
 import { Button } from "../ui/button";
 
+function formatBytes(bytes: number): string {
+	if (bytes < 1024) return `${bytes} B`;
+	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+async function fetchStorageUsage() {
+	const estimate = await navigator.storage.estimate();
+	return {
+		usage: estimate.usage ?? 0,
+		quota: estimate.quota ?? 0,
+	};
+}
+
 export default function Settings() {
 	const queryClient = useQueryClient();
 	const [exporting, setExporting] = createSignal(false);
 	const [importing, setImporting] = createSignal(false);
 	const [importResult, setImportResult] = createSignal<string | null>(null);
+	const [storage] = createResource(fetchStorageUsage);
 
 	const handleExport = async () => {
 		setExporting(true);
@@ -53,6 +68,36 @@ export default function Settings() {
 						<span class="text-base-content/60">Version</span>
 						<span class="font-mono text-sm">{__APP_VERSION__}</span>
 					</div>
+				</div>
+			</div>
+
+			<div class="card bg-base-100 shadow-sm">
+				<div class="card-body gap-2">
+					<h2 class="card-title text-lg">Speicher</h2>
+					<Show when={storage()}>
+						{(s) => (
+							<>
+								<div class="flex justify-between items-center">
+									<span class="text-base-content/60">Belegt</span>
+									<span class="font-mono text-sm">
+										{formatBytes(s().usage)} (
+										{((s().usage / s().quota) * 100).toFixed(2)}%)
+									</span>
+								</div>
+								<div class="flex justify-between items-center">
+									<span class="text-base-content/60">Verfügbar</span>
+									<span class="font-mono text-sm">
+										{formatBytes(s().quota)}
+									</span>
+								</div>
+								<progress
+									class="progress progress-primary w-full"
+									value={s().usage}
+									max={s().quota}
+								/>
+							</>
+						)}
+					</Show>
 				</div>
 			</div>
 
