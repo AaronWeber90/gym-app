@@ -76,8 +76,11 @@ const SessionModal = (props: SessionModalProps) => {
 		} else {
 			setWorkoutDate(new Date().toISOString());
 			if (props.previousExercises?.length) {
+				const normalized = normalizeExercises(
+					props.previousExercises as unknown as Record<string, unknown>[],
+				);
 				setExercises(
-					props.previousExercises.map((ex) => ({
+					normalized.map((ex) => ({
 						name: ex.name,
 						sets: ex.sets.map((s) => ({ weight: 0, reps: s.reps })),
 					})),

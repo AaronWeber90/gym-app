@@ -56,7 +56,12 @@ const WorkoutSession = () => {
 			setExercises(
 				s.exercises.map((ex) => ({
 					name: ex.name,
-					sets: ex.sets.map((set) => ({ weight: set.weight, reps: set.reps })),
+					sets: Array.isArray(ex.sets)
+						? ex.sets.map((set) => ({ weight: set.weight, reps: set.reps }))
+						: Array.from({ length: Number(ex.sets) || 1 }, () => ({
+								weight: 0,
+								reps: 1,
+							})),
 				})),
 			);
 		}
@@ -74,10 +79,9 @@ const WorkoutSession = () => {
 			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
 				create: true,
 			});
-			const handle = await parentDir.getFileHandle(
-				`${params.sessionId}.json`,
-				{ create: true },
-			);
+			const handle = await parentDir.getFileHandle(`${params.sessionId}.json`, {
+				create: true,
+			});
 			const writable = await handle.createWritable();
 
 			const data = {
@@ -255,9 +259,8 @@ const WorkoutSession = () => {
 																			exIndex,
 																			setIndex,
 																			"reps",
-																			Number.parseInt(
-																				e.currentTarget.value,
-																			) || 1,
+																			Number.parseInt(e.currentTarget.value) ||
+																				1,
 																		)
 																	}
 																	onBlur={saveSession}
@@ -267,9 +270,7 @@ const WorkoutSession = () => {
 																<Show when={ex().sets.length > 1}>
 																	<button
 																		class="btn btn-ghost btn-xs btn-circle"
-																		onClick={() =>
-																			removeSet(exIndex, setIndex)
-																		}
+																		onClick={() => removeSet(exIndex, setIndex)}
 																		type="button"
 																	>
 																		✕
