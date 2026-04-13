@@ -1,6 +1,13 @@
 import { useParams } from "@solidjs/router";
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
-import { createEffect, createSignal, Index, Show } from "solid-js";
+import {
+	createEffect,
+	createMemo,
+	createSignal,
+	Index,
+	on,
+	Show,
+} from "solid-js";
 import { getDir, getRootDir } from "../features/opfs-storage/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
@@ -49,23 +56,26 @@ const WorkoutSession = () => {
 	}));
 
 	const session = () => sessionQuery.data;
+	const sessionId = createMemo(() => session()?.id);
 
-	createEffect(() => {
-		const s = session();
-		if (s?.exercises) {
-			setExercises(
-				s.exercises.map((ex) => ({
-					name: ex.name,
-					sets: Array.isArray(ex.sets)
-						? ex.sets.map((set) => ({ weight: set.weight, reps: set.reps }))
-						: Array.from({ length: Number(ex.sets) || 1 }, () => ({
-								weight: 0,
-								reps: 1,
-							})),
-				})),
-			);
-		}
-	});
+	createEffect(
+		on(sessionId, () => {
+			const s = session();
+			if (s?.exercises) {
+				setExercises(
+					s.exercises.map((ex) => ({
+						name: ex.name,
+						sets: Array.isArray(ex.sets)
+							? ex.sets.map((set) => ({ weight: set.weight, reps: set.reps }))
+							: Array.from({ length: Number(ex.sets) || 1 }, () => ({
+									weight: 0,
+									reps: 1,
+								})),
+					})),
+				);
+			}
+		}),
+	);
 
 	const saveSession = async () => {
 		const s = session();
@@ -86,15 +96,16 @@ const WorkoutSession = () => {
 
 			const data = {
 				...s,
-				exercises: exercises().filter((ex) => ex.name.trim()),
+				exercises: exercises(),
 			};
 
 			await writable.write(JSON.stringify(data, null, 2));
 			await writable.close();
 
-			queryClient.invalidateQueries({
-				queryKey: ["workoutSession", params.id, params.sessionId],
-			});
+			queryClient.setQueryData(
+				["workoutSession", params.id, params.sessionId],
+				data,
+			);
 			queryClient.invalidateQueries({
 				queryKey: childWorkoutsQueryKey(params.id),
 			});
