@@ -1,1 +1,0 @@
-var e=async()=>(navigator.storage.persist&&await navigator.storage.persist(),navigator.storage.getDirectory()),t=async(e,t,n=!1)=>e.getDirectoryHandle(t,{create:n}),n=async(e,t,n=!1)=>e.getFileHandle(t,{create:n});export{n,e as r,t};
