@@ -1,5 +1,5 @@
 import { For, lazy, Show } from "solid-js";
-import { createWorkoutResource } from "../features/create-workout-resource";
+import { createWorkoutResource } from "../features/workout/create-workout-resource";
 import { Header } from "../features/workouts/header";
 import { EmptyState } from "../ui/empty-state";
 import { FolderIcon } from "../ui/icons/folder";

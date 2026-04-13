@@ -1,4 +1,4 @@
-import { getDir, getRootDir } from "./utils";
+import { getDir, getRootDir, writeFile } from "./utils";
 
 type ExportedFile = {
 	path: string;
@@ -82,9 +82,7 @@ export async function importAllData(file: File): Promise<number> {
 		const fileName = parts.at(-1);
 		if (!fileName) continue;
 		const fileHandle = await dir.getFileHandle(fileName, { create: true });
-		const writable = await fileHandle.createWritable();
-		await writable.write(entry.content);
-		await writable.close();
+		await writeFile(fileHandle, entry.content);
 		count++;
 	}
 

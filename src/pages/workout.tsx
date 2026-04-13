@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { useQueryClient } from "@tanstack/solid-query";
 import { createMemo, For, lazy, Show } from "solid-js";
-import { workoutsQueryKey } from "../features/create-workout-resource";
 import { createChildWorkoutsResource } from "../features/workout/create-child-workouts-resource";
 import { createCurrentWorkout } from "../features/workout/create-current-workout";
+import { workoutsQueryKey } from "../features/workout/create-workout-resource";
 import { deleteWorkout } from "../features/workout/delete-workout";
 import { Button } from "../ui/button";
 import { EmptyState } from "../ui/empty-state";

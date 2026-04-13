@@ -1,6 +1,6 @@
 import { A } from "@solidjs/router";
 import { createMemo, createSignal, For } from "solid-js";
-import { createWorkoutResource } from "../features/create-workout-resource";
+import { createWorkoutResource } from "../features/workout/create-workout-resource";
 import { Header } from "../features/workouts/header";
 import { Button } from "../ui/button";
 

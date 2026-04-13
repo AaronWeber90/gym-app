@@ -1,6 +1,7 @@
 import { createSignal, Index, Show } from "solid-js";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
+import { writeFile } from "../opfs-storage/utils";
 
 type SetInput = {
 	weight: number;
@@ -193,7 +194,6 @@ const SessionModal = (props: SessionModalProps) => {
 			const handle = await parentDir.getFileHandle(`${childId}.json`, {
 				create: true,
 			});
-			const writable = await handle.createWritable();
 
 			const data = {
 				id: childId,
@@ -205,8 +205,7 @@ const SessionModal = (props: SessionModalProps) => {
 				exercises: validExercises,
 			};
 
-			await writable.write(JSON.stringify(data, null, 2));
-			await writable.close();
+			await writeFile(handle, JSON.stringify(data, null, 2));
 			await props.onSaved?.();
 		} catch (err) {
 			console.error("Failed to save workout session:", err);

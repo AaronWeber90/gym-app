@@ -1,5 +1,5 @@
 import { createMemo } from "solid-js";
-import { createWorkoutResource } from "../create-workout-resource";
+import { createWorkoutResource } from "./create-workout-resource";
 
 export const createCurrentWorkout = (id: () => string) => {
 	const { workouts } = createWorkoutResource();

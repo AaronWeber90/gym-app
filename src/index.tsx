@@ -46,7 +46,9 @@ const Layout: Component<RouteSectionProps> = (props) => {
 			<div class="dock">
 				<Button
 					variant={
-						location.pathname === "/" || location.pathname.includes("/workouts") ? "dock-active" : "dock"
+						location.pathname === "/" || location.pathname.includes("/workouts")
+							? "dock-active"
+							: "dock"
 					}
 					onClick={() => {
 						navigate("/workouts");

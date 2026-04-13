@@ -8,7 +8,7 @@ import {
 	on,
 	Show,
 } from "solid-js";
-import { getDir, getRootDir } from "../features/opfs-storage/utils";
+import { getDir, getRootDir, writeFile } from "../features/opfs-storage/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
 
@@ -92,15 +92,13 @@ const WorkoutSession = () => {
 			const handle = await parentDir.getFileHandle(`${params.sessionId}.json`, {
 				create: true,
 			});
-			const writable = await handle.createWritable();
 
 			const data = {
 				...s,
 				exercises: exercises(),
 			};
 
-			await writable.write(JSON.stringify(data, null, 2));
-			await writable.close();
+			await writeFile(handle, JSON.stringify(data, null, 2));
 
 			queryClient.setQueryData(
 				["workoutSession", params.id, params.sessionId],

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/solid-query";
-import type { Workout, WorkoutSession } from "../api/types";
-import { getDir, getRootDir } from "./opfs-storage/utils";
+import type { Workout, WorkoutSession } from "../../api/types";
+import { getDir, getRootDir } from "../opfs-storage/utils";
 
 const getSessionsAndLastTrainedDate = async (
 	workoutId: string,
