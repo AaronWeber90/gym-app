@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { Button } from "../../ui/button";
 import { getDir, getFile, getRootDir, writeFile } from "../opfs-storage/utils";
 
@@ -9,6 +9,7 @@ type CreateWorkoutModalProps = {
 const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 	const [showModal, setShowModal] = createSignal(false);
 	const [newWorkoutName, setNewWorkoutName] = createSignal("");
+	const [error, setError] = createSignal("");
 
 	const cancelWorkoutCreation = () => {
 		setNewWorkoutName("");
@@ -18,6 +19,7 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 	const handleAddWorkout = async () => {
 		const name = newWorkoutName().trim();
 		if (!name) return;
+		setError("");
 
 		try {
 			const root = await getRootDir();
@@ -38,7 +40,8 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 			setNewWorkoutName("");
 			await props.onCreated?.();
 		} catch (err) {
-			console.error("Failed to add workout:", err);
+			const msg = err instanceof Error ? err.message : JSON.stringify(err);
+			setError(msg);
 		}
 	};
 
@@ -60,6 +63,9 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 							value={newWorkoutName()}
 							onInput={(e) => setNewWorkoutName(e.currentTarget.value)}
 						/>
+						<Show when={error()}>
+							<div class="text-error text-sm mb-2 break-all">{error()}</div>
+						</Show>
 						<div class="modal-action">
 							<Button variant="ghost" onClick={cancelWorkoutCreation}>
 								Abbrechen
