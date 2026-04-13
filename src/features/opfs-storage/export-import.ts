@@ -67,22 +67,12 @@ export async function importAllData(file: File): Promise<number> {
 		throw new Error("Invalid backup file format");
 	}
 
-	const root = await getRootDir();
 	let count = 0;
 
 	for (const entry of data.files) {
 		const parts = entry.path.split("/");
-		let dir = root;
-
-		// Create all intermediate directories
-		for (let i = 0; i < parts.length - 1; i++) {
-			dir = await dir.getDirectoryHandle(parts[i], { create: true });
-		}
-
-		const fileName = parts.at(-1);
-		if (!fileName) continue;
-		const fileHandle = await dir.getFileHandle(fileName, { create: true });
-		await writeFile(fileHandle, entry.content);
+		if (!parts.at(-1)) continue;
+		await writeFile(parts, entry.content);
 		count++;
 	}
 

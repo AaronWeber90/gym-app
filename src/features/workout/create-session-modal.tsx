@@ -186,14 +186,11 @@ const SessionModal = (props: SessionModalProps) => {
 				create: true,
 			});
 
-			const parentDir = await workoutsDir.getDirectoryHandle(props.parentId, {
+			await workoutsDir.getDirectoryHandle(props.parentId, {
 				create: true,
 			});
 
 			const childId = props.session?.id ?? crypto.randomUUID();
-			const handle = await parentDir.getFileHandle(`${childId}.json`, {
-				create: true,
-			});
 
 			const data = {
 				id: childId,
@@ -205,7 +202,10 @@ const SessionModal = (props: SessionModalProps) => {
 				exercises: validExercises,
 			};
 
-			await writeFile(handle, JSON.stringify(data, null, 2));
+			await writeFile(
+				["workouts", props.parentId, `${childId}.json`],
+				JSON.stringify(data, null, 2),
+			);
 			await props.onSaved?.();
 		} catch (err) {
 			console.error("Failed to save workout session:", err);

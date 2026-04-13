@@ -82,23 +82,15 @@ const WorkoutSession = () => {
 		if (!s) return;
 
 		try {
-			const root = await navigator.storage.getDirectory();
-			const workoutsDir = await root.getDirectoryHandle("workouts", {
-				create: true,
-			});
-			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
-				create: true,
-			});
-			const handle = await parentDir.getFileHandle(`${params.sessionId}.json`, {
-				create: true,
-			});
-
 			const data = {
 				...s,
 				exercises: exercises(),
 			};
 
-			await writeFile(handle, JSON.stringify(data, null, 2));
+			await writeFile(
+				["workouts", params.id, `${params.sessionId}.json`],
+				JSON.stringify(data, null, 2),
+			);
 
 			queryClient.setQueryData(
 				["workoutSession", params.id, params.sessionId],

@@ -1,6 +1,6 @@
 import { createSignal, Show } from "solid-js";
 import { Button } from "../../ui/button";
-import { getDir, getFile, getRootDir, writeFile } from "../opfs-storage/utils";
+import { getDir, getRootDir, writeFile } from "../opfs-storage/utils";
 
 type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
@@ -23,9 +23,8 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 
 		try {
 			const root = await getRootDir();
-			const workoutsDir = await getDir(root, "workouts", true);
+			await getDir(root, "workouts", true);
 			const id = crypto.randomUUID();
-			const handle = await getFile(workoutsDir, `${id}.json`, true);
 
 			const data = {
 				id,
@@ -34,7 +33,10 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 				exercises: [],
 			};
 
-			await writeFile(handle, JSON.stringify(data, null, 2));
+			await writeFile(
+				["workouts", `${id}.json`],
+				JSON.stringify(data, null, 2),
+			);
 
 			setShowModal(false);
 			setNewWorkoutName("");
