@@ -33,10 +33,22 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 				exercises: [],
 			};
 
-			await writeFile(
+			const method = await writeFile(
 				["workouts", `${id}.json`],
 				JSON.stringify(data, null, 2),
 			);
+
+			// Verify the file was actually written
+			const verifyRoot = await navigator.storage.getDirectory();
+			const verifyDir = await verifyRoot.getDirectoryHandle("workouts");
+			const verifyHandle = await verifyDir.getFileHandle(`${id}.json`);
+			const verifyFile = await verifyHandle.getFile();
+			const verifyText = await verifyFile.text();
+
+			if (!verifyText) {
+				setError(`Written via ${method} but file is empty`);
+				return;
+			}
 
 			setShowModal(false);
 			setNewWorkoutName("");

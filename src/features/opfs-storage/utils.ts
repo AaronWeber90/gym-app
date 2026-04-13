@@ -30,7 +30,7 @@ export const getRootWorkoutsDir =
 export const writeFile = async (
 	path: string[],
 	content: string,
-): Promise<void> => {
+): Promise<string> => {
 	const root = await navigator.storage.getDirectory();
 	let dir = root;
 	for (let i = 0; i < path.length - 1; i++) {
@@ -48,7 +48,7 @@ export const writeFile = async (
 			const writable = await handle.createWritable();
 			await writable.write(content);
 			await writable.close();
-			return;
+			return "createWritable";
 		} catch {
 			// createWritable may exist but throw on OPFS handles (older Safari)
 		}
@@ -57,6 +57,7 @@ export const writeFile = async (
 	// Fallback: use createSyncAccessHandle in a Web Worker (Safari 15.2+)
 	// FileSystemFileHandle can't be cloned on Safari, so the worker navigates OPFS by path
 	await writeFileViaWorker(path, content);
+	return "worker";
 };
 
 const writeFileViaWorker = (path: string[], content: string): Promise<void> => {
