@@ -169,9 +169,7 @@ const WorkoutSession = () => {
 									<ExerciseBlock
 										exercise={ex()}
 										canRemove={exercises().length > 1}
-										onNameChange={(name) =>
-											updateExerciseName(exIndex, name)
-										}
+										onNameChange={(name) => updateExerciseName(exIndex, name)}
 										onUpdateSet={(setIndex, field, value) =>
 											updateSet(exIndex, setIndex, field, value)
 										}
