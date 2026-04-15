@@ -8,28 +8,16 @@ import {
 	on,
 	Show,
 } from "solid-js";
-import { getDir, getRootDir } from "../features/opfs-storage/utils";
+import { ExerciseBlock } from "../features/session/components/exercise-block";
+import {
+	debounce,
+	type ExerciseData,
+	fetchSession,
+	type SetData,
+	saveSession,
+} from "../features/session/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
-
-type SetData = {
-	weight: number;
-	reps: number;
-};
-
-type ExerciseData = {
-	name: string;
-	sets: SetData[];
-};
-
-type SessionData = {
-	id: string;
-	parentId: string;
-	name: string;
-	date: string;
-	created_at: string;
-	exercises: ExerciseData[];
-};
 
 const WorkoutSession = () => {
 	const params = useParams();
@@ -39,19 +27,7 @@ const WorkoutSession = () => {
 
 	const sessionQuery = createQuery(() => ({
 		queryKey: ["workoutSession", params.id, params.sessionId],
-		queryFn: async (): Promise<SessionData | null> => {
-			const root = await getRootDir();
-			const workoutsDir = await getDir(root, "workouts", true);
-			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
-				create: false,
-			});
-			const fileHandle = await parentDir.getFileHandle(
-				`${params.sessionId}.json`,
-			);
-			const file = await fileHandle.getFile();
-			const text = await file.text();
-			return JSON.parse(text);
-		},
+		queryFn: () => fetchSession(params.id, params.sessionId),
 		enabled: !!params.id && !!params.sessionId,
 	}));
 
@@ -77,30 +53,13 @@ const WorkoutSession = () => {
 		}),
 	);
 
-	const saveSession = async () => {
+	const persistSession = async () => {
 		const s = session();
 		if (!s) return;
 
 		try {
-			const root = await navigator.storage.getDirectory();
-			const workoutsDir = await root.getDirectoryHandle("workouts", {
-				create: true,
-			});
-			const parentDir = await workoutsDir.getDirectoryHandle(params.id, {
-				create: true,
-			});
-			const handle = await parentDir.getFileHandle(`${params.sessionId}.json`, {
-				create: true,
-			});
-			const writable = await handle.createWritable();
-
-			const data = {
-				...s,
-				exercises: exercises(),
-			};
-
-			await writable.write(JSON.stringify(data, null, 2));
-			await writable.close();
+			const data = { ...s, exercises: exercises() };
+			await saveSession(params.id, params.sessionId, data);
 
 			queryClient.setQueryData(
 				["workoutSession", params.id, params.sessionId],
@@ -114,10 +73,13 @@ const WorkoutSession = () => {
 		}
 	};
 
+	const debouncedSave = debounce(persistSession, 500);
+
 	const updateExerciseName = (index: number, name: string) => {
 		setExercises(
 			exercises().map((ex, i) => (i === index ? { ...ex, name } : ex)),
 		);
+		debouncedSave();
 	};
 
 	const updateSet = (
@@ -138,6 +100,7 @@ const WorkoutSession = () => {
 					: ex,
 			),
 		);
+		debouncedSave();
 	};
 
 	const addSet = (exIndex: number) => {
@@ -150,7 +113,7 @@ const WorkoutSession = () => {
 				i === exIndex ? { ...ex, sets: [...ex.sets, newSet] } : ex,
 			),
 		);
-		saveSession();
+		persistSession();
 	};
 
 	const removeSet = (exIndex: number, setIndex: number) => {
@@ -161,7 +124,7 @@ const WorkoutSession = () => {
 					: ex,
 			),
 		);
-		saveSession();
+		persistSession();
 	};
 
 	const addExercise = () => {
@@ -173,7 +136,7 @@ const WorkoutSession = () => {
 
 	const removeExercise = (index: number) => {
 		setExercises(exercises().filter((_, i) => i !== index));
-		saveSession();
+		persistSession();
 	};
 
 	return (
@@ -203,106 +166,19 @@ const WorkoutSession = () => {
 						<div class="space-y-6">
 							<Index each={exercises()}>
 								{(ex, exIndex) => (
-									<div>
-										<div class="flex items-center gap-2 mb-2">
-											<input
-												type="text"
-												class="input input-ghost text-lg font-bold p-0"
-												value={ex().name}
-												placeholder="Übungsname"
-												onInput={(e) =>
-													updateExerciseName(exIndex, e.currentTarget.value)
-												}
-												onBlur={saveSession}
-											/>
-											<Show when={exercises().length > 1}>
-												<button
-													class="btn btn-ghost btn-xs btn-circle"
-													onClick={() => removeExercise(exIndex)}
-													type="button"
-												>
-													✕
-												</button>
-											</Show>
-										</div>
-										<table class="table">
-											<thead>
-												<tr>
-													<th>Satz</th>
-													<th>Gewicht (kg)</th>
-													<th>Wdh.</th>
-													<th />
-												</tr>
-											</thead>
-											<tbody>
-												<Index each={ex().sets}>
-													{(set, setIndex) => (
-														<tr>
-															<td>{setIndex + 1}</td>
-															<td>
-																<input
-																	type="number"
-																	class="input input-ghost w-full p-0"
-																	value={set().weight}
-																	min={0}
-																	step={2.5}
-																	onInput={(e) =>
-																		updateSet(
-																			exIndex,
-																			setIndex,
-																			"weight",
-																			Number.parseFloat(
-																				e.currentTarget.value,
-																			) || 0,
-																		)
-																	}
-																	onBlur={saveSession}
-																/>
-															</td>
-															<td>
-																<input
-																	type="number"
-																	class="input input-ghost w-full p-0"
-																	value={set().reps}
-																	min={0}
-																	onInput={(e) =>
-																		updateSet(
-																			exIndex,
-																			setIndex,
-																			"reps",
-																			Number.parseInt(
-																				e.currentTarget.value,
-																				10,
-																			) || 0,
-																		)
-																	}
-																	onBlur={saveSession}
-																/>
-															</td>
-															<td>
-																<Show when={ex().sets.length > 1}>
-																	<button
-																		class="btn btn-ghost btn-xs btn-circle"
-																		onClick={() => removeSet(exIndex, setIndex)}
-																		type="button"
-																	>
-																		✕
-																	</button>
-																</Show>
-															</td>
-														</tr>
-													)}
-												</Index>
-											</tbody>
-										</table>
-										<button
-											class="btn btn-ghost btn-xs mt-1"
-											onClick={() => addSet(exIndex)}
-											type="button"
-										>
-											+ Satz
-										</button>
-									</div>
+									<ExerciseBlock
+										exercise={ex()}
+										canRemove={exercises().length > 1}
+										onNameChange={(name) =>
+											updateExerciseName(exIndex, name)
+										}
+										onUpdateSet={(setIndex, field, value) =>
+											updateSet(exIndex, setIndex, field, value)
+										}
+										onAddSet={() => addSet(exIndex)}
+										onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
+										onRemove={() => removeExercise(exIndex)}
+									/>
 								)}
 							</Index>
 						</div>
