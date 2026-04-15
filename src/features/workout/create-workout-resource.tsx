@@ -17,8 +17,7 @@ const getSessionsAndLastTrainedDate = async (
 		for await (const [fileName, fileHandle] of childWorkoutsDir.entries()) {
 			if (fileHandle.kind === "file" && fileName.endsWith(".json")) {
 				try {
-					// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
-					const file = await fileHandle.getFile();
+					const file = await (fileHandle as FileSystemFileHandle).getFile();
 					const text = await file.text();
 					const childWorkout = JSON.parse(text);
 					const workoutDate = new Date(
@@ -98,8 +97,7 @@ const fetchWorkouts = async (): Promise<Workout[]> => {
 			if (isJsonFile) {
 				const workout = await parseWorkoutFile(
 					fileName,
-					// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
-					fileHandle,
+					fileHandle as FileSystemFileHandle,
 					workoutsDir,
 				);
 				workouts.push(workout);

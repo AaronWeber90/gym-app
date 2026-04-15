@@ -264,14 +264,16 @@ const WorkoutSession = () => {
 																	type="number"
 																	class="input input-ghost w-full p-0"
 																	value={set().reps}
-																	min={1}
+																	min={0}
 																	onInput={(e) =>
 																		updateSet(
 																			exIndex,
 																			setIndex,
 																			"reps",
-																			Number.parseInt(e.currentTarget.value) ||
-																				1,
+																			Number.parseInt(
+																				e.currentTarget.value,
+																				10,
+																			) || 0,
 																		)
 																	}
 																	onBlur={saveSession}

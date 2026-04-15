@@ -35,7 +35,9 @@ const Settings = lazy(() => import("./pages/settings"));
 const isAppleDevice = () =>
 	/iPhone|iPad|iPod/i.test(navigator.userAgent) ||
 	// iPad on iOS 13+ reports as "MacIntel" desktop Safari
-	("maxTouchPoints" in navigator && navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
+	("maxTouchPoints" in navigator &&
+		navigator.maxTouchPoints > 1 &&
+		/Macintosh/i.test(navigator.userAgent));
 
 const Layout: Component<RouteSectionProps> = (props) => {
 	const navigate = useNavigate();
