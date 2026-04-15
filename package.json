@@ -12,6 +12,8 @@
 		"serve": "vite preview",
 		"gh:deploy": "pnpm build && gh-pages -d dist",
 		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"format": "biome format --write .",
 		"lint": "biome lint --write .",
 		"prepare": "husky"
@@ -28,7 +30,8 @@
 		"typescript": "^5.9.2",
 		"vite": "^8.0.3",
 		"vite-plugin-pwa": "^1.2.0",
-		"vite-plugin-solid": "^2.11.8"
+		"vite-plugin-solid": "^2.11.8",
+		"vitest": "^4.1.4"
 	},
 	"dependencies": {
 		"@solidjs/router": "^0.15.3",
