@@ -32,7 +32,9 @@ describe("readAllFiles", () => {
 
 		const result = await readAllFiles(dir, "workouts");
 
-		expect(result).toEqual([{ path: "workouts/test.json", content: '{"a":1}' }]);
+		expect(result).toEqual([
+			{ path: "workouts/test.json", content: '{"a":1}' },
+		]);
 	});
 
 	it("reads files from nested directories", async () => {

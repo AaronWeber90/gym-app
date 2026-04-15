@@ -22,10 +22,7 @@ describe("importAllData", () => {
 			storage: { getDirectory: vi.fn() },
 		});
 
-		const file = new File(
-			[JSON.stringify({ version: 1 })],
-			"backup.json",
-		);
+		const file = new File([JSON.stringify({ version: 1 })], "backup.json");
 
 		await expect(importAllData(file)).rejects.toThrow(
 			"Invalid backup file format",
@@ -51,9 +48,7 @@ describe("importAllData", () => {
 		const backup = {
 			version: 1,
 			exportedAt: "2026-01-01",
-			files: [
-				{ path: "workouts/push.json", content: '{"name":"Push"}' },
-			],
+			files: [{ path: "workouts/push.json", content: '{"name":"Push"}' }],
 		};
 		const file = new File([JSON.stringify(backup)], "backup.json");
 
