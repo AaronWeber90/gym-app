@@ -287,7 +287,10 @@ const WorkoutCalendar = () => {
 										<div class="space-y-2">
 											<For each={day.workouts}>
 												{(workout) => (
-													<A href={`/workouts/${workout.id}`} class="block">
+													<A
+														href={`/workouts/${workout.id}/${workout.sessionId}`}
+														class="block"
+													>
 														<div class="flex items-center gap-3 p-3 bg-primary text-primary-content rounded-lg hover:bg-primary-focus transition-colors group">
 															<div class="w-2 h-2 bg-primary-content rounded-full flex-shrink-0"></div>
 															<div class="font-medium text-sm flex-1 min-w-0">
