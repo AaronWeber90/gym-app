@@ -9,7 +9,7 @@ import {
 } from "@solidjs/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import type { Component } from "solid-js";
-import { ErrorBoundary, lazy, Suspense } from "solid-js";
+import { ErrorBoundary, lazy, Show, Suspense } from "solid-js";
 import { render } from "solid-js/web";
 import "./index.css";
 import { Button } from "./ui/button";
@@ -32,12 +32,22 @@ const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
 const Overview = lazy(() => import("./pages/overview"));
 const Settings = lazy(() => import("./pages/settings"));
 
+const isAppleDevice = () =>
+	/iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+	// iPad on iOS 13+ reports as "MacIntel" desktop Safari
+	("maxTouchPoints" in navigator && navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
+
 const Layout: Component<RouteSectionProps> = (props) => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	return (
 		<div class="min-h-screen flex flex-col bg-base-200">
+			<Show when={isAppleDevice()}>
+				<div class="bg-warning text-warning-content text-center text-sm p-2">
+					This app may not work correctly on Apple devices.
+				</div>
+			</Show>
 			<main class="flex-1 p-4 pb-safe">
 				<ErrorBoundary fallback={(err) => <span>Error: {err.message}</span>}>
 					<Suspense>{props.children}</Suspense>

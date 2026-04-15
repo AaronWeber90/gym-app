@@ -1,6 +1,6 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal } from "solid-js";
 import { Button } from "../../ui/button";
-import { getDir, getRootDir, writeFile } from "../opfs-storage/utils";
+import { getDir, getFile, getRootDir } from "../opfs-storage/utils";
 
 type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
@@ -9,7 +9,6 @@ type CreateWorkoutModalProps = {
 const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 	const [showModal, setShowModal] = createSignal(false);
 	const [newWorkoutName, setNewWorkoutName] = createSignal("");
-	const [error, setError] = createSignal("");
 
 	const cancelWorkoutCreation = () => {
 		setNewWorkoutName("");
@@ -19,12 +18,13 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 	const handleAddWorkout = async () => {
 		const name = newWorkoutName().trim();
 		if (!name) return;
-		setError("");
 
 		try {
 			const root = await getRootDir();
-			await getDir(root, "workouts", true);
+			const workoutsDir = await getDir(root, "workouts", true);
 			const id = crypto.randomUUID();
+			const handle = await getFile(workoutsDir, `${id}.json`, true);
+			const writable = await handle.createWritable();
 
 			const data = {
 				id,
@@ -33,29 +33,14 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 				exercises: [],
 			};
 
-			const method = await writeFile(
-				["workouts", `${id}.json`],
-				JSON.stringify(data, null, 2),
-			);
-
-			// Verify the file was actually written
-			const verifyRoot = await navigator.storage.getDirectory();
-			const verifyDir = await verifyRoot.getDirectoryHandle("workouts");
-			const verifyHandle = await verifyDir.getFileHandle(`${id}.json`);
-			const verifyFile = await verifyHandle.getFile();
-			const verifyText = await verifyFile.text();
-
-			if (!verifyText) {
-				setError(`Written via ${method} but file is empty`);
-				return;
-			}
+			await writable.write(JSON.stringify(data, null, 2));
+			await writable.close();
 
 			setShowModal(false);
 			setNewWorkoutName("");
 			await props.onCreated?.();
 		} catch (err) {
-			const msg = err instanceof Error ? err.message : JSON.stringify(err);
-			setError(msg);
+			console.error("Failed to add workout:", err);
 		}
 	};
 
@@ -77,9 +62,7 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 							value={newWorkoutName()}
 							onInput={(e) => setNewWorkoutName(e.currentTarget.value)}
 						/>
-						<Show when={error()}>
-							<div class="text-error text-sm mb-2 break-all">{error()}</div>
-						</Show>
+
 						<div class="modal-action">
 							<Button variant="ghost" onClick={cancelWorkoutCreation}>
 								Abbrechen
