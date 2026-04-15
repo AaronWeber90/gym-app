@@ -3,7 +3,7 @@ import { createResource, createSignal, Show } from "solid-js";
 import {
 	exportAllData,
 	importAllData,
-} from "../features/opfs-storage/export-import";
+} from "../features/opfs-storage/utils";
 import { Button } from "../ui/button";
 
 function formatBytes(bytes: number): string {
