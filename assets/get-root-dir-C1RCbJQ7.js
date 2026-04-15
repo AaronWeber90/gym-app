@@ -1,0 +1,1 @@
+var e=async(e,t,n=!1)=>e.getDirectoryHandle(t,{create:n}),t=async()=>navigator.storage.getDirectory();export{e as n,t};
