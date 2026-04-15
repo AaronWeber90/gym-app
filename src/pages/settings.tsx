@@ -1,9 +1,6 @@
 import { useQueryClient } from "@tanstack/solid-query";
 import { createResource, createSignal, Show } from "solid-js";
-import {
-	exportAllData,
-	importAllData,
-} from "../features/opfs-storage/utils";
+import { exportAllData, importAllData } from "../features/opfs-storage/utils";
 import { Button } from "../ui/button";
 
 function formatBytes(bytes: number): string {
