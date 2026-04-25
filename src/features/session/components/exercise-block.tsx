@@ -43,7 +43,7 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					onInput={(e) => props.onNameChange(e.currentTarget.value)}
 				/>
 				<button
-					class="btn btn-ghost btn-xs btn-square cursor-grab active:cursor-grabbing touch-none select-none"
+					class="btn btn-ghost btn-sm btn-square cursor-grab active:cursor-grabbing touch-none select-none"
 					onPointerDown={(e) => props.onDragStart(e)}
 					type="button"
 					aria-label="Übung verschieben"
@@ -69,7 +69,7 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					</svg>
 				</button>
 				<button
-					class="btn btn-ghost btn-xs btn-square"
+					class="btn btn-ghost btn-sm btn-square"
 					popovertarget={menuId}
 					style={`anchor-name:${anchorName}`}
 					type="button"
@@ -132,13 +132,15 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					</Index>
 				</tbody>
 			</table>
-			<button
-				class="btn btn-ghost btn-xs mt-1"
-				onClick={props.onAddSet}
-				type="button"
-			>
-				+ Satz
-			</button>
+			<div class="flex justify-end">
+				<button
+					class="btn btn-ghost btn-sm mt-1"
+					onClick={props.onAddSet}
+					type="button"
+				>
+					+ Satz
+				</button>
+			</div>
 		</div>
 	);
 };
