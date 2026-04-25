@@ -11,7 +11,7 @@ type ExerciseBlockProps = {
 	onRemoveSet: (setIndex: number) => void;
 	onRemove: () => void;
 	isDragging: boolean;
-	isOver: boolean;
+	isAnyDragging: boolean;
 	onDragStart: (e: PointerEvent) => void;
 	registerItem: (el: HTMLElement) => void;
 	unregisterItem: () => void;
@@ -31,7 +31,6 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 			class="transition-all duration-150"
 			classList={{
 				"opacity-50 scale-95": props.isDragging,
-				"border-t-2 border-primary": props.isOver && !props.isDragging,
 			}}
 		>
 			<div class="flex items-center gap-2 mb-2">
@@ -107,40 +106,42 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					</Show>
 				</ul>
 			</div>
-			<table class="table">
-				<thead>
-					<tr>
-						<th>Satz</th>
-						<th>Gewicht (kg)</th>
-						<th>Wdh.</th>
-						<th />
-					</tr>
-				</thead>
-				<tbody>
-					<Index each={props.exercise.sets}>
-						{(set, setIndex) => (
-							<SetRow
-								set={set()}
-								index={setIndex}
-								canRemove={props.exercise.sets.length > 1}
-								onUpdate={(field, value) =>
-									props.onUpdateSet(setIndex, field, value)
-								}
-								onRemove={() => props.onRemoveSet(setIndex)}
-							/>
-						)}
-					</Index>
-				</tbody>
-			</table>
-			<div class="flex justify-end">
-				<button
-					class="btn btn-ghost btn-sm mt-1"
-					onClick={props.onAddSet}
-					type="button"
-				>
-					+ Satz
-				</button>
-			</div>
+			<Show when={!props.isAnyDragging}>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Satz</th>
+							<th>Gewicht (kg)</th>
+							<th>Wdh.</th>
+							<th />
+						</tr>
+					</thead>
+					<tbody>
+						<Index each={props.exercise.sets}>
+							{(set, setIndex) => (
+								<SetRow
+									set={set()}
+									index={setIndex}
+									canRemove={props.exercise.sets.length > 1}
+									onUpdate={(field, value) =>
+										props.onUpdateSet(setIndex, field, value)
+									}
+									onRemove={() => props.onRemoveSet(setIndex)}
+								/>
+							)}
+						</Index>
+					</tbody>
+				</table>
+				<div class="flex justify-end">
+					<button
+						class="btn btn-ghost btn-sm mt-1"
+						onClick={props.onAddSet}
+						type="button"
+					>
+						+ Satz
+					</button>
+				</div>
+			</Show>
 		</div>
 	);
 };

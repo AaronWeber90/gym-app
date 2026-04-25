@@ -180,25 +180,49 @@ const WorkoutSession = () => {
 						<div class="space-y-6">
 							<Index each={exercises()}>
 								{(ex, exIndex) => (
-									<ExerciseBlock
-										exercise={ex()}
-										canRemove={exercises().length > 1}
-										onNameChange={(name) => updateExerciseName(exIndex, name)}
-										onUpdateSet={(setIndex, field, value) =>
-											updateSet(exIndex, setIndex, field, value)
-										}
-										onAddSet={() => addSet(exIndex)}
-										onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
-										onRemove={() => removeExercise(exIndex)}
-										isDragging={sortable.dragIndex() === exIndex}
-										isOver={
-											sortable.dragIndex() !== null &&
-											sortable.overIndex() === exIndex
-										}
-										onDragStart={(e) => sortable.startDrag(exIndex, e)}
-										registerItem={(el) => sortable.registerItem(exIndex, el)}
-										unregisterItem={() => sortable.unregisterItem(exIndex)}
-									/>
+									<>
+										<Show
+											when={
+												sortable.dragIndex() !== null &&
+												sortable.overIndex() === exIndex &&
+												sortable.dragIndex() !== exIndex &&
+												((sortable.dragIndex() ?? -1) > exIndex ||
+													exIndex === 0)
+											}
+										>
+											<div class="border-2 border-dashed border-primary rounded-box p-4 text-center text-sm text-primary">
+												Übung hier einfügen
+											</div>
+										</Show>
+										<ExerciseBlock
+											exercise={ex()}
+											canRemove={exercises().length > 1}
+											onNameChange={(name) => updateExerciseName(exIndex, name)}
+											onUpdateSet={(setIndex, field, value) =>
+												updateSet(exIndex, setIndex, field, value)
+											}
+											onAddSet={() => addSet(exIndex)}
+											onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
+											onRemove={() => removeExercise(exIndex)}
+											isDragging={sortable.dragIndex() === exIndex}
+											isAnyDragging={sortable.dragIndex() !== null}
+											onDragStart={(e) => sortable.startDrag(exIndex, e)}
+											registerItem={(el) => sortable.registerItem(exIndex, el)}
+											unregisterItem={() => sortable.unregisterItem(exIndex)}
+										/>
+										<Show
+											when={
+												sortable.dragIndex() !== null &&
+												sortable.overIndex() === exIndex &&
+												sortable.dragIndex() !== exIndex &&
+												(sortable.dragIndex() ?? -1) < exIndex
+											}
+										>
+											<div class="border-2 border-dashed border-primary rounded-box p-4 text-center text-sm text-primary">
+												Übung hier einfügen
+											</div>
+										</Show>
+									</>
 								)}
 							</Index>
 						</div>
