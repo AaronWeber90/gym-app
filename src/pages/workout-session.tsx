@@ -10,11 +10,12 @@ import {
 } from "solid-js";
 import { ExerciseBlock } from "../features/session/components/exercise-block";
 import {
+	createSortableList,
 	debounce,
 	type ExerciseData,
 	fetchSession,
-	type SetData,
 	saveSession,
+	type SetData,
 } from "../features/session/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
@@ -139,6 +140,19 @@ const WorkoutSession = () => {
 		persistSession();
 	};
 
+	const moveExercise = (fromIndex: number, toIndex: number) => {
+		const list = [...exercises()];
+		const [item] = list.splice(fromIndex, 1);
+		list.splice(toIndex, 0, item);
+		setExercises(list);
+		persistSession();
+	};
+
+	const sortable = createSortableList({
+		getLength: () => exercises().length,
+		onReorder: moveExercise,
+	});
+
 	return (
 		<Show
 			when={!sessionQuery.error}
@@ -176,6 +190,14 @@ const WorkoutSession = () => {
 										onAddSet={() => addSet(exIndex)}
 										onRemoveSet={(setIndex) => removeSet(exIndex, setIndex)}
 										onRemove={() => removeExercise(exIndex)}
+										isDragging={sortable.dragIndex() === exIndex}
+										isOver={
+											sortable.dragIndex() !== null &&
+											sortable.overIndex() === exIndex
+										}
+										onDragStart={(e) => sortable.startDrag(exIndex, e)}
+										registerItem={(el) => sortable.registerItem(exIndex, el)}
+										unregisterItem={() => sortable.unregisterItem(exIndex)}
 									/>
 								)}
 							</Index>
