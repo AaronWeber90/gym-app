@@ -1,4 +1,6 @@
 import { createUniqueId, Index, onCleanup, onMount, Show } from "solid-js";
+import { GripDotsIcon } from "../../../ui/icons/grip-dots";
+import { KebabMenuIcon } from "../../../ui/icons/kebab-menu";
 import type { ExerciseData, SetData } from "../utils";
 import { SetRow } from "./set-row";
 
@@ -47,25 +49,7 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					type="button"
 					aria-label="Übung verschieben"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
-					>
-						<circle cx="9" cy="5" r="1" />
-						<circle cx="9" cy="12" r="1" />
-						<circle cx="9" cy="19" r="1" />
-						<circle cx="15" cy="5" r="1" />
-						<circle cx="15" cy="12" r="1" />
-						<circle cx="15" cy="19" r="1" />
-					</svg>
+					<GripDotsIcon />
 				</button>
 				<button
 					class="btn btn-ghost btn-sm btn-square"
@@ -74,18 +58,7 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					type="button"
 					aria-label="Optionen"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						aria-hidden="true"
-					>
-						<circle cx="12" cy="5" r="2" />
-						<circle cx="12" cy="12" r="2" />
-						<circle cx="12" cy="19" r="2" />
-					</svg>
+					<KebabMenuIcon />
 				</button>
 				<ul
 					class="dropdown menu w-40 rounded-box bg-base-200 shadow-lg"
