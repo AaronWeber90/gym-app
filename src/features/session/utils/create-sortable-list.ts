@@ -74,6 +74,7 @@ export function createSortableList(opts: {
 	function cleanup() {
 		document.removeEventListener("pointermove", onPointerMove);
 		document.removeEventListener("pointerup", onPointerUp);
+		document.body.style.userSelect = "";
 		if (scrollRAF !== null) {
 			cancelAnimationFrame(scrollRAF);
 			scrollRAF = null;
@@ -86,6 +87,7 @@ export function createSortableList(opts: {
 
 	function startDrag(index: number, e: PointerEvent) {
 		e.preventDefault();
+		document.body.style.userSelect = "none";
 		lastClientY = e.clientY;
 		setDragIndex(index);
 		setOverIndex(index);

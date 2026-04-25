@@ -43,7 +43,7 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					onInput={(e) => props.onNameChange(e.currentTarget.value)}
 				/>
 				<button
-					class="btn btn-ghost btn-xs btn-square cursor-grab active:cursor-grabbing touch-none"
+					class="btn btn-ghost btn-xs btn-square cursor-grab active:cursor-grabbing touch-none select-none"
 					onPointerDown={(e) => props.onDragStart(e)}
 					type="button"
 					aria-label="Übung verschieben"
