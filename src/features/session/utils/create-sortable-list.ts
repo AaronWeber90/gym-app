@@ -1,5 +1,8 @@
 import { createSignal, onCleanup } from "solid-js";
 
+const EDGE_THRESHOLD = 60;
+const SCROLL_SPEED = 12;
+
 export function createSortableList(opts: {
 	getLength: () => number;
 	onReorder: (fromIndex: number, toIndex: number) => void;
@@ -7,8 +10,9 @@ export function createSortableList(opts: {
 	const [dragIndex, setDragIndex] = createSignal<number | null>(null);
 	const [overIndex, setOverIndex] = createSignal<number | null>(null);
 
-	const itemRects = new Map<number, DOMRect>();
 	const itemElements = new Map<number, HTMLElement>();
+	let scrollRAF: number | null = null;
+	let lastClientY = 0;
 
 	function registerItem(index: number, el: HTMLElement) {
 		itemElements.set(index, el);
@@ -16,21 +20,14 @@ export function createSortableList(opts: {
 
 	function unregisterItem(index: number) {
 		itemElements.delete(index);
-		itemRects.delete(index);
-	}
-
-	function snapshotRects() {
-		itemRects.clear();
-		for (const [i, el] of itemElements) {
-			itemRects.set(i, el.getBoundingClientRect());
-		}
 	}
 
 	function indexFromY(clientY: number): number {
 		let closest = 0;
 		let closestDist = Number.POSITIVE_INFINITY;
 
-		for (const [i, rect] of itemRects) {
+		for (const [i, el] of itemElements) {
+			const rect = el.getBoundingClientRect();
 			const mid = rect.top + rect.height / 2;
 			const dist = Math.abs(clientY - mid);
 			if (dist < closestDist) {
@@ -41,10 +38,26 @@ export function createSortableList(opts: {
 		return closest;
 	}
 
+	function autoScroll() {
+		const y = lastClientY;
+		const vh = window.innerHeight;
+
+		if (y < EDGE_THRESHOLD) {
+			window.scrollBy(0, -SCROLL_SPEED);
+		} else if (y > vh - EDGE_THRESHOLD) {
+			window.scrollBy(0, SCROLL_SPEED);
+		}
+
+		if (dragIndex() !== null) {
+			setOverIndex(indexFromY(lastClientY));
+			scrollRAF = requestAnimationFrame(autoScroll);
+		}
+	}
+
 	function onPointerMove(e: PointerEvent) {
 		e.preventDefault();
-		const target = indexFromY(e.clientY);
-		setOverIndex(target);
+		lastClientY = e.clientY;
+		setOverIndex(indexFromY(e.clientY));
 	}
 
 	function onPointerUp() {
@@ -61,6 +74,10 @@ export function createSortableList(opts: {
 	function cleanup() {
 		document.removeEventListener("pointermove", onPointerMove);
 		document.removeEventListener("pointerup", onPointerUp);
+		if (scrollRAF !== null) {
+			cancelAnimationFrame(scrollRAF);
+			scrollRAF = null;
+		}
 		setDragIndex(null);
 		setOverIndex(null);
 	}
@@ -69,11 +86,12 @@ export function createSortableList(opts: {
 
 	function startDrag(index: number, e: PointerEvent) {
 		e.preventDefault();
-		snapshotRects();
+		lastClientY = e.clientY;
 		setDragIndex(index);
 		setOverIndex(index);
 		document.addEventListener("pointermove", onPointerMove);
 		document.addEventListener("pointerup", onPointerUp);
+		scrollRAF = requestAnimationFrame(autoScroll);
 	}
 
 	return {
