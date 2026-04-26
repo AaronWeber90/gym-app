@@ -1,12 +1,13 @@
 import { For, lazy, Show } from "solid-js";
 import { createWorkoutResource } from "../features/workout/create-workout-resource";
-import { Header } from "../features/workouts/header";
+import { Header } from "../features/workouts/components/header";
+import { getSubtitle } from "../features/workouts/utils/get-subtitle";
+import { Badge } from "../ui/badge";
 import { EmptyState } from "../ui/empty-state";
 import { FolderIcon } from "../ui/icons/folder";
 import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
 import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
-import { formatDate } from "../utils/format-date";
 
 const CreateWorkoutModal = lazy(
 	() => import("../features/workout/create-workout-modal"),
@@ -45,9 +46,14 @@ const Workouts = () => {
 								}
 								title={item.name}
 								subtitle={
-									item.lastTrainedAt
-										? `last trained at ${formatDate(item.lastTrainedAt)}`
-										: "not trained yet"
+									<>
+										{getSubtitle(item.lastTrainedAt)}
+										{item.lastTrainedAt &&
+											new Date(item.lastTrainedAt).toDateString() ===
+												new Date().toDateString() && (
+												<Badge variant="neutral" size="sm">Heute</Badge>
+											)}
+									</>
 								}
 							/>
 						)}

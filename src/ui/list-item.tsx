@@ -5,7 +5,7 @@ type ListItemProps = {
 	href: string;
 	icon: JSX.Element;
 	title: string;
-	subtitle: string;
+	subtitle: JSX.Element;
 };
 
 export const ListItem: Component<ListItemProps> = (props) => {
@@ -16,7 +16,9 @@ export const ListItem: Component<ListItemProps> = (props) => {
 					{props.icon}
 					<div>
 						<div class="font-medium">{props.title}</div>
-						<div class="text-xs font-semibold opacity-60">{props.subtitle}</div>
+						<div class="flex items-center gap-2 text-xs font-semibold opacity-60">
+							{props.subtitle}
+						</div>
 					</div>
 				</div>
 			</li>

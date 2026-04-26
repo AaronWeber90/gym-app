@@ -1,7 +1,7 @@
 import { A } from "@solidjs/router";
 import { createMemo, createSignal, For } from "solid-js";
 import { createWorkoutResource } from "../features/workout/create-workout-resource";
-import { Header } from "../features/workouts/header";
+import { Header } from "../features/workouts/components/header";
 import { Button } from "../ui/button";
 
 type WorkoutSession = {
