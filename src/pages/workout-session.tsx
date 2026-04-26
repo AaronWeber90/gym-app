@@ -219,7 +219,9 @@ const WorkoutSession = () => {
 											}
 										>
 											<div class="border-2 border-dashed border-primary rounded-box p-4 text-center text-sm text-primary">
-												Übung hier einfügen
+												{exercises()[sortable.dragIndex() ?? -1]?.name ||
+													"Übung "}
+												hier einfügen
 											</div>
 										</Show>
 									</>

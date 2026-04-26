@@ -36,13 +36,6 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 			}}
 		>
 			<div class="flex items-center gap-2 mb-2">
-				<input
-					type="text"
-					class="input input-ghost text-lg font-bold p-0 flex-1 min-w-0"
-					value={props.exercise.name}
-					placeholder="Übungsname"
-					onInput={(e) => props.onNameChange(e.currentTarget.value)}
-				/>
 				<button
 					class="btn btn-ghost btn-sm btn-square cursor-grab active:cursor-grabbing touch-none select-none"
 					onPointerDown={(e) => props.onDragStart(e)}
@@ -51,6 +44,13 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 				>
 					<GripDotsIcon />
 				</button>
+				<input
+					type="text"
+					class="input input-ghost text-lg font-bold p-0 flex-1 min-w-0"
+					value={props.exercise.name}
+					placeholder="Übungsname"
+					onInput={(e) => props.onNameChange(e.currentTarget.value)}
+				/>
 				<button
 					class="btn btn-ghost btn-sm btn-square"
 					popovertarget={menuId}
