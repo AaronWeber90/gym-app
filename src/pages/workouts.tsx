@@ -51,7 +51,9 @@ const Workouts = () => {
 										{item.lastTrainedAt &&
 											new Date(item.lastTrainedAt).toDateString() ===
 												new Date().toDateString() && (
-												<Badge variant="neutral" size="sm">Heute</Badge>
+												<Badge variant="neutral" size="sm">
+													Heute
+												</Badge>
 											)}
 									</>
 								}
