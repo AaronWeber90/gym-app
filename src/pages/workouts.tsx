@@ -1,8 +1,7 @@
 import { For, lazy, Show } from "solid-js";
 import { createWorkoutResource } from "../features/workout/create-workout-resource";
 import { Header } from "../features/workouts/components/header";
-import { getSubtitle } from "../features/workouts/utils/get-subtitle";
-import { Badge } from "../ui/badge";
+import { WorkoutSubtitle } from "../features/workouts/components/workout-subtitle";
 import { EmptyState } from "../ui/empty-state";
 import { FolderIcon } from "../ui/icons/folder";
 import { FolderWithSheetsIcon } from "../ui/icons/folder-with-sheets";
@@ -46,16 +45,7 @@ const Workouts = () => {
 								}
 								title={item.name}
 								subtitle={
-									<>
-										{getSubtitle(item.lastTrainedAt)}
-										{item.lastTrainedAt &&
-											new Date(item.lastTrainedAt).toDateString() ===
-												new Date().toDateString() && (
-												<Badge variant="neutral" size="sm">
-													Heute
-												</Badge>
-											)}
-									</>
+									<WorkoutSubtitle lastTrainedAt={item.lastTrainedAt} />
 								}
 							/>
 						)}
