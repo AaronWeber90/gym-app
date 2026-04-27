@@ -14,8 +14,8 @@ import {
 	debounce,
 	type ExerciseData,
 	fetchSession,
-	saveSession,
 	type SetData,
+	saveSession,
 } from "../features/session/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
@@ -191,7 +191,9 @@ const WorkoutSession = () => {
 											}
 										>
 											<div class="border-2 border-dashed border-primary rounded-box p-4 text-center text-sm text-primary">
-												Übung hier einfügen
+												{exercises()[sortable.dragIndex() ?? -1]?.name ||
+													"Übung"}{" "}
+												hier einfügen
 											</div>
 										</Show>
 										<ExerciseBlock
@@ -220,7 +222,7 @@ const WorkoutSession = () => {
 										>
 											<div class="border-2 border-dashed border-primary rounded-box p-4 text-center text-sm text-primary">
 												{exercises()[sortable.dragIndex() ?? -1]?.name ||
-													"Übung "}
+													"Übung"}{" "}
 												hier einfügen
 											</div>
 										</Show>
