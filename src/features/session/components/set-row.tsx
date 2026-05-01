@@ -14,7 +14,7 @@ export const SetRow = (props: SetRowProps) => {
 	return (
 		<tr>
 			<td>{props.index + 1}</td>
-			<td>
+			<td class="pl-0">
 				<input
 					type="number"
 					class="input input-ghost w-full p-0"
@@ -36,7 +36,7 @@ export const SetRow = (props: SetRowProps) => {
 					)}
 				</Show>
 			</td>
-			<td>
+			<td class="pl-0">
 				<input
 					type="number"
 					class="input input-ghost w-full p-0"
@@ -57,7 +57,7 @@ export const SetRow = (props: SetRowProps) => {
 					)}
 				</Show>
 			</td>
-			<td>
+			<td class="pl-0">
 				<Show when={props.canRemove}>
 					<button
 						class="btn btn-ghost btn-xs btn-circle"
