@@ -7,6 +7,7 @@ import { SetRow } from "./set-row";
 type ExerciseBlockProps = {
 	exercise: ExerciseData;
 	canRemove: boolean;
+	previousSets?: SetData[];
 	onNameChange: (name: string) => void;
 	onUpdateSet: (setIndex: number, field: keyof SetData, value: number) => void;
 	onAddSet: () => void;
@@ -96,6 +97,7 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 									set={set()}
 									index={setIndex}
 									canRemove={props.exercise.sets.length > 1}
+									previousSet={props.previousSets?.[setIndex]}
 									onUpdate={(field, value) =>
 										props.onUpdateSet(setIndex, field, value)
 									}

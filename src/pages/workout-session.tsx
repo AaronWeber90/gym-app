@@ -13,6 +13,7 @@ import {
 	createSortableList,
 	debounce,
 	type ExerciseData,
+	fetchPreviousSession,
 	fetchSession,
 	type SetData,
 	saveSession,
@@ -34,6 +35,26 @@ const WorkoutSession = () => {
 
 	const session = () => sessionQuery.data;
 	const sessionId = createMemo(() => session()?.id);
+
+	const previousSessionQuery = createQuery(() => ({
+		queryKey: ["previousSession", params.id, params.sessionId],
+		queryFn: () => {
+			const date = session()?.date;
+			if (!date) throw new Error("Session date not available");
+			return fetchPreviousSession(params.id, params.sessionId, date);
+		},
+		enabled: !!session()?.date,
+	}));
+
+	const previousExerciseMap = createMemo(() => {
+		const prev = previousSessionQuery.data;
+		if (!prev?.exercises) return new Map<string, SetData[]>();
+		const map = new Map<string, SetData[]>();
+		for (const ex of prev.exercises) {
+			map.set(ex.name.toLowerCase(), ex.sets);
+		}
+		return map;
+	});
 
 	createEffect(
 		on(sessionId, () => {
@@ -199,6 +220,9 @@ const WorkoutSession = () => {
 										<ExerciseBlock
 											exercise={ex()}
 											canRemove={exercises().length > 1}
+											previousSets={previousExerciseMap().get(
+												ex().name.toLowerCase(),
+											)}
 											onNameChange={(name) => updateExerciseName(exIndex, name)}
 											onUpdateSet={(setIndex, field, value) =>
 												updateSet(exIndex, setIndex, field, value)

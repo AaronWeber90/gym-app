@@ -5,6 +5,7 @@ type SetRowProps = {
 	set: SetData;
 	index: number;
 	canRemove: boolean;
+	previousSet?: SetData;
 	onUpdate: (field: keyof SetData, value: number) => void;
 	onRemove: () => void;
 };
@@ -27,6 +28,13 @@ export const SetRow = (props: SetRowProps) => {
 						)
 					}
 				/>
+				<Show when={props.previousSet}>
+					{(prev) => (
+						<span class="text-xs text-base-content/50">
+							vorher: {prev().weight} kg
+						</span>
+					)}
+				</Show>
 			</td>
 			<td>
 				<input
@@ -41,6 +49,13 @@ export const SetRow = (props: SetRowProps) => {
 						)
 					}
 				/>
+				<Show when={props.previousSet}>
+					{(prev) => (
+						<span class="text-xs text-base-content/50">
+							vorher: {prev().reps}
+						</span>
+					)}
+				</Show>
 			</td>
 			<td>
 				<Show when={props.canRemove}>
