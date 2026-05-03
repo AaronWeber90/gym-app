@@ -15,8 +15,8 @@ import {
 	type ExerciseData,
 	fetchPreviousSession,
 	fetchSession,
-	saveSession,
 	type SetData,
+	saveSession,
 } from "../features/session/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
@@ -29,7 +29,7 @@ const WorkoutSession = () => {
 
 	const sessionQuery = createQuery(() => ({
 		queryKey: ["workoutSession", params.id, params.sessionId],
-		queryFn: () => fetchSession(params.id, params.sessionId),
+		queryFn: () => fetchSession(params.id!, params.sessionId!),
 		enabled: !!params.id && !!params.sessionId,
 	}));
 
@@ -41,7 +41,7 @@ const WorkoutSession = () => {
 		queryFn: () => {
 			const date = session()?.date;
 			if (!date) throw new Error("Session date not available");
-			return fetchPreviousSession(params.id, params.sessionId, date);
+			return fetchPreviousSession(params.id!, params.sessionId!, date);
 		},
 		enabled: !!session()?.date,
 	}));
@@ -85,10 +85,10 @@ const WorkoutSession = () => {
 				name: ex.name.trim(),
 			}));
 			const data = { ...s, exercises: trimmedExercises };
-			await saveSession(params.id, params.sessionId, data);
+			await saveSession(params.id!, params.sessionId!, data);
 
 			queryClient.invalidateQueries({
-				queryKey: childWorkoutsQueryKey(params.id),
+				queryKey: childWorkoutsQueryKey(params.id!),
 			});
 		} catch (err) {
 			console.error("Failed to save workout session:", err);

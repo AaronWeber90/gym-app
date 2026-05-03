@@ -27,14 +27,14 @@
 		"gh-pages": "^6.3.0",
 		"husky": "^9.1.7",
 		"tailwindcss": "^4.1.13",
-		"typescript": "^5.9.2",
+		"typescript": "^6.0.3",
 		"vite": "^8.0.3",
 		"vite-plugin-pwa": "^1.2.0",
 		"vite-plugin-solid": "^2.11.8",
 		"vitest": "^4.1.4"
 	},
 	"dependencies": {
-		"@solidjs/router": "^0.15.3",
+		"@solidjs/router": "^0.16.1",
 		"@tanstack/solid-query": "^5.91.3",
 		"solid-js": "^1.9.9"
 	}

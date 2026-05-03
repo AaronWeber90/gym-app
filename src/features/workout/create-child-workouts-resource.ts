@@ -27,8 +27,7 @@ export const createChildWorkoutsResource = (parentId: () => string) => {
 			for await (const [name, handle] of parentDir.entries()) {
 				if (handle.kind === "file" && name.endsWith(".json")) {
 					try {
-						// @ts-expect-error TS doesn't narrow FileSystemHandle to FileSystemFileHandle via kind check
-						const file = await handle.getFile();
+						const file = await (handle as FileSystemFileHandle).getFile();
 						const text = await file.text();
 						const data = JSON.parse(text);
 						const sessionId = data.id ?? name.replace(".json", "");
