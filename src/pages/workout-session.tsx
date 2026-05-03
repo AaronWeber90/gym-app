@@ -15,8 +15,8 @@ import {
 	type ExerciseData,
 	fetchPreviousSession,
 	fetchSession,
-	type SetData,
 	saveSession,
+	type SetData,
 } from "../features/session/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
 import { formatDate } from "../utils/format-date";
@@ -80,7 +80,11 @@ const WorkoutSession = () => {
 		if (!s) return;
 
 		try {
-			const data = { ...s, exercises: exercises() };
+			const trimmedExercises = exercises().map((ex) => ({
+				...ex,
+				name: ex.name.trim(),
+			}));
+			const data = { ...s, exercises: trimmedExercises };
 			await saveSession(params.id, params.sessionId, data);
 
 			queryClient.invalidateQueries({
@@ -217,7 +221,7 @@ const WorkoutSession = () => {
 											exercise={ex()}
 											canRemove={exercises().length > 1}
 											previousSets={previousExerciseMap().get(
-												ex().name.toLowerCase(),
+												ex().name.toLowerCase().trim(),
 											)}
 											onNameChange={(name) => updateExerciseName(exIndex, name)}
 											onUpdateSet={(setIndex, field, value) =>
