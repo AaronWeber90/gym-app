@@ -20,13 +20,18 @@ export const SetRow = (props: SetRowProps) => {
 					class="input input-ghost w-full p-0"
 					value={props.set.weight}
 					min={0}
+					max={9999}
 					step={2.5}
-					onInput={(e) =>
+					onInput={(e) => {
+						if (e.currentTarget.value.replace(".", "").length > 4) {
+							e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+							return;
+						}
 						props.onUpdate(
 							"weight",
 							Number.parseFloat(e.currentTarget.value) || 0,
-						)
-					}
+						);
+					}}
 				/>
 				<Show when={props.previousSet}>
 					{(prev) => (
@@ -42,12 +47,17 @@ export const SetRow = (props: SetRowProps) => {
 					class="input input-ghost w-full p-0"
 					value={props.set.reps}
 					min={0}
-					onInput={(e) =>
+					max={9999}
+					onInput={(e) => {
+						if (e.currentTarget.value.length > 4) {
+							e.currentTarget.value = e.currentTarget.value.slice(0, 4);
+							return;
+						}
 						props.onUpdate(
 							"reps",
 							Number.parseInt(e.currentTarget.value, 10) || 0,
-						)
-					}
+						);
+					}}
 				/>
 				<Show when={props.previousSet}>
 					{(prev) => (
