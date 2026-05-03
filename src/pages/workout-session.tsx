@@ -83,10 +83,6 @@ const WorkoutSession = () => {
 			const data = { ...s, exercises: exercises() };
 			await saveSession(params.id, params.sessionId, data);
 
-			queryClient.setQueryData(
-				["workoutSession", params.id, params.sessionId],
-				data,
-			);
 			queryClient.invalidateQueries({
 				queryKey: childWorkoutsQueryKey(params.id),
 			});
