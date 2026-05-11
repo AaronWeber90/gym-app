@@ -4,7 +4,7 @@ import type { Component, JSX } from "solid-js";
 type ListItemProps = {
 	href: string;
 	icon: JSX.Element;
-	title: string;
+	title: JSX.Element;
 	subtitle: JSX.Element;
 };
 

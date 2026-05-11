@@ -5,6 +5,7 @@ import { createChildWorkoutsResource } from "../features/workout/create-child-wo
 import { createCurrentWorkout } from "../features/workout/create-current-workout";
 import { workoutsQueryKey } from "../features/workout/create-workout-resource";
 import { deleteWorkout } from "../features/workout/delete-workout";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { EmptyState } from "../ui/empty-state";
 import { TableCellsIcon } from "../ui/icons/table-cells";
@@ -65,11 +66,25 @@ const Workout = () => {
 								<ListItem
 									href={`/workouts/${params.id}/${item.id}`}
 									icon={<TableCellsIcon />}
-									title={formatDate(item.date, {
-										day: "2-digit",
-										month: "2-digit",
-										year: "2-digit",
-									})}
+									title={
+										<span class="flex items-center gap-2">
+											{formatDate(item.date, {
+												day: "2-digit",
+												month: "2-digit",
+												year: "2-digit",
+											})}
+											<Show
+												when={
+													new Date(item.date).toDateString() ===
+													new Date().toDateString()
+												}
+											>
+												<Badge variant="neutral" size="sm">
+													Heute
+												</Badge>
+											</Show>
+										</span>
+									}
 									subtitle={`started at ${formatDate(item.date, {
 										hour: "2-digit",
 										minute: "2-digit",
