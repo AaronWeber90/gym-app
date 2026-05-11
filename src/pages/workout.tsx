@@ -20,10 +20,10 @@ const SessionModal = lazy(
 const Workout = () => {
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
-	const params = useParams();
-	const currentWorkout = createCurrentWorkout(() => params.id!);
+	const params = useParams<{ id: string }>();
+	const currentWorkout = createCurrentWorkout(() => params.id);
 	const { childWorkouts, refetch: refetchChildWorkouts } =
-		createChildWorkoutsResource(() => params.id!);
+		createChildWorkoutsResource(() => params.id);
 
 	const latestExercises = createMemo(() => {
 		const sessions = childWorkouts();
@@ -43,7 +43,7 @@ const Workout = () => {
 
 	const handleDelete = async () => {
 		try {
-			await deleteWorkout(params.id!);
+			await deleteWorkout(params.id);
 			navigate("/workouts");
 		} catch (err) {
 			console.error("Failed to delete workout:", err);
@@ -101,7 +101,7 @@ const Workout = () => {
 				</Show>
 			</div>
 			<SessionModal
-				parentId={params.id!}
+				parentId={params.id}
 				previousExercises={latestExercises()}
 				onSaved={async () => {
 					await refetchChildWorkouts();
