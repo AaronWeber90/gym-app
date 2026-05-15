@@ -131,7 +131,7 @@ async function readDirectoryEntries(
 		if (handle.kind === "directory") {
 			const entry = await processDirectoryEntry(
 				name,
-				handle as FileSystemDirectoryHandle,
+				handle,
 				dirHandle,
 				fullPath,
 				processedDirs,
