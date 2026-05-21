@@ -37,7 +37,12 @@ Generate a conventional commit message from the latest changes, then stage and c
    - Max 72 characters
    - Summarize *what* changed and *why* if not obvious
 
-5. **Add a body** only when the subject alone doesn't explain the change. Separate from the subject with a blank line. Wrap at 72 characters. Explain *why*, not *what* (the diff shows what).
+5. **Add a body** only when the subject alone doesn't explain the change. Separate from the subject with a blank line. Use a bullet list format:
+   ```
+   - Change description: reason/why
+   - Another change: reason/why
+   ```
+   Keep each bullet short (one line per change) and explain *why*, not *what* (the diff shows what).
 
 6. **Stage and commit**:
    - If nothing is staged, run `git add -A` to stage everything.
