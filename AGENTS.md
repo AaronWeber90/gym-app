@@ -60,6 +60,10 @@ src/
   api/types.ts     ← shared API types
 ```
 
+## Dependency Philosophy
+
+Keep dependencies minimal. Before reaching for a third-party package, build the solution in-house unless the library is already in use or the problem domain is genuinely complex (e.g. crypto, query caching like TanStack Query). Prefer native browser APIs and small focused utilities over large frameworks.
+
 ## Conventions
 
 - **Kebab-case** filenames everywhere
@@ -73,7 +77,16 @@ src/
 
 ## Testing
 
-Tests run in **node** environment (no jsdom). OPFS APIs are mocked by stubbing `navigator.storage.getDirectory` via `vi.stubGlobal()`. Tests focus on data/logic utilities, not component rendering.
+Two tiers:
+
+| Tier | Tool | Environment | Focus |
+|------|------|-------------|-------|
+| Unit / logic | **Vitest** (node) | Node — no DOM | Data utilities, pure functions, OPFS mocks |
+| UI / integration | **Vitest + Playwright** | Real browser | Component behaviour, user flows, OPFS in real context |
+
+- Node tests: run in `node` environment. OPFS APIs are mocked via `vi.stubGlobal('navigator', ...)`. Co-located alongside source files (`foo.test.ts`).
+- UI/integration tests: always use a real browser via Playwright. Prefer integration-level tests over unit tests for UI — test user-visible behaviour, not implementation details. Place in `e2e/` or alongside the component as `foo.browser.test.ts`.
+- **Default to real-browser integration tests for anything touching the UI.** Only use node tests for pure logic and data utilities.
 
 ## Gotchas
 
