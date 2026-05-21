@@ -6,7 +6,7 @@ import { createCurrentWorkout } from "../features/workout/create-current-workout
 import { workoutsQueryKey } from "../features/workout/create-workout-resource";
 import { deleteWorkout } from "../features/workout/delete-workout";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
 import { EmptyState } from "../ui/empty-state";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { ListGroup } from "../ui/list-group";
@@ -54,9 +54,13 @@ const Workout = () => {
 		<div class="overflow-x-auto w-full max-w-full">
 			<div class="flex flex-row justify-between items-center">
 				<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
-				<Button onClick={handleDelete} variant="ghost">
-					Löschen
-				</Button>
+				<ConfirmDeleteButton
+					ariaLabel="Trainingsplan löschen"
+					dialogTitle="Trainingsplan löschen?"
+					dialogMessage="Der Trainingsplan und alle Sessions werden dauerhaft gelöscht."
+					confirmLabel="Löschen"
+					onConfirm={handleDelete}
+				/>
 			</div>
 			<div class="mt-4">
 				<Show when={(childWorkouts()?.length ?? 0) > 0}>

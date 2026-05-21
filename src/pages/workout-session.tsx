@@ -1,4 +1,4 @@
-import { useParams } from "@solidjs/router";
+import { useNavigate, useParams } from "@solidjs/router";
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
 import {
 	createEffect,
@@ -12,17 +12,20 @@ import { ExerciseBlock } from "../features/session/components/exercise-block";
 import {
 	createSortableList,
 	debounce,
+	deleteSession,
 	type ExerciseData,
 	fetchPreviousSession,
 	fetchSession,
-	type SetData,
 	saveSession,
+	type SetData,
 } from "../features/session/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
+import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
 import { formatDate } from "../utils/format-date";
 
 const WorkoutSession = () => {
 	const params = useParams<{ id: string; sessionId: string }>();
+	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 
 	const [exercises, setExercises] = createSignal<ExerciseData[]>([]);
@@ -174,6 +177,18 @@ const WorkoutSession = () => {
 		onReorder: moveExercise,
 	});
 
+	const handleDeleteSession = async () => {
+		try {
+			await deleteSession(params.id, params.sessionId);
+			await queryClient.invalidateQueries({
+				queryKey: childWorkoutsQueryKey(params.id),
+			});
+			navigate(`/workouts/${params.id}`);
+		} catch (err) {
+			console.error("Failed to delete workout session:", err);
+		}
+	};
+
 	return (
 		<Show
 			when={!sessionQuery.error}
@@ -186,13 +201,22 @@ const WorkoutSession = () => {
 			<Show when={session()} fallback={<div class="min-h-screen" />}>
 				{(s) => (
 					<div>
-						<h1 class="text-2xl font-bold mb-1">
-							{formatDate(s().date, {
-								day: "2-digit",
-								month: "2-digit",
-								year: "numeric",
-							})}
-						</h1>
+						<div class="flex items-start justify-between gap-2 mb-1">
+							<h1 class="text-2xl font-bold">
+								{formatDate(s().date, {
+									day: "2-digit",
+									month: "2-digit",
+									year: "numeric",
+								})}
+							</h1>
+							<ConfirmDeleteButton
+								ariaLabel="Session löschen"
+								dialogTitle="Session löschen?"
+								dialogMessage="Diese Session wird dauerhaft gelöscht."
+								confirmLabel="Löschen"
+								onConfirm={handleDeleteSession}
+							/>
+						</div>
 						<p class="text-sm text-base-content/60 mb-6">
 							Gestartet um{" "}
 							{formatDate(s().date, { hour: "2-digit", minute: "2-digit" })}
