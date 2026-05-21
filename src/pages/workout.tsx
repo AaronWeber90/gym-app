@@ -11,6 +11,7 @@ import { EmptyState } from "../ui/empty-state";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
+import { Header } from "../features/workouts/components/header";
 import { formatDate } from "../utils/format-date";
 
 const SessionModal = lazy(
@@ -52,16 +53,18 @@ const Workout = () => {
 
 	return (
 		<div class="overflow-x-auto w-full max-w-full">
-			<div class="flex flex-row justify-between items-center">
-				<h1 class="text-3xl font-bold">{currentWorkout()?.name}</h1>
-				<ConfirmDeleteButton
-					ariaLabel="Trainingsplan löschen"
-					dialogTitle="Trainingsplan löschen?"
-					dialogMessage="Der Trainingsplan und alle Sessions werden dauerhaft gelöscht."
-					confirmLabel="Löschen"
-					onConfirm={handleDelete}
-				/>
-			</div>
+			<Header
+				title={currentWorkout()?.name || ""}
+				action={
+					<ConfirmDeleteButton
+						ariaLabel="Trainingsplan löschen"
+						dialogTitle="Trainingsplan löschen?"
+						dialogMessage="Der Trainingsplan und alle Sessions werden dauerhaft gelöscht."
+						confirmLabel="Löschen"
+						onConfirm={handleDelete}
+					/>
+				}
+			/>
 			<div class="mt-4">
 				<Show when={(childWorkouts()?.length ?? 0) > 0}>
 					<ListGroup>

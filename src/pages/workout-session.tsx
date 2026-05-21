@@ -20,6 +20,7 @@ import {
 	type SetData,
 } from "../features/session/utils";
 import { childWorkoutsQueryKey } from "../features/workout/create-child-workouts-resource";
+import { Header } from "../features/workouts/components/header";
 import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
 import { formatDate } from "../utils/format-date";
 
@@ -201,22 +202,22 @@ const WorkoutSession = () => {
 			<Show when={session()} fallback={<div class="min-h-screen" />}>
 				{(s) => (
 					<div>
-						<div class="flex items-start justify-between gap-2 mb-1">
-							<h1 class="text-2xl font-bold">
-								{formatDate(s().date, {
-									day: "2-digit",
-									month: "2-digit",
-									year: "numeric",
-								})}
-							</h1>
-							<ConfirmDeleteButton
-								ariaLabel="Session löschen"
-								dialogTitle="Session löschen?"
-								dialogMessage="Diese Session wird dauerhaft gelöscht."
-								confirmLabel="Löschen"
-								onConfirm={handleDeleteSession}
-							/>
-						</div>
+						<Header
+							title={formatDate(s().date, {
+								day: "2-digit",
+								month: "2-digit",
+								year: "numeric",
+							})}
+							action={
+								<ConfirmDeleteButton
+									ariaLabel="Session löschen"
+									dialogTitle="Session löschen?"
+									dialogMessage="Diese Session wird dauerhaft gelöscht."
+									confirmLabel="Löschen"
+									onConfirm={handleDeleteSession}
+								/>
+							}
+						/>
 						<p class="text-sm text-base-content/60 mb-6">
 							Gestartet um{" "}
 							{formatDate(s().date, { hour: "2-digit", minute: "2-digit" })}
