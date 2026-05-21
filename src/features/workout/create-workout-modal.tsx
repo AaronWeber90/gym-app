@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 import { getDir, getFile, getRootDir } from "../opfs-storage/utils";
 
 type CreateWorkoutModalProps = {
@@ -55,10 +56,10 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 							handleAddWorkout();
 						}}
 					>
-						<input
+						<Input
 							type="text"
 							placeholder="Workout name"
-							class="input input-bordered w-full mb-4"
+							class="input-bordered mb-4"
 							value={newWorkoutName()}
 							onInput={(e) => setNewWorkoutName(e.currentTarget.value)}
 						/>

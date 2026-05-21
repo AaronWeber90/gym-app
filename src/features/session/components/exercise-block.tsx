@@ -9,6 +9,7 @@ import {
 import { CheckCircleIcon } from "../../../ui/icons/check-circle";
 import { GripDotsIcon } from "../../../ui/icons/grip-dots";
 import { KebabMenuIcon } from "../../../ui/icons/kebab-menu";
+import { Input } from "../../../ui/input";
 import type { ExerciseData, SetData } from "../utils";
 import { SetRow } from "./set-row";
 
@@ -62,7 +63,7 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 				>
 					<GripDotsIcon />
 				</button>
-				<input
+				<Input
 					type="text"
 					class="input input-ghost text-lg font-bold p-0 flex-1 min-w-0"
 					value={props.exercise.name}

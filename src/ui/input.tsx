@@ -1,27 +1,41 @@
-import { createUniqueId, type JSX } from "solid-js";
+import type { JSX } from "solid-js";
+import { createUniqueId, splitProps } from "solid-js";
 
-type InputProps = Omit<JSX.InputHTMLAttributes<HTMLInputElement>, "label"> & {
+type InputProps = Omit<
+	JSX.InputHTMLAttributes<HTMLInputElement>,
+	"label" | "type"
+> & {
 	label?: string;
-	value: string | number | readonly string[] | undefined;
-	type: "date" | "text" | "number" | "password" | "email" | "search" | "time";
+	type: "date" | "text" | "number" | "search" | "time";
 };
 
 export const Input = (props: InputProps) => {
-	const id = createUniqueId();
+	const generatedId = createUniqueId();
+	const [local, inputProps] = splitProps(props, [
+		"label",
+		"type",
+		"class",
+		"id",
+	]);
+	const inputId = local.id ?? generatedId;
+
+	const input = (
+		<input
+			{...inputProps}
+			type={local.type}
+			class={`input w-full ${local.class ?? ""}`.trim()}
+			id={local.label ? inputId : local.id}
+		/>
+	);
+
+	if (!local.label) return input;
+
 	return (
 		<div class="flex flex-col gap-1">
-			{props.label && (
-				<label class="label" for={id}>
-					<span class="label-text">{props.label}</span>
-				</label>
-			)}
-			<input
-				{...props}
-				type={props.type}
-				class={`input w-full ${props.class || ""}`}
-				id={id}
-				value={props.value}
-			/>
+			<label class="label" for={inputId}>
+				<span class="label-text">{local.label}</span>
+			</label>
+			{input}
 		</div>
 	);
 };
