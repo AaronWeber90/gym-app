@@ -1,17 +1,12 @@
-import { useNavigate, useParams } from "@solidjs/router";
-import { useQueryClient } from "@tanstack/solid-query";
-import { createMemo, For, lazy, Show } from "solid-js";
-import { createChildWorkoutsResource } from "../features/workout/create-child-workouts-resource";
-import { createCurrentWorkout } from "../features/workout/create-current-workout";
-import { workoutsQueryKey } from "../features/workout/create-workout-resource";
-import { deleteWorkout } from "../features/workout/delete-workout";
+import { For, lazy, Show } from "solid-js";
+import { createWorkoutPageState } from "../features/workout/create-workout-page-state";
+import { Header } from "../features/workouts/components/header";
 import { Badge } from "../ui/badge";
 import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
 import { EmptyState } from "../ui/empty-state";
 import { TableCellsIcon } from "../ui/icons/table-cells";
 import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
-import { Header } from "../features/workouts/components/header";
 import { formatDate } from "../utils/format-date";
 
 const SessionModal = lazy(
@@ -19,37 +14,14 @@ const SessionModal = lazy(
 );
 
 const Workout = () => {
-	const queryClient = useQueryClient();
-	const navigate = useNavigate();
-	const params = useParams<{ id: string }>();
-	const currentWorkout = createCurrentWorkout(() => params.id);
-	const { childWorkouts, refetch: refetchChildWorkouts } =
-		createChildWorkoutsResource(() => params.id);
-
-	const latestExercises = createMemo(() => {
-		const sessions = childWorkouts();
-		if (!sessions?.length) return undefined;
-		const latestId = sessions[0].id;
-		const cached = queryClient.getQueryData<{ exercises?: unknown[] }>([
-			"workoutSession",
-			params.id,
-			latestId,
-		]);
-		if (!cached?.exercises?.length) return undefined;
-		return cached.exercises as {
-			name: string;
-			sets: { weight: number; reps: number }[];
-		}[];
-	});
-
-	const handleDelete = async () => {
-		try {
-			await deleteWorkout(params.id);
-			navigate("/workouts");
-		} catch (err) {
-			console.error("Failed to delete workout:", err);
-		}
-	};
+	const {
+		currentWorkout,
+		childWorkouts,
+		latestExercises,
+		handleDelete,
+		handleSessionSaved,
+		workoutId,
+	} = createWorkoutPageState();
 
 	return (
 		<div class="overflow-x-auto w-full max-w-full">
@@ -71,7 +43,7 @@ const Workout = () => {
 						<For each={childWorkouts()}>
 							{(item) => (
 								<ListItem
-									href={`/workouts/${params.id}/${item.id}`}
+									href={`/workouts/${workoutId()}/${item.id}`}
 									icon={<TableCellsIcon />}
 									title={
 										<span class="flex items-center gap-2">
@@ -108,12 +80,9 @@ const Workout = () => {
 				</Show>
 			</div>
 			<SessionModal
-				parentId={params.id}
+				parentId={workoutId()}
 				previousExercises={latestExercises()}
-				onSaved={async () => {
-					await refetchChildWorkouts();
-					await queryClient.invalidateQueries({ queryKey: workoutsQueryKey });
-				}}
+				onSaved={handleSessionSaved}
 			/>
 		</div>
 	);
