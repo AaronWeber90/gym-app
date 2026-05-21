@@ -1,4 +1,11 @@
-import { createMemo, createUniqueId, Index, onCleanup, onMount, Show } from "solid-js";
+import {
+	createMemo,
+	createUniqueId,
+	Index,
+	onCleanup,
+	onMount,
+	Show,
+} from "solid-js";
 import { CheckCircleIcon } from "../../../ui/icons/check-circle";
 import { GripDotsIcon } from "../../../ui/icons/grip-dots";
 import { KebabMenuIcon } from "../../../ui/icons/kebab-menu";
