@@ -10,7 +10,7 @@ Generate a conventional commit message from the latest changes, then stage and c
 
 ## Procedure
 
-1. **Inspect changes** — Run `git status` and `git diff` (or `git diff --staged` if files are already staged). Read the diff carefully.
+1. **Inspect changes** — First check the current conversation for context about what changed (e.g. file edits, user descriptions, assistant summaries). If the changes are already clear from context, skip the git commands. Only run `git status` and `git diff` (or `git diff --staged` if files are already staged) when the changes are not described in the conversation.
 
 2. **Determine the commit type** from the change:
 
