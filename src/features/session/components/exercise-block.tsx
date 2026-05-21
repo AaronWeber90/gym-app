@@ -1,4 +1,5 @@
-import { createUniqueId, Index, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createUniqueId, Index, onCleanup, onMount, Show } from "solid-js";
+import { CheckCircleIcon } from "../../../ui/icons/check-circle";
 import { GripDotsIcon } from "../../../ui/icons/grip-dots";
 import { KebabMenuIcon } from "../../../ui/icons/kebab-menu";
 import type { ExerciseData, SetData } from "../utils";
@@ -23,6 +24,13 @@ type ExerciseBlockProps = {
 export const ExerciseBlock = (props: ExerciseBlockProps) => {
 	let containerRef!: HTMLDivElement;
 	const menuId = createUniqueId();
+
+	const isComplete = createMemo(
+		() =>
+			props.exercise.name.trim().length > 0 &&
+			props.exercise.sets.length > 0 &&
+			props.exercise.sets.every((s) => s.weight > 0 && s.reps > 0),
+	);
 	const anchorName = `--exercise-menu-${menuId}`;
 
 	onMount(() => props.registerItem(containerRef));
@@ -31,9 +39,11 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 	return (
 		<div
 			ref={containerRef}
-			class="transition-all duration-150"
+			class="transition-all duration-150 border-l-4 pl-2"
 			classList={{
 				"opacity-50 scale-95": props.isDragging,
+				"border-primary": isComplete(),
+				"border-transparent": !isComplete(),
 			}}
 		>
 			<div class="flex items-center gap-2 mb-2">
@@ -52,6 +62,11 @@ export const ExerciseBlock = (props: ExerciseBlockProps) => {
 					placeholder="Übungsname"
 					onInput={(e) => props.onNameChange(e.currentTarget.value)}
 				/>
+				<Show when={isComplete()}>
+					<span class="text-primary shrink-0">
+						<CheckCircleIcon />
+					</span>
+				</Show>
 				<button
 					class="btn btn-ghost btn-sm btn-square"
 					popovertarget={menuId}
