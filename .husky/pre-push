@@ -1,1 +1,2 @@
+pnpm test:e2e
 pnpm gh:deploy

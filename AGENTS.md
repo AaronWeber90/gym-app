@@ -17,6 +17,14 @@ Offline-first gym tracking PWA built with **SolidJS**. All data lives in the bro
 | Lint | `pnpm lint` |
 | Deploy | `pnpm gh:deploy` |
 
+## CI / Delivery
+
+- There is **no CI pipeline** for this project (no GitHub Actions checks).
+- Quality gates run **locally** via Husky hooks:
+  - `pre-commit`: `pnpm format` → `pnpm lint` → `pnpm typecheck` → `pnpm test`
+  - `pre-push`: `pnpm test:e2e` → `pnpm gh:deploy`
+- E2E is Playwright-based, Firefox-only (WSL-friendly), and uses real browser OPFS (no OPFS mocking in e2e tests).
+
 ## Tech Stack
 
 - **SolidJS** with `@solidjs/router` (HashRouter, lazy-loaded pages)
