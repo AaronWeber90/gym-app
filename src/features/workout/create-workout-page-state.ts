@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { useQueryClient } from "@tanstack/solid-query";
 import { createMemo } from "solid-js";
+import { overviewSessionsQueryKey } from "../overview/utils/fetch-overview-sessions";
 import { createChildWorkoutsResource } from "./create-child-workouts-resource";
 import { createCurrentWorkout } from "./create-current-workout";
 import { workoutsQueryKey } from "./create-workout-resource";
@@ -43,6 +44,7 @@ export const createWorkoutPageState = () => {
 	const handleSessionSaved = async () => {
 		await refetchChildWorkouts();
 		await queryClient.invalidateQueries({ queryKey: workoutsQueryKey });
+		await queryClient.invalidateQueries({ queryKey: overviewSessionsQueryKey });
 	};
 
 	return {

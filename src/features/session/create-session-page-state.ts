@@ -1,15 +1,16 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, on } from "solid-js";
+import { overviewSessionsQueryKey } from "../overview/utils/fetch-overview-sessions";
 import { childWorkoutsQueryKey } from "../workout/create-child-workouts-resource";
 import {
 	createSortableList,
 	debounce,
 	deleteSession,
+	type ExerciseData,
 	fetchPreviousSession,
 	fetchSession,
 	saveSession,
-	type ExerciseData,
 	type SetData,
 } from "./utils";
 
@@ -82,6 +83,9 @@ export const createSessionPageState = () => {
 
 			queryClient.invalidateQueries({
 				queryKey: childWorkoutsQueryKey(params.id),
+			});
+			queryClient.invalidateQueries({
+				queryKey: overviewSessionsQueryKey,
 			});
 		} catch (err) {
 			console.error("Failed to save workout session:", err);
@@ -172,6 +176,9 @@ export const createSessionPageState = () => {
 			await deleteSession(params.id, params.sessionId);
 			await queryClient.invalidateQueries({
 				queryKey: childWorkoutsQueryKey(params.id),
+			});
+			await queryClient.invalidateQueries({
+				queryKey: overviewSessionsQueryKey,
 			});
 			navigate(`/workouts/${params.id}`);
 		} catch (err) {

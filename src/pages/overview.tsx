@@ -1,8 +1,19 @@
 import { A } from "@solidjs/router";
+import { createQuery } from "@tanstack/solid-query";
 import { createMemo, createSignal, For } from "solid-js";
+import { WeeklyStats } from "../features/overview/components/weekly-stats";
+import {
+	calculatePersonalRecords,
+	calculateWeeklyInsights,
+} from "../features/overview/utils/calculate-overview-insights";
+import {
+	fetchOverviewSessions,
+	overviewSessionsQueryKey,
+} from "../features/overview/utils/fetch-overview-sessions";
 import { createWorkoutResource } from "../features/workout/create-workout-resource";
 import { Header } from "../features/workouts/components/header";
 import { Button } from "../ui/button";
+import { formatDate } from "../utils/format-date";
 
 type WorkoutSession = {
 	id: string;
@@ -45,6 +56,11 @@ const weekDayNames = [
 const WorkoutCalendar = () => {
 	const { workouts } = createWorkoutResource();
 	const [weekOffset, setWeekOffset] = createSignal(0);
+
+	const overviewSessionsQuery = createQuery(() => ({
+		queryKey: overviewSessionsQueryKey,
+		queryFn: fetchOverviewSessions,
+	}));
 
 	// Get the start of the week (Monday)
 	const getWeekStart = (date: Date) => {
@@ -142,12 +158,24 @@ const WorkoutCalendar = () => {
 		);
 	};
 
-	const totalWorkoutsThisWeek = createMemo(() => {
-		return weekDays().reduce((sum, day) => sum + day.workouts.length, 0);
+	const weeklyInsights = createMemo(() => {
+		const sessions = overviewSessionsQuery.data ?? [];
+		const days = weekDays();
+		if (days.length === 0) {
+			return {
+				totalSessions: 0,
+				activeDays: 0,
+				totalVolume: 0,
+				averageSetsPerSession: 0,
+			};
+		}
+
+		return calculateWeeklyInsights(sessions, days[0].date, days[6].date);
 	});
 
-	const activeDaysThisWeek = createMemo(() => {
-		return weekDays().filter((day) => day.workouts.length > 0).length;
+	const personalRecords = createMemo(() => {
+		const sessions = overviewSessionsQuery.data ?? [];
+		return calculatePersonalRecords(sessions, 5);
 	});
 
 	return (
@@ -206,26 +234,52 @@ const WorkoutCalendar = () => {
 					</div>
 
 					{/* Quick Stats */}
-					<div class="grid grid-cols-2 gap-3">
-						<div class="bg-base-200 rounded-lg p-3">
-							<div class="text-xs text-base-content/60 font-medium">
-								Diese Woche
-							</div>
-							<div class="text-2xl font-bold text-primary">
-								{totalWorkoutsThisWeek()}
-							</div>
-							<div class="text-xs text-base-content/50">Trainings</div>
-						</div>
-						<div class="bg-base-200 rounded-lg p-3">
-							<div class="text-xs text-base-content/60 font-medium">
-								Aktive Tage
-							</div>
-							<div class="text-2xl font-bold text-secondary">
-								{activeDaysThisWeek()}
-							</div>
-							<div class="text-xs text-base-content/50">von 7 Tagen</div>
-						</div>
+					<WeeklyStats insights={weeklyInsights()} />
+				</div>
+
+				<div class="mb-6 bg-base-200 rounded-xl p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h3 class="text-lg font-semibold">Persönliche Rekorde</h3>
+						<div class="text-xs text-base-content/60">Nach Gewicht</div>
 					</div>
+					{personalRecords().length > 0 ? (
+						<div class="space-y-2">
+							<For each={personalRecords()}>
+								{(record) => (
+									<A
+										href={`/workouts/${record.workoutId}/${record.sessionId}`}
+										class="flex items-center justify-between p-3 rounded-lg bg-base-100 hover:bg-base-300/30 transition-colors"
+									>
+										<div class="min-w-0">
+											<div class="font-medium truncate">
+												{record.exerciseName}
+											</div>
+											<div class="text-xs text-base-content/60 truncate">
+												{record.workoutName} •{" "}
+												{formatDate(record.date, {
+													day: "2-digit",
+													month: "2-digit",
+													year: "numeric",
+												})}
+											</div>
+										</div>
+										<div class="text-right ml-4">
+											<div class="font-bold text-primary">
+												{record.weight} kg
+											</div>
+											<div class="text-xs text-base-content/60">
+												{record.reps} Wiederholungen
+											</div>
+										</div>
+									</A>
+								)}
+							</For>
+						</div>
+					) : (
+						<div class="text-sm text-base-content/50">
+							Noch keine Rekorde vorhanden.
+						</div>
+					)}
 				</div>
 
 				{/* Week Days - Column Layout */}
