@@ -1,6 +1,6 @@
-import { Show, Index } from "solid-js";
+import { Index, Show } from "solid-js";
 import { ExerciseBlock } from "../features/session/components/exercise-block";
-import { createSessionPageState } from "../features/session/create-session-page-state";
+import { createSessionPageState } from "../features/session/hooks/create-session-page-state";
 import { Header } from "../features/workouts/components/header";
 import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
 import { formatDate } from "../utils/format-date";

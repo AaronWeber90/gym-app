@@ -1,11 +1,11 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { useQueryClient } from "@tanstack/solid-query";
 import { createMemo } from "solid-js";
-import { overviewSessionsQueryKey } from "../overview/utils/fetch-overview-sessions";
+import { overviewSessionsQueryKey } from "../../overview/utils/fetch-overview-sessions";
+import { deleteWorkout } from "../utils/delete-workout";
 import { createChildWorkoutsResource } from "./create-child-workouts-resource";
 import { createCurrentWorkout } from "./create-current-workout";
 import { workoutsQueryKey } from "./create-workout-resource";
-import { deleteWorkout } from "./delete-workout";
 
 export const createWorkoutPageState = () => {
 	const queryClient = useQueryClient();

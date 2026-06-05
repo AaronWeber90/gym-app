@@ -1,4 +1,4 @@
-import { getDir, getRootDir } from "../opfs-storage/utils";
+import { getDir, getRootDir } from "../../opfs-storage/utils";
 
 export const deleteWorkout = async (workoutId: string) => {
 	const root = await getRootDir();

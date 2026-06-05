@@ -1,5 +1,5 @@
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
-import { getDir, getRootDir } from "../opfs-storage/utils";
+import { getDir, getRootDir } from "../../opfs-storage/utils";
 
 type ChildWorkout = {
 	id: string;

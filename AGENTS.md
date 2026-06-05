@@ -61,8 +61,9 @@ src/
   pages/           ← route components (lazy-loaded)
   features/
     {feature}/
-      components/  ← feature-specific components
-      utils/       ← logic, data fetching, types
+      components/  ← feature-specific UI components
+      hooks/       ← SolidJS reactive primitives: createQuery wrappers, page-state factories, resource hooks
+      utils/       ← pure logic, OPFS read/write, data transforms, types
         index.ts   ← barrel export
   ui/              ← shared UI components (Button, Input, ListItem, etc.)
   api/types.ts     ← shared API types

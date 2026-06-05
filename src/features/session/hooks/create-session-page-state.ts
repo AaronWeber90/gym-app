@@ -1,8 +1,7 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, on } from "solid-js";
-import { overviewSessionsQueryKey } from "../overview/utils/fetch-overview-sessions";
-import { childWorkoutsQueryKey } from "../workout/create-child-workouts-resource";
+import { overviewSessionsQueryKey } from "../../overview/utils/fetch-overview-sessions";
 import {
 	createSortableList,
 	debounce,
@@ -10,9 +9,10 @@ import {
 	type ExerciseData,
 	fetchPreviousSession,
 	fetchSession,
-	saveSession,
 	type SetData,
-} from "./utils";
+	saveSession,
+} from "../utils";
+import { childWorkoutsQueryKey } from "../../workout/hooks/create-child-workouts-resource";
 
 export const createSessionPageState = () => {
 	const params = useParams<{ id: string; sessionId: string }>();

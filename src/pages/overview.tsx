@@ -10,7 +10,7 @@ import {
 	fetchOverviewSessions,
 	overviewSessionsQueryKey,
 } from "../features/overview/utils/fetch-overview-sessions";
-import { createWorkoutResource } from "../features/workout/create-workout-resource";
+import { createWorkoutResource } from "../features/workout/hooks/create-workout-resource";
 import { Header } from "../features/workouts/components/header";
 import { Button } from "../ui/button";
 import { formatDate } from "../utils/format-date";

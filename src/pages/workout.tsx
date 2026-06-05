@@ -1,5 +1,5 @@
 import { For, lazy, Show } from "solid-js";
-import { createWorkoutPageState } from "../features/workout/create-workout-page-state";
+import { createWorkoutPageState } from "../features/workout/hooks/create-workout-page-state";
 import { Header } from "../features/workouts/components/header";
 import { Badge } from "../ui/badge";
 import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
@@ -10,7 +10,7 @@ import { ListItem } from "../ui/list-item";
 import { formatDate } from "../utils/format-date";
 
 const SessionModal = lazy(
-	() => import("../features/workout/create-session-modal"),
+	() => import("../features/workout/components/create-session-modal"),
 );
 
 const Workout = () => {

@@ -1,5 +1,5 @@
 import { createMemo, createSignal, For, lazy, Show } from "solid-js";
-import { createWorkoutResource } from "../features/workout/create-workout-resource";
+import { createWorkoutResource } from "../features/workout/hooks/create-workout-resource";
 import { Header } from "../features/workouts/components/header";
 import { WorkoutSubtitle } from "../features/workouts/components/workout-subtitle";
 import { Button } from "../ui/button";
@@ -11,7 +11,7 @@ import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
 
 const CreateWorkoutModal = lazy(
-	() => import("../features/workout/create-workout-modal"),
+	() => import("../features/workout/components/create-workout-modal"),
 );
 
 const Workouts = () => {

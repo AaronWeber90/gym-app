@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/solid-query";
-import { fetchWorkouts } from "./utils/fetch-workouts";
+import { fetchWorkouts } from "../utils/fetch-workouts";
 
 export const workoutsQueryKey = ["workouts"] as const;
 

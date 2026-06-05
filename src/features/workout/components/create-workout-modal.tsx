@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { getDir, getFile, getRootDir } from "../opfs-storage/utils";
+import { Button } from "../../../ui/button";
+import { Input } from "../../../ui/input";
+import { getDir, getFile, getRootDir } from "../../opfs-storage/utils";
 
 type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
