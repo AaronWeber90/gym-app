@@ -25,6 +25,11 @@ if (!(root instanceof HTMLElement)) {
 	);
 }
 
+window.addEventListener("vite:preloadError", (event) => {
+	event.preventDefault();
+	window.location.reload();
+});
+
 const Workout = lazy(() => import("./pages/workout"));
 const WorkoutSession = lazy(() => import("./pages/workout-session"));
 const Workouts = lazy(() => import("./pages/workouts"));
