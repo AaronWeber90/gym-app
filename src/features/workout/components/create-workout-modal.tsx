@@ -79,6 +79,7 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 				<button
 					class="btn btn-lg btn-circle btn-primary"
 					onClick={() => setShowModal(true)}
+					aria-label="Training hinzufügen"
 					type="button"
 				>
 					+
