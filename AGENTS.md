@@ -95,6 +95,11 @@ Two tiers:
 
 - Node tests: run in `node` environment. OPFS APIs are mocked via `vi.stubGlobal('navigator', ...)`. Co-located alongside source files (`foo.test.ts`).
 - UI/integration tests: always use a real browser via Playwright. Prefer integration-level tests over unit tests for UI — test user-visible behaviour, not implementation details. Place in `e2e/` or alongside the component as `foo.browser.test.ts`.
+- Structure Playwright e2e specs under `e2e/states/` and `e2e/journeys/`.
+- `e2e/states/`: page-focused specs that cover a page's different states (empty, loading, populated, error, edge cases).
+- `e2e/journeys/`: real user journeys spanning one or more pages, often with longer flows or complex interactions.
+- In e2e tests, prefer accessible selectors (`getByRole`, `getByLabel`, `getByText`) over brittle CSS selectors whenever possible.
+- Write e2e tests as real user interactions with the app, focusing on observable behaviour and outcomes.
 - **Default to real-browser integration tests for anything touching the UI.** Only use node tests for pure logic and data utilities.
 
 ## Gotchas
