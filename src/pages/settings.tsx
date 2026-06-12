@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/solid-query";
 import { createResource, createSignal, Show } from "solid-js";
 import { exportAllData, importAllData } from "../features/opfs-storage/utils";
 import { Button } from "../ui/button";
+import { Section } from "../ui/section";
 
 function formatBytes(bytes: number): string {
 	if (bytes < 1024) return `${bytes} B`;
@@ -59,17 +60,15 @@ export default function Settings() {
 	return (
 		<div class="flex flex-col gap-4">
 			<h1 class="text-2xl font-bold">Settings</h1>
-			<div class="card bg-base-100 shadow-sm">
-				<div class="card-body">
-					<div class="flex justify-between items-center">
-						<span class="text-base-content/60">Version</span>
-						<span class="font-mono text-sm">{__APP_VERSION__}</span>
-					</div>
+			<Section>
+				<div class="flex justify-between items-center">
+					<span class="text-base-content/60">Version</span>
+					<span class="font-mono text-sm">{__APP_VERSION__}</span>
 				</div>
-			</div>
+			</Section>
 
-			<div class="card bg-base-100 shadow-sm">
-				<div class="card-body gap-2">
+			<Section>
+				<div class="flex flex-col gap-2">
 					<h2 class="card-title text-lg">Speicher</h2>
 					<Show when={storage()}>
 						{(s) => (
@@ -96,10 +95,10 @@ export default function Settings() {
 						)}
 					</Show>
 				</div>
-			</div>
+			</Section>
 
-			<div class="card bg-base-100 shadow-sm">
-				<div class="card-body gap-4">
+			<Section>
+				<div class="flex flex-col gap-4">
 					<h2 class="card-title text-lg">Daten Export / Import</h2>
 					<p class="text-sm text-base-content/60">
 						Exportiere alle Daten als JSON-Datei und importiere sie in einem
@@ -124,7 +123,7 @@ export default function Settings() {
 					</label>
 					{importResult() && <p class="text-sm mt-1">{importResult()}</p>}
 				</div>
-			</div>
+			</Section>
 		</div>
 	);
 }
