@@ -112,6 +112,7 @@ const SessionModal = (props: SessionModalProps) => {
 				<button
 					class="btn btn-lg btn-circle btn-primary"
 					onClick={handleCreateSession}
+					aria-label="Trainingseinheit hinzufügen"
 					type="button"
 				>
 					+
