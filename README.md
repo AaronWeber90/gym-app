@@ -1,3 +1,12 @@
+## Local-First And PWA
+
+This app is local-first: workout data lives in the browser and must remain usable without a server.
+For that reason, solid PWA behavior (installability, offline app shell, and stable app icons) is a core requirement, not an optional enhancement.
+
+Browser support target:
+- Firefox is the primary install target.
+- Chrome installability is also supported through the same manifest/icon setup.
+
 ## Usage
 
 Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.

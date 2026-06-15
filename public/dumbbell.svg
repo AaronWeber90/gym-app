@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Dumbbell Icon</title>
+  <rect width="512" height="512" fill="#ffffff"/>
+  <g fill="#111111">
+    <rect x="88" y="184" width="46" height="144" rx="8"/>
+    <rect x="144" y="168" width="34" height="176" rx="8"/>
+    <rect x="334" y="168" width="34" height="176" rx="8"/>
+    <rect x="378" y="184" width="46" height="144" rx="8"/>
+    <rect x="170" y="236" width="172" height="40" rx="20"/>
+  </g>
+</svg>
