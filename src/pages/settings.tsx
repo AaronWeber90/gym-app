@@ -1,6 +1,7 @@
 import { Show } from "solid-js";
 import { createSettingsPageState } from "../features/settings/hooks/create-settings-page-state";
 import { formatBytes } from "../features/settings/utils/format-bytes";
+import { Header } from "../features/workouts/components/header";
 import { Button } from "../ui/button";
 import { Section } from "../ui/section";
 
@@ -16,7 +17,7 @@ export default function Settings() {
 
 	return (
 		<div class="flex flex-col gap-4">
-			<h1 class="text-2xl font-bold">Settings</h1>
+			<Header title="Settings" />
 			<Section>
 				<div class="flex justify-between items-center">
 					<span class="text-base-content/60">Version</span>
