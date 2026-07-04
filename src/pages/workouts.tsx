@@ -1,7 +1,7 @@
-import { createMemo, createSignal, For, lazy, Show } from "solid-js";
-import { createWorkoutResource } from "../features/workout/hooks/create-workout-resource";
+import { For, lazy, Show } from "solid-js";
 import { Header } from "../features/workouts/components/header";
 import { WorkoutSubtitle } from "../features/workouts/components/workout-subtitle";
+import { createWorkoutsPageState } from "../features/workouts/hooks/create-workouts-page-state";
 import { Button } from "../ui/button";
 import { EmptyState } from "../ui/empty-state";
 import { FolderIcon } from "../ui/icons/folder";
@@ -15,26 +15,10 @@ const CreateWorkoutModal = lazy(
 );
 
 const Workouts = () => {
-	const { workouts, refetch } = createWorkoutResource();
-	const [sortOrder, setSortOrder] = createSignal<"asc" | "desc">("asc");
+	const { sortedWorkouts, sortOrder, setSortOrder, handleCreated } =
+		createWorkoutsPageState();
 	const sortDropdownId = "workout-sort-dropdown";
 	const sortButtonAnchor = "--sort-button";
-
-	const sortedWorkouts = createMemo(() => {
-		const items = workouts();
-		if (!items || items.length === 0) return items;
-		return items
-			.slice()
-			.sort((a, b) =>
-				sortOrder() === "asc"
-					? a.name.localeCompare(b.name)
-					: b.name.localeCompare(a.name),
-			);
-	});
-
-	const handleCreated = () => {
-		refetch();
-	};
 
 	return (
 		<>
