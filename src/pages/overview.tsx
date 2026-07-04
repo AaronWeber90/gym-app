@@ -1,183 +1,24 @@
 import { A } from "@solidjs/router";
-import { createQuery } from "@tanstack/solid-query";
-import { createMemo, createSignal, For } from "solid-js";
+import { For } from "solid-js";
 import { WeeklyStats } from "../features/overview/components/weekly-stats";
-import {
-	calculatePersonalRecords,
-	calculateWeeklyInsights,
-} from "../features/overview/utils/calculate-overview-insights";
-import {
-	fetchOverviewSessions,
-	overviewSessionsQueryKey,
-} from "../features/overview/utils/fetch-overview-sessions";
-import { createWorkoutResource } from "../features/workout/hooks/create-workout-resource";
+import { createOverviewPageState } from "../features/overview/hooks/create-overview-page-state";
+import { monthNames } from "../features/overview/utils/constants";
 import { Header } from "../features/workouts/components/header";
 import { Button } from "../ui/button";
 import { Section } from "../ui/section";
 import { formatDate } from "../utils/format-date";
 
-type WorkoutSession = {
-	id: string;
-	name: string;
-	sessionId: string;
-	timestamp: string;
-};
-
-type WeekDay = {
-	date: Date;
-	dayName: string;
-	workouts: WorkoutSession[];
-};
-
-const monthNames = [
-	"Januar",
-	"Februar",
-	"März",
-	"April",
-	"Mai",
-	"Juni",
-	"Juli",
-	"August",
-	"September",
-	"Oktober",
-	"November",
-	"Dezember",
-] as const;
-
-const weekDayNames = [
-	"Montag",
-	"Dienstag",
-	"Mittwoch",
-	"Donnerstag",
-	"Freitag",
-	"Samstag",
-	"Sonntag",
-] as const;
-
 const WorkoutCalendar = () => {
-	const { workouts } = createWorkoutResource();
-	const [weekOffset, setWeekOffset] = createSignal(0);
-
-	const overviewSessionsQuery = createQuery(() => ({
-		queryKey: overviewSessionsQueryKey,
-		queryFn: fetchOverviewSessions,
-	}));
-
-	// Get the start of the week (Monday)
-	const getWeekStart = (date: Date) => {
-		const d = new Date(date);
-		const day = d.getDay();
-		const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
-		return new Date(d.setDate(diff));
-	};
-
-	// Get current week days
-	const weekDays = createMemo(() => {
-		const today = new Date();
-		const offset = weekOffset();
-
-		// Get start of current week and add offset
-		const weekStart = getWeekStart(today);
-		weekStart.setDate(weekStart.getDate() + offset * 7);
-
-		const days: WeekDay[] = [];
-
-		for (let i = 0; i < 7; i++) {
-			const date = new Date(weekStart);
-			date.setDate(weekStart.getDate() + i);
-
-			// NEW: Use sessions instead of lastTrainedAt
-			const dayWorkouts =
-				workouts()
-					?.flatMap((w) => {
-						if (!w.sessions || w.sessions.length === 0) return [];
-
-						return w.sessions
-							.filter((session) => {
-								const sessionDate = new Date(session.date);
-								return (
-									sessionDate.getDate() === date.getDate() &&
-									sessionDate.getMonth() === date.getMonth() &&
-									sessionDate.getFullYear() === date.getFullYear()
-								);
-							})
-							.map((session) => ({
-								id: w.id,
-								name: w.name,
-								sessionId: session.id,
-								timestamp: session.date,
-							}));
-					})
-					.sort(
-						(a, b) =>
-							new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-					) || [];
-
-			days.push({
-				date,
-				dayName: weekDayNames[i],
-				workouts: dayWorkouts,
-			});
-		}
-
-		return days;
-	});
-
-	const weekRange = createMemo(() => {
-		const days = weekDays();
-		if (days.length === 0) return "";
-
-		const start = days[0].date;
-		const end = days[6].date;
-
-		// If same month
-		if (start.getMonth() === end.getMonth()) {
-			return `${start.getDate()}. - ${end.getDate()}. ${monthNames[start.getMonth()]} ${start.getFullYear()}`;
-		}
-		// Different months
-		return `${start.getDate()}. ${monthNames[start.getMonth()]} - ${end.getDate()}. ${monthNames[end.getMonth()]} ${start.getFullYear()}`;
-	});
-
-	const previousWeek = () => {
-		setWeekOffset((o) => o - 1);
-	};
-
-	const nextWeek = () => {
-		setWeekOffset((o) => o + 1);
-	};
-
-	const goToToday = () => {
-		setWeekOffset(0);
-	};
-
-	const today = new Date();
-	const isToday = (date: Date) => {
-		return (
-			date.getDate() === today.getDate() &&
-			date.getMonth() === today.getMonth() &&
-			date.getFullYear() === today.getFullYear()
-		);
-	};
-
-	const weeklyInsights = createMemo(() => {
-		const sessions = overviewSessionsQuery.data ?? [];
-		const days = weekDays();
-		if (days.length === 0) {
-			return {
-				totalSessions: 0,
-				activeDays: 0,
-				totalVolume: 0,
-				averageSetsPerSession: 0,
-			};
-		}
-
-		return calculateWeeklyInsights(sessions, days[0].date, days[6].date);
-	});
-
-	const personalRecords = createMemo(() => {
-		const sessions = overviewSessionsQuery.data ?? [];
-		return calculatePersonalRecords(sessions, 5);
-	});
+	const {
+		weekDays,
+		weekRange,
+		weeklyInsights,
+		personalRecords,
+		previousWeek,
+		nextWeek,
+		goToToday,
+		isToday,
+	} = createOverviewPageState();
 
 	return (
 		<>

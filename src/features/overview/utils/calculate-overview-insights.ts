@@ -25,6 +25,45 @@ export type PersonalRecord = {
 	sessionId: string;
 };
 
+const toPersonalRecord = (
+	session: OverviewSession,
+	exerciseName: string,
+	weight: number,
+	reps: number,
+): PersonalRecord => ({
+	exerciseName,
+	weight,
+	reps,
+	date: session.date,
+	workoutId: session.workoutId,
+	workoutName: session.workoutName,
+	sessionId: session.sessionId,
+});
+
+const isBetterRecord = (current: PersonalRecord, previous: PersonalRecord) => {
+	if (current.weight !== previous.weight) {
+		return current.weight > previous.weight;
+	}
+	return current.reps > previous.reps;
+};
+
+const updateBestPersonalRecord = (
+	byExercise: Map<string, PersonalRecord>,
+	normalizedName: string,
+	current: PersonalRecord,
+) => {
+	const previous = byExercise.get(normalizedName);
+	if (!previous || isBetterRecord(current, previous)) {
+		byExercise.set(normalizedName, current);
+	}
+};
+
+const comparePersonalRecords = (a: PersonalRecord, b: PersonalRecord) => {
+	if (a.weight !== b.weight) return b.weight - a.weight;
+	if (a.reps !== b.reps) return b.reps - a.reps;
+	return new Date(b.date).getTime() - new Date(a.date).getTime();
+};
+
 const isInDateRange = (dateIso: string, start: Date, end: Date) => {
 	const value = new Date(dateIso).getTime();
 	if (Number.isNaN(value)) return false;
@@ -96,44 +135,23 @@ export const calculatePersonalRecords = (
 
 	for (const session of sessions) {
 		for (const exercise of session.exercises) {
-			const normalizedName = exercise.name.trim().toLowerCase();
+			const trimmedName = exercise.name.trim();
+			const normalizedName = trimmedName.toLowerCase();
 			if (!normalizedName) continue;
 
 			for (const set of exercise.sets) {
 				if (set.weight <= 0 || set.reps <= 0) continue;
 
-				const current: PersonalRecord = {
-					exerciseName: exercise.name.trim(),
-					weight: set.weight,
-					reps: set.reps,
-					date: session.date,
-					workoutId: session.workoutId,
-					workoutName: session.workoutName,
-					sessionId: session.sessionId,
-				};
-
-				const previous = byExercise.get(normalizedName);
-				if (!previous) {
-					byExercise.set(normalizedName, current);
-					continue;
-				}
-
-				const isBetterWeight = current.weight > previous.weight;
-				const isSameWeightBetterReps =
-					current.weight === previous.weight && current.reps > previous.reps;
-
-				if (isBetterWeight || isSameWeightBetterReps) {
-					byExercise.set(normalizedName, current);
-				}
+				updateBestPersonalRecord(
+					byExercise,
+					normalizedName,
+					toPersonalRecord(session, trimmedName, set.weight, set.reps),
+				);
 			}
 		}
 	}
 
 	return [...byExercise.values()]
-		.toSorted((a, b) => {
-			if (a.weight !== b.weight) return b.weight - a.weight;
-			if (a.reps !== b.reps) return b.reps - a.reps;
-			return new Date(b.date).getTime() - new Date(a.date).getTime();
-		})
+		.toSorted(comparePersonalRecords)
 		.slice(0, Math.max(0, limit));
 };
