@@ -1,7 +1,7 @@
 import { getDir } from "./get-dir";
 import { getRootDir } from "./get-root-dir";
-import { readAllFiles } from "./read-all-files";
 import type { ExportData } from "./read-all-files";
+import { readAllFiles } from "./read-all-files";
 
 export async function exportAllData(): Promise<void> {
 	const root = await getRootDir();

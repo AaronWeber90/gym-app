@@ -1,5 +1,5 @@
-import tailwindcss from "@tailwindcss/vite";
 import { execSync } from "node:child_process";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import solidPlugin from "vite-plugin-solid";
