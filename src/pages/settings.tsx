@@ -1,61 +1,18 @@
-import { useQueryClient } from "@tanstack/solid-query";
-import { createResource, createSignal, Show } from "solid-js";
-import { exportAllData, importAllData } from "../features/opfs-storage/utils";
+import { Show } from "solid-js";
+import { createSettingsPageState } from "../features/settings/hooks/create-settings-page-state";
+import { formatBytes } from "../features/settings/utils/format-bytes";
 import { Button } from "../ui/button";
 import { Section } from "../ui/section";
 
-function formatBytes(bytes: number): string {
-	if (bytes < 1024) return `${bytes} B`;
-	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-async function fetchStorageUsage() {
-	const estimate = await navigator.storage.estimate();
-	return {
-		usage: estimate.usage ?? 0,
-		quota: estimate.quota ?? 0,
-	};
-}
-
 export default function Settings() {
-	const queryClient = useQueryClient();
-	const [exporting, setExporting] = createSignal(false);
-	const [importing, setImporting] = createSignal(false);
-	const [importResult, setImportResult] = createSignal<string | null>(null);
-	const [storage] = createResource(fetchStorageUsage);
-
-	const handleExport = async () => {
-		setExporting(true);
-		try {
-			await exportAllData();
-		} catch (e) {
-			console.error("Export failed:", e);
-		} finally {
-			setExporting(false);
-		}
-	};
-
-	const handleImport = async (e: Event) => {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
-
-		setImporting(true);
-		setImportResult(null);
-		try {
-			const count = await importAllData(file);
-			setImportResult(`${count} Dateien importiert`);
-			await queryClient.invalidateQueries();
-		} catch (err) {
-			setImportResult(
-				`Import fehlgeschlagen: ${err instanceof Error ? err.message : "Unbekannter Fehler"}`,
-			);
-		} finally {
-			setImporting(false);
-			input.value = "";
-		}
-	};
+	const {
+		storage,
+		exporting,
+		importing,
+		importResult,
+		handleExport,
+		handleImport,
+	} = createSettingsPageState();
 
 	return (
 		<div class="flex flex-col gap-4">
