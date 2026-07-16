@@ -64,6 +64,18 @@ const Workouts = () => {
 									Z-A
 								</button>
 							</li>
+							<li>
+								<button
+									type="button"
+									onClick={() => setSortOrder("oldest")}
+									class={sortOrder() === "oldest" ? "active" : ""}
+								>
+									<span class="mr-2 w-4 inline-block">
+										{sortOrder() === "oldest" && "✓"}
+									</span>
+									Ältestes zuerst
+								</button>
+							</li>
 						</ul>
 					</div>
 				}
