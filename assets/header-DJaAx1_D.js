@@ -1,1 +1,0 @@
-import{S as e,_ as t}from"./index-Cti0BqGw.js";var n=async(e,t,n=!1)=>e.getDirectoryHandle(t,{create:n}),r=async()=>navigator.storage.getDirectory(),i=e(`<div class="flex justify-between items-center mb-4"><h1 class="text-3xl font-bold">`),a=e=>(()=>{var n=i(),r=n.firstChild;return t(r,()=>e.title),t(n,()=>e.action,null),n})();export{r as n,n as r,a as t};
