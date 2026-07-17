@@ -77,4 +77,37 @@ describe("importAllData", () => {
 
 		expect(count).toBe(0);
 	});
+
+	it("writes nothing when the backup contains one valid and one invalid entry", async () => {
+		const writable = { write: vi.fn(), close: vi.fn() };
+		const fileHandle = { createWritable: vi.fn().mockResolvedValue(writable) };
+		const subDir = {
+			getDirectoryHandle: vi.fn(),
+			getFileHandle: vi.fn().mockResolvedValue(fileHandle),
+		};
+		const mockRoot = {
+			getDirectoryHandle: vi.fn().mockResolvedValue(subDir),
+			getFileHandle: vi.fn().mockResolvedValue(fileHandle),
+		};
+
+		vi.stubGlobal("navigator", {
+			storage: { getDirectory: vi.fn().mockResolvedValue(mockRoot) },
+		});
+
+		const backup = {
+			version: 1,
+			exportedAt: "2026-01-01",
+			files: [
+				{ path: "workouts/push.json", content: '{"name":"Push"}' },
+				{ path: "workouts/../etc/passwd", content: "malicious" },
+			],
+		};
+		const file = new File([JSON.stringify(backup)], "backup.json");
+
+		await expect(importAllData(file)).rejects.toThrow(/invalid path segment/);
+
+		expect(mockRoot.getDirectoryHandle).not.toHaveBeenCalled();
+		expect(subDir.getFileHandle).not.toHaveBeenCalled();
+		expect(writable.write).not.toHaveBeenCalled();
+	});
 });

@@ -5,3 +5,4 @@ export { getRootDir } from "./get-root-dir";
 export { getRootWorkoutsDir } from "./get-root-workouts-dir";
 export { importAllData } from "./import-all-data";
 export { readAllFiles } from "./read-all-files";
+export { validateImportData } from "./validate-import-data";

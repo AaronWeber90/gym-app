@@ -1,13 +1,9 @@
 import { getRootDir } from "./get-root-dir";
-import type { ExportData } from "./read-all-files";
+import { validateImportData } from "./validate-import-data";
 
 export async function importAllData(file: File): Promise<number> {
 	const text = await file.text();
-	const data: ExportData = JSON.parse(text);
-
-	if (data.version !== 1 || !Array.isArray(data.files)) {
-		throw new Error("Invalid backup file format");
-	}
+	const data = validateImportData(JSON.parse(text));
 
 	const root = await getRootDir();
 	let count = 0;
