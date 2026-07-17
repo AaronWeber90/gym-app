@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@solidjs/router':
-        specifier: ^0.16.1
-        version: 0.16.1(solid-js@1.9.13)
+        specifier: ^0.16.2
+        version: 0.16.2(solid-js@1.9.13)
       '@tanstack/solid-query':
         specifier: ^5.91.3
         version: 5.91.3(solid-js@1.9.13)
@@ -977,8 +977,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@solidjs/router@0.16.1':
-    resolution: {integrity: sha512-IhyjedgC6LRpw/8CPGGI89FrV+r0xTHzOl2c4CRyzYQ1bLepJxbVI1LLKvsavMWY5TRBRacV7hAeOhuTXkjiqg==}
+  '@solidjs/router@0.16.2':
+    resolution: {integrity: sha512-pncbV4SGUwGGlELlDWc3B4KDVB0Kt+7+7ct+GTN7D8CgetGSJMzl8RzyAFz+/TtSuFFzp9IzrjrACHUpGzxsKQ==}
     peerDependencies:
       solid-js: ^1.8.6
 
@@ -3604,7 +3604,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.62.2':
     optional: true
 
-  '@solidjs/router@0.16.1(solid-js@1.9.13)':
+  '@solidjs/router@0.16.2(solid-js@1.9.13)':
     dependencies:
       solid-js: 1.9.13
 
