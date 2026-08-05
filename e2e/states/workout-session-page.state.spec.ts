@@ -71,6 +71,11 @@ test("workout session detail page state exposes key accessible elements", async 
 	await expect(
 		page.getByRole("heading", { level: 1, name: "12.06.2026" }),
 	).toBeVisible();
-	await expect(page.getByRole("button", { name: /Session/i })).toBeVisible();
+	await expect(
+		page.getByRole("button", { name: /Session teilen/i }),
+	).toBeVisible();
+	await expect(
+		page.getByRole("button", { name: /Session löschen/i }),
+	).toBeVisible();
 	await expect(page.getByRole("button", { name: /hinzuf/i })).toBeVisible();
 });
