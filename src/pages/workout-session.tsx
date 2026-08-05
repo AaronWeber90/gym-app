@@ -1,5 +1,6 @@
 import { Index, Show } from "solid-js";
 import { ExerciseBlock } from "../features/session/components/exercise-block";
+import { ShareSessionDropdown } from "../features/session/components/share-session-dropdown";
 import { createSessionPageState } from "../features/session/hooks/create-session-page-state";
 import { Header } from "../features/workouts/components/header";
 import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
@@ -40,13 +41,16 @@ const WorkoutSession = () => {
 								year: "numeric",
 							})}
 							action={
-								<ConfirmDeleteButton
-									ariaLabel="Session löschen"
-									dialogTitle="Session löschen?"
-									dialogMessage="Diese Session wird dauerhaft gelöscht."
-									confirmLabel="Löschen"
-									onConfirm={handleDeleteSession}
-								/>
+								<div class="flex items-center gap-1">
+									<ShareSessionDropdown session={s()} exercises={exercises()} />
+									<ConfirmDeleteButton
+										ariaLabel="Session löschen"
+										dialogTitle="Session löschen?"
+										dialogMessage="Diese Session wird dauerhaft gelöscht."
+										confirmLabel="Löschen"
+										onConfirm={handleDeleteSession}
+									/>
+								</div>
 							}
 						/>
 						<p class="text-sm text-base-content/60 mb-6">
