@@ -1,5 +1,6 @@
-import { Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import type { SetData } from "../utils";
+import { normalizeWeightInput } from "../utils/normalize-weight-input";
 
 type SetRowProps = {
 	set: SetData;
@@ -11,26 +12,58 @@ type SetRowProps = {
 };
 
 export const SetRow = (props: SetRowProps) => {
+	const [inputValue, setInputValue] = createSignal(
+		String(props.set.weight).replace(".", ","),
+	);
+
+	const commitWeight = (rawValue: string) => {
+		const normalized = normalizeWeightInput(rawValue);
+		setInputValue(rawValue === "" ? "0" : rawValue);
+		props.onUpdate("weight", normalized);
+	};
+
+	const stepWeight = (direction: 1 | -1) => {
+		const current = normalizeWeightInput(inputValue());
+		const next = Math.max(0, current + direction * 0.5);
+		const normalized = Number(next.toFixed(2));
+		setInputValue(String(normalized).replace(".", ","));
+		props.onUpdate("weight", normalized);
+	};
+
 	return (
 		<tr>
 			<td>{props.index + 1}</td>
 			<td class="pl-0">
 				<input
-					type="number"
+					type="text"
+					inputMode="decimal"
 					class="input input-ghost w-full p-0"
-					value={props.set.weight}
+					value={inputValue()}
 					min={0}
 					max={9999}
-					step={2.5}
+					step={0.5}
 					onInput={(e) => {
-						if (e.currentTarget.value.replace(".", "").length > 4) {
-							e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+						const rawValue = e.currentTarget.value;
+						if (rawValue.replace(/[^0-9,.-]/g, "").length > 6) {
+							e.currentTarget.value = rawValue.slice(0, -1);
 							return;
 						}
-						props.onUpdate(
-							"weight",
-							Number.parseFloat(e.currentTarget.value) || 0,
-						);
+						commitWeight(rawValue);
+					}}
+					onKeyDown={(e) => {
+						if (e.key === "ArrowUp") {
+							e.preventDefault();
+							stepWeight(1);
+						}
+						if (e.key === "ArrowDown") {
+							e.preventDefault();
+							stepWeight(-1);
+						}
+					}}
+					onBlur={() => {
+						const normalized = normalizeWeightInput(inputValue());
+						setInputValue(String(normalized).replace(".", ","));
+						props.onUpdate("weight", normalized);
 					}}
 				/>
 				<Show when={props.previousSet}>
