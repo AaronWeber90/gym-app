@@ -16,6 +16,11 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true
+		},
+		"domains": {
+			"solid": "recommended",
+			"project": "recommended",
+			"test": "recommended"
 		}
 	},
 	"javascript": {

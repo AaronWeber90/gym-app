@@ -1,4 +1,5 @@
 packages:
   - '.'
 
+# 3 Days
 minimumReleaseAge: 4320
