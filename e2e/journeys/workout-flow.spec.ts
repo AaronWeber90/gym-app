@@ -85,9 +85,13 @@ test("creates lower-body workout, fills realistic session data, and persists via
 		}
 
 		for (const [setIndex, set] of exercise.sets.entries()) {
-			const setInputs = block.locator("tbody input[type='number']");
-			await setInputs.nth(setIndex * 2).fill(String(set.weight));
-			await setInputs.nth(setIndex * 2 + 1).fill(String(set.reps));
+			const setRows = block.locator("tbody tr");
+			const setRow = setRows.nth(setIndex);
+			const weightInput = setRow.locator("input[type='text']");
+			const repsInput = setRow.locator("input[type='number']");
+
+			await weightInput.fill(String(set.weight).replace(".", ","));
+			await repsInput.fill(String(set.reps));
 		}
 	}
 
@@ -106,12 +110,14 @@ test("creates lower-body workout, fills realistic session data, and persists via
 	await expect(exerciseNameInputs.nth(2)).toHaveValue("Bulgarian Split Squat");
 
 	const firstExercise = page.locator("div.border-l-4").first();
-	const firstExerciseSetInputs = firstExercise.locator(
-		"tbody input[type='number']",
-	);
-	await expect(firstExerciseSetInputs.nth(0)).toHaveValue("80");
-	await expect(firstExerciseSetInputs.nth(1)).toHaveValue("8");
-	await expect(firstExerciseSetInputs).toHaveCount(6);
+	const firstExerciseRows = firstExercise.locator("tbody tr");
+	await expect(firstExerciseRows).toHaveCount(3);
+	await expect(
+		firstExerciseRows.nth(0).locator("input[type='text']"),
+	).toHaveValue("80");
+	await expect(
+		firstExerciseRows.nth(0).locator("input[type='number']"),
+	).toHaveValue("8");
 
 	await page.getByRole("button", { name: "Workouts" }).click();
 	await expect(page).toHaveURL(/#\/workouts$/);
