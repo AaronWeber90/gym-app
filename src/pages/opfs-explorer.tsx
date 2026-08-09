@@ -41,13 +41,14 @@ async function hasHandle(
 	}
 }
 
-async function processDirectoryEntry(
-	name: string,
-	handle: FileSystemDirectoryHandle,
-	dirHandle: FileSystemDirectoryHandle,
-	fullPath: string,
-	processedDirs: Set<string>,
-): Promise<OpfsEntry | null> {
+async function processDirectoryEntry(args: {
+	name: string;
+	handle: FileSystemDirectoryHandle;
+	dirHandle: FileSystemDirectoryHandle;
+	fullPath: string;
+	processedDirs: Set<string>;
+}): Promise<OpfsEntry | null> {
+	const { name, handle, dirHandle, fullPath, processedDirs } = args;
 	const data = await tryReadJsonFile(dirHandle, `${name}.json`);
 	const displayName = data?.name ?? name;
 
@@ -129,13 +130,13 @@ async function readDirectoryEntries(
 		const fullPath = path ? `${path}/${name}` : name;
 
 		if (handle.kind === "directory") {
-			const entry = await processDirectoryEntry(
+			const entry = await processDirectoryEntry({
 				name,
 				handle,
 				dirHandle,
 				fullPath,
 				processedDirs,
-			);
+			});
 			if (entry) entries.push(entry);
 		} else {
 			const entry = await processFileEntry(name, dirHandle, fullPath);

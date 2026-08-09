@@ -1,13 +1,36 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
-test("creates lower-body workout, fills realistic session data, and persists via OPFS", async ({
-	page,
-}) => {
-	const workoutName = "lower-body";
+type ExerciseFixture = {
+	name: string;
+	sets: Array<{ weight: number; reps: number }>;
+};
 
-	await page.goto("/#/workouts");
+const exerciseData: ExerciseFixture[] = [
+	{
+		name: "Kniebeuge",
+		sets: [
+			{ weight: 80, reps: 8 },
+			{ weight: 85, reps: 6 },
+			{ weight: 90, reps: 5 },
+		],
+	},
+	{
+		name: "Romanian Deadlift",
+		sets: [
+			{ weight: 70, reps: 10 },
+			{ weight: 75, reps: 8 },
+		],
+	},
+	{
+		name: "Bulgarian Split Squat",
+		sets: [
+			{ weight: 20, reps: 12 },
+			{ weight: 22, reps: 10 },
+		],
+	},
+];
 
-	// Reset OPFS workouts directory for deterministic E2E runs.
+async function resetWorkoutsDirectory(page: Page) {
 	await page.evaluate(async () => {
 		const storageWithDirectory = navigator.storage as StorageManager & {
 			getDirectory: () => Promise<FileSystemDirectoryHandle>;
@@ -25,62 +48,14 @@ test("creates lower-body workout, fills realistic session data, and persists via
 			await workoutsDir.removeEntry(name, { recursive: true });
 		}
 	});
+}
 
-	await page.reload();
-	await expect(page.getByText("Keine Übungen vorhanden")).toBeVisible();
-
-	await page.locator(".fab .btn-circle.btn-primary").click();
-	await expect(page.getByText("Neuer Trainingsplan")).toBeVisible();
-	await page.getByPlaceholder("Workout name").fill(workoutName);
-	await page.getByRole("button", { name: "Speichern" }).click();
-
-	const workoutLink = page.locator("a[href^='#/workouts/']", {
-		hasText: workoutName,
-	});
-	await expect(workoutLink).toBeVisible();
-	await workoutLink.click();
-
-	await expect(page).toHaveURL(/#\/workouts\/[0-9a-f-]+$/);
-
-	await page.locator(".fab .btn-circle.btn-primary").click();
-	await expect(page).toHaveURL(/#\/workouts\/[0-9a-f-]+\/[0-9a-f-]+$/);
-	await expect(
-		page.getByRole("button", { name: "+ Übung hinzufügen" }),
-	).toBeVisible();
-
-	await page.getByRole("button", { name: "+ Übung hinzufügen" }).click();
-	await page.getByRole("button", { name: "+ Übung hinzufügen" }).click();
-
-	const exerciseData = [
-		{
-			name: "Kniebeuge",
-			sets: [
-				{ weight: 80, reps: 8 },
-				{ weight: 85, reps: 6 },
-				{ weight: 90, reps: 5 },
-			],
-		},
-		{
-			name: "Romanian Deadlift",
-			sets: [
-				{ weight: 70, reps: 10 },
-				{ weight: 75, reps: 8 },
-			],
-		},
-		{
-			name: "Bulgarian Split Squat",
-			sets: [
-				{ weight: 20, reps: 12 },
-				{ weight: 22, reps: 10 },
-			],
-		},
-	];
-
-	for (const [exerciseIndex, exercise] of exerciseData.entries()) {
+async function fillExerciseData(page: Page, exercises: ExerciseFixture[]) {
+	for (const [exerciseIndex, exercise] of exercises.entries()) {
 		const block = page.locator("div.border-l-4").nth(exerciseIndex);
 		await block.getByPlaceholder("Übungsname").fill(exercise.name);
 
-		for (let i = 1; i < exercise.sets.length; i++) {
+		for (let index = 1; index < exercise.sets.length; index++) {
 			await block.getByRole("button", { name: "+ Satz" }).click();
 		}
 
@@ -94,12 +69,39 @@ test("creates lower-body workout, fills realistic session data, and persists via
 			await repsInput.fill(String(set.reps));
 		}
 	}
+}
 
-	// Session persistence is debounced in-app, so wait before reloading.
-	await page.waitForTimeout(800);
-
+async function createWorkout(page: Page, workoutName: string) {
+	await page.goto("/#/workouts");
+	await resetWorkoutsDirectory(page);
 	await page.reload();
+	await expect(page.getByText("Keine Übungen vorhanden")).toBeVisible();
+
+	await page.locator(".fab .btn-circle.btn-primary").click();
+	await expect(page.getByText("Neuer Trainingsplan")).toBeVisible();
+	await page.getByPlaceholder("Workout name").fill(workoutName);
+	await page.getByRole("button", { name: "Speichern" }).click();
+}
+
+async function openWorkoutSession(page: Page, workoutName: string) {
+	const workoutLink = page.locator("a[href^='#/workouts/']", {
+		hasText: workoutName,
+	});
+	await expect(workoutLink).toBeVisible();
+	await workoutLink.click();
+	await expect(page).toHaveURL(/#\/workouts\/[0-9a-f-]+$/);
+
+	await page.locator(".fab .btn-circle.btn-primary").click();
 	await expect(page).toHaveURL(/#\/workouts\/[0-9a-f-]+\/[0-9a-f-]+$/);
+	await expect(
+		page.getByRole("button", { name: "+ Übung hinzufügen" }),
+	).toBeVisible();
+}
+
+async function assertPersistedSession(page: Page) {
+	await page.waitForTimeout(800);
+	await page.reload();
+	await expect(page).toHaveURL(/c#\/workouts\/[0-9a-f-]+\/[0-9a-f-]+$/);
 	await expect(
 		page.getByRole("button", { name: "+ Übung hinzufügen" }),
 	).toBeVisible();
@@ -118,6 +120,19 @@ test("creates lower-body workout, fills realistic session data, and persists via
 	await expect(
 		firstExerciseRows.nth(0).locator("input[type='number']"),
 	).toHaveValue("8");
+}
+
+test("creates lower-body workout, fills realistic session data, and persists via OPFS", async ({
+	page,
+}) => {
+	const workoutName = "lower-body";
+
+	await createWorkout(page, workoutName);
+	await openWorkoutSession(page, workoutName);
+	await page.getByRole("button", { name: "+ Übung hinzufügen" }).click();
+	await page.getByRole("button", { name: "+ Übung hinzufügen" }).click();
+	await fillExerciseData(page, exerciseData);
+	await assertPersistedSession(page);
 
 	await page.getByRole("button", { name: "Workouts" }).click();
 	await expect(page).toHaveURL(/#\/workouts$/);

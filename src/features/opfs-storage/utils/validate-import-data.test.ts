@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { validateImportData } from "./validate-import-data";
 
-describe("validateImportData", () => {
+describe("validateImportData format", () => {
 	it("returns the data unchanged for a valid backup", () => {
 		const backup = {
 			version: 1,
@@ -32,7 +32,9 @@ describe("validateImportData", () => {
 			"Invalid backup file format",
 		);
 	});
+});
 
+describe("validateImportData path segments", () => {
 	it("throws on a '..' path segment", () => {
 		const backup = {
 			version: 1,
@@ -77,7 +79,9 @@ describe("validateImportData", () => {
 
 		expect(() => validateImportData(backup)).toThrow(/disallowed characters/);
 	});
+});
 
+describe("validateImportData entry content", () => {
 	it("throws on non-string content", () => {
 		const backup = {
 			version: 1,

@@ -1,4 +1,8 @@
-import { createQuery, useQueryClient } from "@tanstack/solid-query";
+import {
+	createQuery,
+	type QueryClient,
+	useQueryClient,
+} from "@tanstack/solid-query";
 import { getDir, getRootDir } from "../../opfs-storage/utils";
 
 type ChildWorkout = {
@@ -10,6 +14,34 @@ type ChildWorkout = {
 
 export const childWorkoutsQueryKey = (parentId: string) =>
 	["childWorkouts", parentId] as const;
+
+const readChildWorkout = async (
+	name: string,
+	handle: FileSystemHandle,
+	parentId: string,
+	queryClient: QueryClient,
+): Promise<ChildWorkout | null> => {
+	if (handle.kind !== "file" || !name.endsWith(".json")) return null;
+	try {
+		const file = await (handle as FileSystemFileHandle).getFile();
+		const text = await file.text();
+		const data = JSON.parse(text);
+		const sessionId = data.id ?? name.replace(".json", "");
+
+		// Seed session query cache so navigation is instant
+		queryClient.setQueryData(["workoutSession", parentId, sessionId], data);
+
+		return {
+			id: sessionId,
+			name: data.name ?? "Unbenannt",
+			date: data.date,
+			created_at: data.created_at,
+		};
+	} catch (err) {
+		console.warn("Failed to read child workout:", err);
+		return null;
+	}
+};
 
 export const createChildWorkoutsResource = (parentId: () => string) => {
 	const queryClient = useQueryClient();
@@ -25,26 +57,8 @@ export const createChildWorkoutsResource = (parentId: () => string) => {
 			});
 			const result: ChildWorkout[] = [];
 			for await (const [name, handle] of parentDir.entries()) {
-				if (handle.kind === "file" && name.endsWith(".json")) {
-					try {
-						const file = await (handle as FileSystemFileHandle).getFile();
-						const text = await file.text();
-						const data = JSON.parse(text);
-						const sessionId = data.id ?? name.replace(".json", "");
-
-						// Seed session query cache so navigation is instant
-						queryClient.setQueryData(["workoutSession", id, sessionId], data);
-
-						result.push({
-							id: sessionId,
-							name: data.name ?? "Unbenannt",
-							date: data.date,
-							created_at: data.created_at,
-						});
-					} catch (err) {
-						console.warn("Failed to read child workout:", err);
-					}
-				}
+				const entry = await readChildWorkout(name, handle, id, queryClient);
+				if (entry) result.push(entry);
 			}
 			return result.toSorted(
 				(a, b) =>

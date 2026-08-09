@@ -41,43 +41,42 @@ const createDirectoryHandle = (params: {
 		isSameEntry: vi.fn(),
 	}) as unknown as FileSystemDirectoryHandle;
 
+const makeSessionsDir = (
+	fileName: string,
+	session: unknown,
+): FileSystemDirectoryHandle =>
+	createDirectoryHandle({
+		entries: async function* () {
+			yield [fileName, asJsonFileHandle(fileName, session)];
+		},
+	});
+
+const pushSession = {
+	id: "s1",
+	parentId: "w1",
+	name: "Push",
+	date: "2026-06-01T08:00:00.000Z",
+	created_at: "2026-06-01T08:00:00.000Z",
+	exercises: [],
+};
+
+const pullSession = {
+	id: "s2",
+	parentId: "w2",
+	name: "Pull",
+	date: "2026-06-02T08:00:00.000Z",
+	created_at: "2026-06-02T08:00:00.000Z",
+	exercises: [{ name: "Klimmzug", sets: [{ weight: 0, reps: 8 }] }],
+};
+
 beforeEach(() => {
 	vi.clearAllMocks();
 });
 
 describe("fetchOverviewSessions", () => {
 	it("returns parsed sessions sorted by date desc", async () => {
-		const pushSessionsDir = createDirectoryHandle({
-			entries: async function* () {
-				yield [
-					"s1.json",
-					asJsonFileHandle("s1.json", {
-						id: "s1",
-						parentId: "w1",
-						name: "Push",
-						date: "2026-06-01T08:00:00.000Z",
-						created_at: "2026-06-01T08:00:00.000Z",
-						exercises: [],
-					}),
-				];
-			},
-		});
-
-		const pullSessionsDir = createDirectoryHandle({
-			entries: async function* () {
-				yield [
-					"s2.json",
-					asJsonFileHandle("s2.json", {
-						id: "s2",
-						parentId: "w2",
-						name: "Pull",
-						date: "2026-06-02T08:00:00.000Z",
-						created_at: "2026-06-02T08:00:00.000Z",
-						exercises: [{ name: "Klimmzug", sets: [{ weight: 0, reps: 8 }] }],
-					}),
-				];
-			},
-		});
+		const pushSessionsDir = makeSessionsDir("s1.json", pushSession);
+		const pullSessionsDir = makeSessionsDir("s2.json", pullSession);
 
 		const workoutsDir = createDirectoryHandle({
 			entries: async function* () {

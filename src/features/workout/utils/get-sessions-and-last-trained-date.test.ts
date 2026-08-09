@@ -55,7 +55,9 @@ describe("getSessionsAndLastTrainedDate", () => {
 		expect(result.lastTrainedAt).toBe(new Date("2026-04-01").toISOString());
 		expect(result.sessions[0].id).toBe("s1");
 	});
+});
 
+describe("getSessionsAndLastTrainedDate edge cases", () => {
 	it("uses filename as id when id is missing", async () => {
 		const entries = [createFileEntry("abc.json", { date: "2026-01-01" })];
 		const workoutsDir = createMockDir(entries);

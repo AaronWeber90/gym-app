@@ -71,7 +71,9 @@ describe("fetchPreviousSession", () => {
 
 		expect(result).toBeNull();
 	});
+});
 
+describe("fetchPreviousSession edge cases", () => {
 	it("skips sessions with dates after the current one", async () => {
 		const older = makeSession("s1", "2026-01-01T10:00:00Z");
 		const current = makeSession("s2", "2026-01-05T10:00:00Z");

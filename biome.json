@@ -15,7 +15,26 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"a11y": {
+				"noNoninteractiveElementInteractions": "error"
+			},
+			"correctness": {
+				"noSolidDestructuredProps": "error",
+				"noUndeclaredDependencies": "error",
+				"noUndeclaredVariables": "error",
+				"useUniqueElementIds": "error"
+			},
+
+			"complexity": {
+				"noExcessiveCognitiveComplexity": "error",
+				"noExcessiveLinesPerFunction": "error",
+				"noExcessiveNestedTestSuites": "error",
+				"noVoid": "error"
+			},
+			"nursery": {
+				"useMaxParams": "error"
+			}
 		},
 		"domains": {
 			"solid": "recommended",
@@ -24,6 +43,7 @@
 		}
 	},
 	"javascript": {
+		"globals": ["__APP_VERSION__"],
 		"formatter": {
 			"quoteStyle": "double"
 		}

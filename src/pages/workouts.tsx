@@ -1,7 +1,8 @@
-import { For, lazy, Show } from "solid-js";
+import { type Accessor, For, lazy, Show } from "solid-js";
 import { Header } from "../features/workouts/components/header";
 import { WorkoutSubtitle } from "../features/workouts/components/workout-subtitle";
 import { createWorkoutsPageState } from "../features/workouts/hooks/create-workouts-page-state";
+import type { WorkoutsSortMode } from "../features/workouts/utils/sort-workouts";
 import { Button } from "../ui/button";
 import { EmptyState } from "../ui/empty-state";
 import { FolderIcon } from "../ui/icons/folder";
@@ -14,70 +15,80 @@ const CreateWorkoutModal = lazy(
 	() => import("../features/workout/components/create-workout-modal"),
 );
 
+const SortDropdown = (props: {
+	sortOrder: Accessor<WorkoutsSortMode>;
+	setSortOrder: (mode: WorkoutsSortMode) => void;
+}) => {
+	const sortDropdownId = "workout-sort-dropdown";
+	const sortButtonAnchor = "--sort-button";
+
+	return (
+		<div style={`anchor-name:${sortButtonAnchor}`}>
+			<Button
+				variant="square-ghost"
+				popovertarget={sortDropdownId}
+				type="button"
+				aria-label="Sortieren"
+			>
+				<SortIcon />
+			</Button>
+			<ul
+				class="dropdown menu w-40 rounded-box bg-base-200 shadow-lg"
+				popover
+				id={sortDropdownId}
+				style={`position-anchor:${sortButtonAnchor}`}
+			>
+				<li>
+					<button
+						type="button"
+						onClick={() => props.setSortOrder("asc")}
+						class={props.sortOrder() === "asc" ? "active" : ""}
+					>
+						<span class="mr-2 w-4 inline-block">
+							{props.sortOrder() === "asc" && "✓"}
+						</span>
+						A-Z
+					</button>
+				</li>
+				<li>
+					<button
+						type="button"
+						onClick={() => props.setSortOrder("desc")}
+						class={props.sortOrder() === "desc" ? "active" : ""}
+					>
+						<span class="mr-2 w-4 inline-block">
+							{props.sortOrder() === "desc" && "✓"}
+						</span>
+						Z-A
+					</button>
+				</li>
+				<li>
+					<button
+						type="button"
+						onClick={() => props.setSortOrder("oldest")}
+						class={props.sortOrder() === "oldest" ? "active" : ""}
+					>
+						<span class="mr-2 w-4 inline-block">
+							{props.sortOrder() === "oldest" && "✓"}
+						</span>
+						Ältestes zuerst
+					</button>
+				</li>
+			</ul>
+		</div>
+	);
+};
+
 const Workouts = () => {
 	const { sortedWorkouts, sortOrder, setSortOrder, handleCreated } =
 		createWorkoutsPageState();
-	const sortDropdownId = "workout-sort-dropdown";
-	const sortButtonAnchor = "--sort-button";
 
 	return (
 		<>
 			<Header
 				title="Workouts"
 				action={
-					<div style={`anchor-name:${sortButtonAnchor}`}>
-						<Button
-							variant="square-ghost"
-							popovertarget={sortDropdownId}
-							type="button"
-							aria-label="Sortieren"
-						>
-							<SortIcon />
-						</Button>
-						<ul
-							class="dropdown menu w-40 rounded-box bg-base-200 shadow-lg"
-							popover
-							id={sortDropdownId}
-							style={`position-anchor:${sortButtonAnchor}`}
-						>
-							<li>
-								<button
-									type="button"
-									onClick={() => setSortOrder("asc")}
-									class={sortOrder() === "asc" ? "active" : ""}
-								>
-									<span class="mr-2 w-4 inline-block">
-										{sortOrder() === "asc" && "✓"}
-									</span>
-									A-Z
-								</button>
-							</li>
-							<li>
-								<button
-									type="button"
-									onClick={() => setSortOrder("desc")}
-									class={sortOrder() === "desc" ? "active" : ""}
-								>
-									<span class="mr-2 w-4 inline-block">
-										{sortOrder() === "desc" && "✓"}
-									</span>
-									Z-A
-								</button>
-							</li>
-							<li>
-								<button
-									type="button"
-									onClick={() => setSortOrder("oldest")}
-									class={sortOrder() === "oldest" ? "active" : ""}
-								>
-									<span class="mr-2 w-4 inline-block">
-										{sortOrder() === "oldest" && "✓"}
-									</span>
-									Ältestes zuerst
-								</button>
-							</li>
-						</ul>
-					</div>
+					<SortDropdown sortOrder={sortOrder} setSortOrder={setSortOrder} />
 				}
 			/>
 			<Show
