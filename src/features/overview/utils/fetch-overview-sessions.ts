@@ -10,11 +10,12 @@ const parseWorkoutIdFromFile = (fileName: string) =>
 const toOverviewSession = (
 	workoutId: string,
 	workoutName: string,
+	sessionId: string,
 	session: SessionData,
 ): OverviewSession => ({
 	workoutId,
 	workoutName,
-	sessionId: session.id,
+	sessionId,
 	date: session.date,
 	exercises: Array.isArray(session.exercises) ? session.exercises : [],
 });
@@ -63,7 +64,10 @@ const collectWorkoutSessions = async (
 
 		try {
 			const sessionData = await readSessionFile(sessionHandle);
-			sessions.push(toOverviewSession(workoutId, workoutName, sessionData));
+			const sessionId = sessionFileName.replace(".json", "");
+			sessions.push(
+				toOverviewSession(workoutId, workoutName, sessionId, sessionData),
+			);
 		} catch (error) {
 			console.warn("Failed to parse overview session file:", error);
 		}

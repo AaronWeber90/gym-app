@@ -26,16 +26,20 @@ const readChildWorkout = async (
 		const file = await (handle as FileSystemFileHandle).getFile();
 		const text = await file.text();
 		const data = JSON.parse(text);
-		const sessionId = data.id ?? name.replace(".json", "");
+		const sessionId = name.replace(".json", "");
+		const normalizedData = { ...data, id: sessionId };
 
 		// Seed session query cache so navigation is instant
-		queryClient.setQueryData(["workoutSession", parentId, sessionId], data);
+		queryClient.setQueryData(
+			["workoutSession", parentId, sessionId],
+			normalizedData,
+		);
 
 		return {
 			id: sessionId,
-			name: data.name ?? "Unbenannt",
-			date: data.date,
-			created_at: data.created_at,
+			name: normalizedData.name ?? "Unbenannt",
+			date: normalizedData.date,
+			created_at: normalizedData.created_at,
 		};
 	} catch (err) {
 		console.warn("Failed to read child workout:", err);

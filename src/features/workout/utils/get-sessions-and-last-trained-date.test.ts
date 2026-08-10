@@ -70,6 +70,25 @@ describe("getSessionsAndLastTrainedDate edge cases", () => {
 		expect(result.sessions[0].id).toBe("abc");
 	});
 
+	it("uses filename as id when JSON id differs", async () => {
+		const entries = [
+			createFileEntry("canonical.json", {
+				id: "other-id",
+				date: "2026-01-01",
+			}),
+		];
+		const workoutsDir = createMockDir(entries);
+
+		const result = await getSessionsAndLastTrainedDate(
+			"workout-1",
+			workoutsDir as unknown as FileSystemDirectoryHandle,
+		);
+
+		expect(result.sessions[0].id).toBe("canonical");
+	});
+});
+
+describe("getSessionsAndLastTrainedDate filesystem handling", () => {
 	it("returns empty when no directory exists", async () => {
 		const workoutsDir = {
 			getDirectoryHandle: vi.fn().mockRejectedValue(new Error("Not found")),

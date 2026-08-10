@@ -18,12 +18,13 @@ export const getSessionsAndLastTrainedDate = async (
 					const file = await (fileHandle as FileSystemFileHandle).getFile();
 					const text = await file.text();
 					const childWorkout = JSON.parse(text);
+					const sessionId = fileName.replace(".json", "");
 					const workoutDate = new Date(
 						childWorkout.date || childWorkout.created_at,
 					);
 
 					sessions.push({
-						id: childWorkout.id || fileName.replace(".json", ""),
+						id: sessionId,
 						date: workoutDate.toISOString(),
 					});
 

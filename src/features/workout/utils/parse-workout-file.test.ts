@@ -20,7 +20,7 @@ const mockWorkoutsDir = {} as FileSystemDirectoryHandle;
 describe("parseWorkoutFile", () => {
 	it("parses a workout file and returns a Workout", async () => {
 		const fileHandle = createMockFileHandle({
-			id: "w1",
+			id: "other-id",
 			name: "Push Day",
 			created_at: "2026-01-01T00:00:00.000Z",
 		});
@@ -55,6 +55,23 @@ describe("parseWorkoutFile", () => {
 		expect(result.id).toBe("leg-day");
 	});
 
+	it("uses filename as id when JSON id differs", async () => {
+		const fileHandle = createMockFileHandle({
+			id: "different-id",
+			name: "Upper Day",
+		});
+
+		const result = await parseWorkoutFile(
+			"upper-day.json",
+			fileHandle,
+			mockWorkoutsDir,
+		);
+
+		expect(result.id).toBe("upper-day");
+	});
+});
+
+describe("parseWorkoutFile metadata defaults", () => {
 	it("defaults created_at when missing from data", async () => {
 		const fileHandle = createMockFileHandle({
 			id: "w2",

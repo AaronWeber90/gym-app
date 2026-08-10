@@ -10,7 +10,7 @@ export const parseWorkoutFile = async (
 	const text = await file.text();
 	const workoutData = JSON.parse(text);
 
-	const workoutId = workoutData.id ?? fileName.replace(".json", "");
+	const workoutId = fileName.replace(".json", "");
 	const { lastTrainedAt, sessions } = await getSessionsAndLastTrainedDate(
 		workoutId,
 		workoutsDir,

@@ -110,6 +110,7 @@ const persistSession = async (deps: PersistDeps) => {
 		}));
 		await saveSession(params.id, params.sessionId, {
 			...s,
+			id: params.sessionId,
 			exercises: trimmedExercises,
 		});
 		queryClient.invalidateQueries({

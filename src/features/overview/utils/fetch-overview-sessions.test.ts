@@ -69,6 +69,15 @@ const pullSession = {
 	exercises: [{ name: "Klimmzug", sets: [{ weight: 0, reps: 8 }] }],
 };
 
+const mismatchedIdSession = {
+	id: "other-id",
+	parentId: "w1",
+	name: "Push",
+	date: "2026-06-01T08:00:00.000Z",
+	created_at: "2026-06-01T08:00:00.000Z",
+	exercises: [],
+};
+
 beforeEach(() => {
 	vi.clearAllMocks();
 });
@@ -111,6 +120,29 @@ describe("fetchOverviewSessions", () => {
 		});
 	});
 
+	it("uses the session filename as sessionId when JSON id differs", async () => {
+		const sessionsDir = makeSessionsDir("canonical.json", mismatchedIdSession);
+
+		const workoutsDir = createDirectoryHandle({
+			entries: async function* () {
+				yield [
+					"w1.json",
+					asJsonFileHandle("w1.json", { id: "w1", name: "Push" }),
+				];
+			},
+			getDirectoryHandle: async () => sessionsDir,
+		});
+
+		mockedGetDir.mockResolvedValue(workoutsDir);
+
+		const result = await fetchOverviewSessions();
+
+		expect(result).toHaveLength(1);
+		expect(result[0]?.sessionId).toBe("canonical");
+	});
+});
+
+describe("fetchOverviewSessions error handling", () => {
 	it("returns empty array when root access fails", async () => {
 		const spy = vi.spyOn(console, "error").mockImplementation(() => {});
 		mockedGetDir.mockRejectedValue(new Error("OPFS unavailable"));
