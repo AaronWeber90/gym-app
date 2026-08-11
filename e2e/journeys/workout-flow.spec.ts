@@ -101,7 +101,7 @@ async function openWorkoutSession(page: Page, workoutName: string) {
 async function assertPersistedSession(page: Page) {
 	await page.waitForTimeout(800);
 	await page.reload();
-	await expect(page).toHaveURL(/c#\/workouts\/[0-9a-f-]+\/[0-9a-f-]+$/);
+	await expect(page).toHaveURL(/#\/workouts\/[0-9a-f-]+\/[0-9a-f-]+$/);
 	await expect(
 		page.getByRole("button", { name: "+ Übung hinzufügen" }),
 	).toBeVisible();
