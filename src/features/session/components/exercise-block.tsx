@@ -10,6 +10,7 @@ import { CheckCircleIcon } from "../../../ui/icons/check-circle";
 import { GripDotsIcon } from "../../../ui/icons/grip-dots";
 import { KebabMenuIcon } from "../../../ui/icons/kebab-menu";
 import { Input } from "../../../ui/input";
+import { getExerciseSuggestions } from "../../exercises/utils";
 import type { ExerciseData, SetData } from "../utils";
 import { SetRow } from "./set-row";
 
@@ -88,58 +89,67 @@ const SetsTable = (props: SetsTableProps) => (
 
 const ExerciseHeader = (props: ExerciseHeaderProps) => {
 	const menuId = createUniqueId();
+	const datalistId = createUniqueId();
 	const anchorName = `--exercise-menu-${menuId}`;
 
 	return (
-		<div class="flex items-center gap-2 mb-2">
-			<button
-				class="btn btn-ghost btn-sm btn-square cursor-grab active:cursor-grabbing touch-none select-none"
-				onPointerDown={(e) => props.onDragStart(e)}
-				type="button"
-				aria-label="Übung verschieben"
-			>
-				<GripDotsIcon />
-			</button>
-			<Input
-				type="text"
-				class="input input-ghost text-lg font-bold p-0 flex-1 min-w-0"
-				value={props.name}
-				placeholder="Übungsname"
-				onInput={(e) => props.onNameChange(e.currentTarget.value)}
-			/>
-			<Show when={props.isComplete}>
-				<span class="text-primary shrink-0">
-					<CheckCircleIcon />
-				</span>
-			</Show>
-			<button
-				class="btn btn-ghost btn-sm btn-square"
-				popovertarget={menuId}
-				style={`anchor-name:${anchorName}`}
-				type="button"
-				aria-label="Optionen"
-			>
-				<KebabMenuIcon />
-			</button>
-			<ul
-				class="dropdown menu w-40 rounded-box bg-base-200 shadow-lg"
-				popover
-				id={menuId}
-				style={`position-anchor:${anchorName}`}
-			>
-				<Show when={props.canRemove}>
-					<li>
-						<button
-							class="text-error"
-							type="button"
-							onClick={() => props.onRemove()}
-						>
-							Löschen
-						</button>
-					</li>
+		<>
+			<div class="flex items-center gap-2 mb-2">
+				<button
+					class="btn btn-ghost btn-sm btn-square cursor-grab active:cursor-grabbing touch-none select-none"
+					onPointerDown={(e) => props.onDragStart(e)}
+					type="button"
+					aria-label="Übung verschieben"
+				>
+					<GripDotsIcon />
+				</button>
+				<Input
+					type="text"
+					class="input input-ghost text-lg font-bold p-0 flex-1 min-w-0"
+					value={props.name}
+					placeholder="Übungsname"
+					list={datalistId}
+					onInput={(e) => props.onNameChange(e.currentTarget.value)}
+				/>
+				<Show when={props.isComplete}>
+					<span class="text-primary shrink-0">
+						<CheckCircleIcon />
+					</span>
 				</Show>
-			</ul>
-		</div>
+				<button
+					class="btn btn-ghost btn-sm btn-square"
+					popovertarget={menuId}
+					style={`anchor-name:${anchorName}`}
+					type="button"
+					aria-label="Optionen"
+				>
+					<KebabMenuIcon />
+				</button>
+				<ul
+					class="dropdown menu w-40 rounded-box bg-base-200 shadow-lg"
+					popover
+					id={menuId}
+					style={`position-anchor:${anchorName}`}
+				>
+					<Show when={props.canRemove}>
+						<li>
+							<button
+								class="text-error"
+								type="button"
+								onClick={() => props.onRemove()}
+							>
+								Löschen
+							</button>
+						</li>
+					</Show>
+				</ul>
+			</div>
+			<datalist id={datalistId}>
+				{getExerciseSuggestions().map((exercise) => (
+					<option value={exercise} />
+				))}
+			</datalist>
+		</>
 	);
 };
 

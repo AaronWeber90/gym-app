@@ -1,3 +1,4 @@
+import { normalizeExerciseName } from "../../exercises/utils";
 import type { ExerciseData } from "../../session/utils";
 
 export type OverviewSession = {
@@ -136,7 +137,7 @@ export const calculatePersonalRecords = (
 	for (const session of sessions) {
 		for (const exercise of session.exercises) {
 			const trimmedName = exercise.name.trim();
-			const normalizedName = trimmedName.toLowerCase();
+			const normalizedName = normalizeExerciseName(trimmedName);
 			if (!normalizedName) continue;
 
 			for (const set of exercise.sets) {

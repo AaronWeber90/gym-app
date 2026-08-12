@@ -5,6 +5,7 @@ import {
 	useQueryClient,
 } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, on } from "solid-js";
+import { normalizeExerciseName } from "../../exercises/utils";
 import { overviewSessionsQueryKey } from "../../overview/utils/fetch-overview-sessions";
 import { childWorkoutsQueryKey } from "../../workout/hooks/create-child-workouts-resource";
 import {
@@ -160,7 +161,7 @@ const createSessionQueries = (params: SessionParams) => {
 		const prev = previousSessionQuery.data;
 		const map = new Map<string, SetData[]>();
 		for (const ex of prev?.exercises ?? []) {
-			map.set(ex.name.toLowerCase(), ex.sets);
+			map.set(normalizeExerciseName(ex.name), ex.sets);
 		}
 		return map;
 	});

@@ -1,4 +1,5 @@
 import { type Accessor, Index, Show } from "solid-js";
+import { normalizeExerciseName } from "../features/exercises/utils";
 import { ExerciseBlock } from "../features/session/components/exercise-block";
 import { ShareSessionDropdown } from "../features/session/components/share-session-dropdown";
 import { createSessionPageState } from "../features/session/hooks/create-session-page-state";
@@ -44,7 +45,7 @@ const ExerciseListItem = (props: {
 				canRemove={state.exercises().length > 1}
 				previousSets={state
 					.previousExerciseMap()
-					.get(props.ex().name.toLowerCase().trim())}
+					.get(normalizeExerciseName(props.ex().name))}
 				onNameChange={(name) => state.updateExerciseName(props.exIndex, name)}
 				onUpdateSet={(setIndex, field, value) =>
 					state.updateSet(props.exIndex, setIndex, field, value)
