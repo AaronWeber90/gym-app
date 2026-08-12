@@ -7,6 +7,7 @@ export const SettingsIcon = (props: IconProps) => {
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 24 24"
 		>
+			<title>settings-icon</title>
 			<g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt">
 				<circle
 					cx="12"
@@ -26,7 +27,6 @@ export const SettingsIcon = (props: IconProps) => {
 					stroke-miterlimit="10"
 					stroke-width="2"
 				></path>
-				<title>settings-icon</title>
 			</g>
 		</svg>
 	);

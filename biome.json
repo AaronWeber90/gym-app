@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.12/schema.json",
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -15,7 +15,7 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"a11y": {
 				"noNoninteractiveElementInteractions": "error"
 			},
@@ -30,9 +30,7 @@
 				"noExcessiveCognitiveComplexity": "error",
 				"noExcessiveLinesPerFunction": "error",
 				"noExcessiveNestedTestSuites": "error",
-				"noVoid": "error"
-			},
-			"nursery": {
+				"noVoid": "error",
 				"useMaxParams": "error"
 			}
 		},
