@@ -1,6 +1,7 @@
 export type SetData = {
 	weight: number;
 	reps: number;
+	rpe?: number;
 };
 
 export type ExerciseData = {

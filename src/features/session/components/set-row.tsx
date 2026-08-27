@@ -7,7 +7,7 @@ type SetRowProps = {
 	index: number;
 	canRemove: boolean;
 	previousSet?: SetData;
-	onUpdate: (field: keyof SetData, value: number) => void;
+	onUpdate: (field: keyof SetData, value: number | undefined) => void;
 	onRemove: () => void;
 };
 
@@ -21,6 +21,12 @@ type RepsCellProps = {
 	reps: number;
 	previousSet?: SetData;
 	onUpdate: (value: number) => void;
+};
+
+type RpeCellProps = {
+	rpe?: number;
+	previousSet?: SetData;
+	onUpdate: (value: number | undefined) => void;
 };
 
 const WeightCell = (props: WeightCellProps) => {
@@ -111,6 +117,37 @@ const RepsCell = (props: RepsCellProps) => (
 	</td>
 );
 
+const RpeCell = (props: RpeCellProps) => (
+	<td class="pl-0">
+		<input
+			type="number"
+			class="input input-ghost w-full p-0"
+			value={props.rpe ?? ""}
+			min={1}
+			max={10}
+			placeholder="-"
+			onInput={(e) => {
+				const raw = e.currentTarget.value;
+				if (raw === "") {
+					props.onUpdate(undefined);
+					return;
+				}
+				const clamped = Math.min(
+					10,
+					Math.max(1, Number.parseInt(raw, 10) || 1),
+				);
+				e.currentTarget.value = String(clamped);
+				props.onUpdate(clamped);
+			}}
+		/>
+		<Show when={props.previousSet?.rpe}>
+			{(prev) => (
+				<span class="text-xs text-base-content/50">vorher: {prev()}</span>
+			)}
+		</Show>
+	</td>
+);
+
 export const SetRow = (props: SetRowProps) => (
 	<tr>
 		<td>{props.index + 1}</td>
@@ -123,6 +160,11 @@ export const SetRow = (props: SetRowProps) => (
 			reps={props.set.reps}
 			previousSet={props.previousSet}
 			onUpdate={(value) => props.onUpdate("reps", value)}
+		/>
+		<RpeCell
+			rpe={props.set.rpe}
+			previousSet={props.previousSet}
+			onUpdate={(value) => props.onUpdate("rpe", value)}
 		/>
 		<td class="pl-0">
 			<Show when={props.canRemove}>

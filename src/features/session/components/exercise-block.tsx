@@ -17,7 +17,11 @@ import { SetRow } from "./set-row";
 type SetsTableProps = {
 	sets: SetData[];
 	previousSets?: SetData[];
-	onUpdateSet: (setIndex: number, field: keyof SetData, value: number) => void;
+	onUpdateSet: (
+		setIndex: number,
+		field: keyof SetData,
+		value: number | undefined,
+	) => void;
 	onAddSet: () => void;
 	onRemoveSet: (setIndex: number) => void;
 };
@@ -36,7 +40,11 @@ type ExerciseBlockProps = {
 	canRemove: boolean;
 	previousSets?: SetData[];
 	onNameChange: (name: string) => void;
-	onUpdateSet: (setIndex: number, field: keyof SetData, value: number) => void;
+	onUpdateSet: (
+		setIndex: number,
+		field: keyof SetData,
+		value: number | undefined,
+	) => void;
 	onAddSet: () => void;
 	onRemoveSet: (setIndex: number) => void;
 	onRemove: () => void;
@@ -55,6 +63,7 @@ const SetsTable = (props: SetsTableProps) => (
 					<th>Satz</th>
 					<th>Gewicht (kg)</th>
 					<th>Wdh.</th>
+					<th>RPE</th>
 					<th />
 				</tr>
 			</thead>

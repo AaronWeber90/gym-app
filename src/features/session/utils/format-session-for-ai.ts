@@ -1,12 +1,15 @@
 import { formatDate } from "../../../utils/format-date";
 import type { ExerciseData, SessionData } from "./types";
 
-const formatSet = (weight: number, reps: number) => `${weight}kgx${reps}`;
+const formatSet = (weight: number, reps: number, rpe?: number) => {
+	const rpeSuffix = rpe != null ? `@${rpe}` : "";
+	return `${weight}kgx${reps}${rpeSuffix}`;
+};
 
 const formatExercise = (exercise: ExerciseData, index: number) => {
 	const name = exercise.name.trim() || `Übung ${index + 1}`;
 	const sets = exercise.sets
-		.map((set) => formatSet(set.weight, set.reps))
+		.map((set) => formatSet(set.weight, set.reps, set.rpe))
 		.join(", ");
 
 	return `${name}: ${sets || "-"}`;

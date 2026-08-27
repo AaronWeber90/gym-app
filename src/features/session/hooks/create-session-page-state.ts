@@ -19,6 +19,7 @@ import {
 	type SetData,
 	saveSession,
 } from "../utils";
+import { appendSet, mapSessionExercises } from "../utils/exercise-transforms";
 
 type SessionParams = { id: string; sessionId: string };
 type SessionAccessor = () => SessionData | undefined;
@@ -44,17 +45,6 @@ type DeleteDeps = {
 	navigate: Navigate;
 };
 
-const mapSessionExercises = (exercises: ExerciseData[]): ExerciseData[] =>
-	exercises.map((ex) => ({
-		name: ex.name,
-		sets: Array.isArray(ex.sets)
-			? ex.sets.map((set) => ({ weight: set.weight, reps: set.reps }))
-			: Array.from({ length: Number(ex.sets) || 1 }, () => ({
-					weight: 0,
-					reps: 1,
-				})),
-	}));
-
 const renameExercise = (list: ExerciseData[], index: number, name: string) =>
 	list.map((ex, i) => (i === index ? { ...ex, name } : ex));
 
@@ -74,16 +64,6 @@ const updateSetValue = (
 				}
 			: ex,
 	);
-
-const appendSet = (list: ExerciseData[], exIndex: number) => {
-	const lastSet = list[exIndex]?.sets.at(-1);
-	const newSet = lastSet
-		? { weight: lastSet.weight, reps: lastSet.reps }
-		: { weight: 0, reps: 1 };
-	return list.map((ex, i) =>
-		i === exIndex ? { ...ex, sets: [...ex.sets, newSet] } : ex,
-	);
-};
 
 const deleteSet = (list: ExerciseData[], exIndex: number, setIndex: number) =>
 	list.map((ex, i) =>
@@ -185,7 +165,7 @@ const createExerciseStore = (deps: ExerciseStoreDeps) => {
 		exIndex: number,
 		setIndex: number,
 		field: keyof SetData,
-		value: number,
+		value: number | undefined,
 	) => {
 		setExercises(
 			updateSetValue(exercises(), exIndex, setIndex, { [field]: value }),

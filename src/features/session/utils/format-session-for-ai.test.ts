@@ -28,6 +28,28 @@ describe("formatSessionForAi", () => {
 		);
 	});
 
+	it("appends RPE with @ when set", () => {
+		const result = formatSessionForAi(
+			{
+				name: "Push Day",
+				date: "2026-08-05T12:00:00.000Z",
+			},
+			[
+				{
+					name: "Bankdrücken",
+					sets: [
+						{ weight: 80, reps: 8, rpe: 9 },
+						{ weight: 82.5, reps: 6 },
+					],
+				},
+			],
+		);
+
+		expect(result).toBe(
+			"Push Day - 05.08.2026\nBankdrücken: 80kgx8@9, 82.5kgx6",
+		);
+	});
+
 	it("prints fallback line when there are no exercises", () => {
 		const result = formatSessionForAi(
 			{
