@@ -63,7 +63,7 @@ async function fillExerciseData(page: Page, exercises: ExerciseFixture[]) {
 			const setRows = block.locator("tbody tr");
 			const setRow = setRows.nth(setIndex);
 			const weightInput = setRow.locator("input[type='text']");
-			const repsInput = setRow.locator("input[type='number']");
+			const repsInput = setRow.getByRole("spinbutton").first();
 
 			await weightInput.fill(String(set.weight).replace(".", ","));
 			await repsInput.fill(String(set.reps));
@@ -99,7 +99,6 @@ async function openWorkoutSession(page: Page, workoutName: string) {
 }
 
 async function assertPersistedSession(page: Page) {
-	await page.waitForTimeout(800);
 	await page.reload();
 	await expect(page).toHaveURL(/#\/workouts\/[0-9a-f-]+\/[0-9a-f-]+$/);
 	await expect(
@@ -118,7 +117,7 @@ async function assertPersistedSession(page: Page) {
 		firstExerciseRows.nth(0).locator("input[type='text']"),
 	).toHaveValue("80");
 	await expect(
-		firstExerciseRows.nth(0).locator("input[type='number']"),
+		firstExerciseRows.nth(0).getByRole("spinbutton").first(),
 	).toHaveValue("8");
 }
 
