@@ -150,7 +150,7 @@ const RpeCell = (props: RpeCellProps) => (
 
 export const SetRow = (props: SetRowProps) => (
 	<tr>
-		<td>{props.index + 1}</td>
+		<td class="pl-0">{props.index + 1}</td>
 		<WeightCell
 			weight={props.set.weight}
 			previousSet={props.previousSet}

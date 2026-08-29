@@ -60,10 +60,10 @@ const SetsTable = (props: SetsTableProps) => (
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Satz</th>
-					<th>Gewicht (kg)</th>
-					<th>Wdh.</th>
-					<th>RPE</th>
+					<th class="pl-0">Satz</th>
+					<th class="pl-0">Gewicht (kg)</th>
+					<th class="pl-0">Wdh.</th>
+					<th class="pl-0">RPE</th>
 					<th />
 				</tr>
 			</thead>
