@@ -12,6 +12,9 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"noEmit": true,
+		"paths": {
+			"@api": ["./src/api/index.ts"]
+		},
 
 		// Type Checking & Safety
 		"strict": true,

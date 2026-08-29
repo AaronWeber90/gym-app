@@ -1,5 +1,5 @@
+import type { Workout } from "@api";
 import { describe, expect, it } from "vitest";
-import type { Workout } from "../../../api/types";
 import { sortWorkouts } from "./sort-workouts";
 
 const createWorkout = (overrides: Partial<Workout> = {}): Workout => ({

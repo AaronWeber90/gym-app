@@ -1,8 +1,8 @@
+import { dataClient } from "@api";
 import { useNavigate, useParams } from "@solidjs/router";
 import { useQueryClient } from "@tanstack/solid-query";
 import { createMemo } from "solid-js";
 import { overviewSessionsQueryKey } from "../../overview/utils/fetch-overview-sessions";
-import { deleteWorkout } from "../utils/delete-workout";
 import { createChildWorkoutsResource } from "./create-child-workouts-resource";
 import { createCurrentWorkout } from "./create-current-workout";
 import { workoutsQueryKey } from "./create-workout-resource";
@@ -34,7 +34,7 @@ export const createWorkoutPageState = () => {
 
 	const handleDelete = async () => {
 		try {
-			await deleteWorkout(params.id);
+			await dataClient.deleteWorkout(params.id);
 			navigate("/workouts");
 		} catch (err) {
 			console.error("Failed to delete workout:", err);

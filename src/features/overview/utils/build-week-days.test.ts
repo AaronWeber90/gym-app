@@ -1,5 +1,5 @@
+import type { Workout } from "@api";
 import { describe, expect, it } from "vitest";
-import type { Workout } from "../../../api/types";
 import { buildWeekDays } from "./build-week-days";
 
 const weekStart = new Date("2024-03-11"); // Monday

@@ -1,4 +1,4 @@
-import type { WorkoutSession } from "../../../api/types";
+import type { WorkoutSession } from "@api";
 
 export const getSessionsAndLastTrainedDate = async (
 	workoutId: string,

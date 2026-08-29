@@ -1,7 +1,7 @@
+import { dataClient } from "@api";
 import { createSignal } from "solid-js";
 import { Button } from "../../../ui/button";
 import { Input } from "../../../ui/input";
-import { getDir, getFile, getRootDir } from "../../opfs-storage/utils";
 
 type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
@@ -21,22 +21,7 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 		if (!name) return;
 
 		try {
-			const root = await getRootDir();
-			const workoutsDir = await getDir(root, "workouts", true);
-			const id = crypto.randomUUID();
-			const handle = await getFile(workoutsDir, `${id}.json`, true);
-			const writable = await handle.createWritable();
-
-			const data = {
-				id,
-				name,
-				created_at: new Date().toISOString(),
-				exercises: [],
-			};
-
-			await writable.write(JSON.stringify(data, null, 2));
-			await writable.close();
-
+			await dataClient.createWorkout({ name });
 			setShowModal(false);
 			setNewWorkoutName("");
 			await props.onCreated?.();

@@ -77,7 +77,8 @@ Keep dependencies minimal. Before reaching for a third-party package, build the 
 
 - **Kebab-case** filenames everywhere
 - **Co-located tests**: `foo.ts` → `foo.test.ts` in the same directory
-- **Relative imports** only — no path aliases
+- **Relative imports** only — no path aliases, **except** the `@api` alias
+- **`@api` barrel**: the data-access layer in `src/api` exposes a single barrel export (`src/api/index.ts`) — the `dataClient`, its `DataClient` contract, all domain types, and `validateExportData`. Import from it via the `@api` alias everywhere it's consumed
 - **`import type`** for type-only imports
 - **`splitProps()`** in components to separate local vs forwarded props
 - **Barrel exports** (`index.ts`) in each feature's utils folder

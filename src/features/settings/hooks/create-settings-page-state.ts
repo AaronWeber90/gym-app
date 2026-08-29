@@ -1,19 +1,30 @@
+import { dataClient, validateExportData } from "@api";
 import { useQueryClient } from "@tanstack/solid-query";
 import { createResource, createSignal } from "solid-js";
-import { exportAllData, importAllData } from "../../opfs-storage/utils";
-import { fetchStorageUsage } from "../utils/fetch-storage-usage";
+
+const downloadExport = (data: unknown) => {
+	const blob = new Blob([JSON.stringify(data, null, 2)], {
+		type: "application/json",
+	});
+	const url = URL.createObjectURL(blob);
+	const anchor = document.createElement("a");
+	anchor.href = url;
+	anchor.download = `gym-backup-${new Date().toISOString().slice(0, 10)}.json`;
+	anchor.click();
+	URL.revokeObjectURL(url);
+};
 
 export const createSettingsPageState = () => {
 	const queryClient = useQueryClient();
 	const [exporting, setExporting] = createSignal(false);
 	const [importing, setImporting] = createSignal(false);
 	const [importResult, setImportResult] = createSignal<string | null>(null);
-	const [storage] = createResource(fetchStorageUsage);
+	const [storage] = createResource(() => dataClient.getStorageUsage());
 
 	const handleExport = async () => {
 		setExporting(true);
 		try {
-			await exportAllData();
+			downloadExport(await dataClient.exportData());
 		} catch (e) {
 			console.error("Export failed:", e);
 		} finally {
@@ -29,7 +40,8 @@ export const createSettingsPageState = () => {
 		setImporting(true);
 		setImportResult(null);
 		try {
-			const count = await importAllData(file);
+			const data = validateExportData(JSON.parse(await file.text()));
+			const count = await dataClient.importData(data);
 			setImportResult(`${count} Dateien importiert`);
 			await queryClient.invalidateQueries();
 		} catch (err) {

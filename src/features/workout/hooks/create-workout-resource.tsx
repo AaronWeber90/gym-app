@@ -1,5 +1,5 @@
+import { dataClient } from "@api";
 import { useQuery, useQueryClient } from "@tanstack/solid-query";
-import { fetchWorkouts } from "../utils/fetch-workouts";
 
 export const workoutsQueryKey = ["workouts"] as const;
 
@@ -7,7 +7,7 @@ export const createWorkoutResource = () => {
 	const queryClient = useQueryClient();
 	const workoutsQuery = useQuery(() => ({
 		queryKey: workoutsQueryKey,
-		queryFn: fetchWorkouts,
+		queryFn: () => dataClient.getWorkouts(),
 		throwOnError: true,
 	}));
 	return {

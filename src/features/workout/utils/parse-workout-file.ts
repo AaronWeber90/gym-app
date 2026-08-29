@@ -1,4 +1,4 @@
-import type { Workout } from "../../../api/types";
+import type { Workout } from "@api";
 import { getSessionsAndLastTrainedDate } from "./get-sessions-and-last-trained-date";
 
 export const parseWorkoutFile = async (

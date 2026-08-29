@@ -1,4 +1,4 @@
-import type { Workout } from "../../../api/types";
+import type { Workout } from "@api";
 import { getDir, getRootDir } from "../../opfs-storage/utils";
 import { parseWorkoutFile } from "./parse-workout-file";
 

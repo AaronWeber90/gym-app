@@ -1,3 +1,4 @@
+import { dataClient } from "@api";
 import { createQuery } from "@tanstack/solid-query";
 import { createMemo, createSignal } from "solid-js";
 import { createWorkoutResource } from "../../workout/hooks/create-workout-resource";
@@ -6,10 +7,7 @@ import {
 	calculatePersonalRecords,
 	calculateWeeklyInsights,
 } from "../utils/calculate-overview-insights";
-import {
-	fetchOverviewSessions,
-	overviewSessionsQueryKey,
-} from "../utils/fetch-overview-sessions";
+import { overviewSessionsQueryKey } from "../utils/fetch-overview-sessions";
 import { formatWeekRange } from "../utils/format-week-range";
 import { getWeekStart } from "../utils/get-week-start";
 import { isToday } from "../utils/is-today";
@@ -20,7 +18,7 @@ export const createOverviewPageState = () => {
 
 	const overviewSessionsQuery = createQuery(() => ({
 		queryKey: overviewSessionsQueryKey,
-		queryFn: fetchOverviewSessions,
+		queryFn: () => dataClient.getOverviewSessions(),
 	}));
 
 	const weekDays = createMemo(() => {

@@ -1,4 +1,4 @@
-import type { Workout } from "../../../api/types";
+import type { Workout } from "@api";
 
 export type WorkoutsSortMode = "asc" | "desc" | "oldest";
 

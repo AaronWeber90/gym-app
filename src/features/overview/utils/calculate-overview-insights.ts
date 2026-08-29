@@ -1,13 +1,7 @@
+import type { OverviewSession } from "@api";
 import { normalizeExerciseName } from "../../exercises/utils";
-import type { ExerciseData } from "../../session/utils";
 
-export type OverviewSession = {
-	workoutId: string;
-	workoutName: string;
-	sessionId: string;
-	date: string;
-	exercises: ExerciseData[];
-};
+export type { OverviewSession } from "@api";
 
 export type WeeklyInsights = {
 	totalSessions: number;

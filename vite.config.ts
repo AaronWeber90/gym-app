@@ -1,4 +1,5 @@
 import { execSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
@@ -10,6 +11,11 @@ export default defineConfig({
 	base: "/gym-app/",
 	define: {
 		__APP_VERSION__: JSON.stringify(commitHash),
+	},
+	resolve: {
+		alias: {
+			"@api": fileURLToPath(new URL("./src/api/index.ts", import.meta.url)),
+		},
 	},
 	plugins: [
 		solidPlugin(),

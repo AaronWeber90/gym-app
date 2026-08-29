@@ -21,17 +21,11 @@ function createMockOpfs() {
 	return { writable, fileHandle, subDir, mockRoot };
 }
 
-function backupFile(data: unknown) {
-	return new File([JSON.stringify(data)], "backup.json");
-}
-
 describe("importAllData validation", () => {
 	it("throws on invalid backup format (wrong version)", async () => {
 		stubOpfs({});
 
-		const file = backupFile({ version: 2, files: [] });
-
-		await expect(importAllData(file)).rejects.toThrow(
+		await expect(importAllData({ version: 2, files: [] })).rejects.toThrow(
 			"Invalid backup file format",
 		);
 	});
@@ -39,9 +33,7 @@ describe("importAllData validation", () => {
 	it("throws on invalid backup format (missing files)", async () => {
 		stubOpfs({});
 
-		const file = backupFile({ version: 1 });
-
-		await expect(importAllData(file)).rejects.toThrow(
+		await expect(importAllData({ version: 1 })).rejects.toThrow(
 			"Invalid backup file format",
 		);
 	});
@@ -50,7 +42,7 @@ describe("importAllData validation", () => {
 		stubOpfs({});
 
 		const backup = { version: 1, exportedAt: "2026-01-01", files: [] };
-		const count = await importAllData(backupFile(backup));
+		const count = await importAllData(backup);
 
 		expect(count).toBe(0);
 	});
@@ -66,7 +58,7 @@ describe("importAllData file writing", () => {
 			exportedAt: "2026-01-01",
 			files: [{ path: "workouts/push.json", content: '{"name":"Push"}' }],
 		};
-		const count = await importAllData(backupFile(backup));
+		const count = await importAllData(backup);
 
 		expect(count).toBe(1);
 		expect(mockRoot.getDirectoryHandle).toHaveBeenCalledWith("workouts", {
@@ -92,9 +84,7 @@ describe("importAllData file writing", () => {
 			],
 		};
 
-		await expect(importAllData(backupFile(backup))).rejects.toThrow(
-			/invalid path segment/,
-		);
+		await expect(importAllData(backup)).rejects.toThrow(/invalid path segment/);
 
 		expect(mockRoot.getDirectoryHandle).not.toHaveBeenCalled();
 		expect(subDir.getFileHandle).not.toHaveBeenCalled();

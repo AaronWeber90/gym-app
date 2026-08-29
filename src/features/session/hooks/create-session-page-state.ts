@@ -1,3 +1,9 @@
+import {
+	dataClient,
+	type ExerciseData,
+	type SessionData,
+	type SetData,
+} from "@api";
 import { useNavigate, useParams } from "@solidjs/router";
 import {
 	createQuery,
@@ -8,17 +14,7 @@ import { createEffect, createMemo, createSignal, on } from "solid-js";
 import { normalizeExerciseName } from "../../exercises/utils";
 import { overviewSessionsQueryKey } from "../../overview/utils/fetch-overview-sessions";
 import { childWorkoutsQueryKey } from "../../workout/hooks/create-child-workouts-resource";
-import {
-	createSortableList,
-	debounce,
-	deleteSession,
-	type ExerciseData,
-	fetchPreviousSession,
-	fetchSession,
-	type SessionData,
-	type SetData,
-	saveSession,
-} from "../utils";
+import { createSortableList, debounce } from "../utils";
 import { appendSet, mapSessionExercises } from "../utils/exercise-transforms";
 
 type SessionParams = { id: string; sessionId: string };
@@ -89,7 +85,7 @@ const persistSession = async (deps: PersistDeps) => {
 			...ex,
 			name: ex.name.trim(),
 		}));
-		await saveSession(params.id, params.sessionId, {
+		await dataClient.saveSession(params.id, params.sessionId, {
 			...s,
 			id: params.sessionId,
 			exercises: trimmedExercises,
@@ -106,7 +102,7 @@ const persistSession = async (deps: PersistDeps) => {
 const deleteSessionAndNavigate = async (deps: DeleteDeps) => {
 	const { params, queryClient, navigate } = deps;
 	try {
-		await deleteSession(params.id, params.sessionId);
+		await dataClient.deleteSession(params.id, params.sessionId);
 		await queryClient.invalidateQueries({
 			queryKey: childWorkoutsQueryKey(params.id),
 		});
@@ -120,7 +116,7 @@ const deleteSessionAndNavigate = async (deps: DeleteDeps) => {
 const createSessionQueries = (params: SessionParams) => {
 	const sessionQuery = createQuery(() => ({
 		queryKey: ["workoutSession", params.id, params.sessionId],
-		queryFn: () => fetchSession(params.id, params.sessionId),
+		queryFn: () => dataClient.getSession(params.id, params.sessionId),
 		enabled: !!params.id && !!params.sessionId,
 	}));
 
@@ -132,7 +128,7 @@ const createSessionQueries = (params: SessionParams) => {
 		queryFn: () => {
 			const date = session()?.date;
 			if (!date) throw new Error("Session date not available");
-			return fetchPreviousSession(params.id, params.sessionId, date);
+			return dataClient.getPreviousSession(params.id, params.sessionId, date);
 		},
 		enabled: !!session()?.date,
 	}));
@@ -216,7 +212,11 @@ export const createSessionPageState = () => {
 	const { sessionQuery, session, sessionId, previousExerciseMap } =
 		createSessionQueries(params);
 
-	const store = createExerciseStore({ params, session, queryClient });
+	const store = createExerciseStore({
+		params,
+		session,
+		queryClient,
+	});
 
 	createEffect(
 		on(sessionId, () => {
@@ -231,7 +231,11 @@ export const createSessionPageState = () => {
 	});
 
 	const handleDeleteSession = () =>
-		deleteSessionAndNavigate({ params, queryClient, navigate });
+		deleteSessionAndNavigate({
+			params,
+			queryClient,
+			navigate,
+		});
 
 	return {
 		// State

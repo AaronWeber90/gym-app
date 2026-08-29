@@ -1,4 +1,4 @@
-import type { Workout } from "../../../api/types";
+import type { Workout } from "@api";
 import { weekDayNames } from "./constants";
 import type { DayWorkout, WeekDay } from "./types";
 

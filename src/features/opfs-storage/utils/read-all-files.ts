@@ -1,13 +1,6 @@
-type ExportedFile = {
-	path: string;
-	content: string;
-};
+import type { ExportedFile } from "@api";
 
-export type ExportData = {
-	version: 1;
-	exportedAt: string;
-	files: ExportedFile[];
-};
+export type { ExportData, ExportedFile } from "@api";
 
 export async function readAllFiles(
 	dir: FileSystemDirectoryHandle,
