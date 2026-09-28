@@ -1,4 +1,5 @@
 export { createBodyWeightEntry } from "./create-body-weight-entry";
+export { deleteBodyWeightEntry } from "./delete-body-weight-entry";
 export { exportAllData } from "./export-all-data";
 export { getBodyWeightEntries } from "./get-body-weight-entries";
 export { getDir } from "./get-dir";

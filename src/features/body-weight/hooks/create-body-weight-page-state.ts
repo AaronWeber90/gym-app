@@ -1,4 +1,5 @@
 import type { BodyWeightEntry } from "@api";
+import { dataClient } from "@api";
 import { createSignal } from "solid-js";
 import { createBodyWeightResource } from "./create-body-weight-resource";
 
@@ -18,6 +19,11 @@ export const createBodyWeightPageState = () => {
 		await refetch();
 	};
 
+	const handleDelete = async (entry: BodyWeightEntry) => {
+		await dataClient.deleteBodyWeightEntry(entry.id);
+		await refetch();
+	};
+
 	return {
 		entries,
 		isLoading,
@@ -27,5 +33,6 @@ export const createBodyWeightPageState = () => {
 		openEditForm,
 		closeForm,
 		handleSaved,
+		handleDelete,
 	};
 };

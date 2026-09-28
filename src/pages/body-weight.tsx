@@ -13,6 +13,7 @@ export default function BodyWeight() {
 		openEditForm,
 		closeForm,
 		handleSaved,
+		handleDelete,
 	} = createBodyWeightPageState();
 
 	const editingEntry = () => {
@@ -32,6 +33,7 @@ export default function BodyWeight() {
 				<WeightEntryList
 					entries={entries().toReversed()}
 					onSelect={openEditForm}
+					onDelete={handleDelete}
 				/>
 			</Section>
 

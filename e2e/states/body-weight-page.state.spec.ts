@@ -75,3 +75,21 @@ test("editing an existing entry updates its weight", async ({ page }) => {
 	await expect(page.getByText("79 kg")).toBeVisible();
 	await expect(page.getByText("80 kg")).toHaveCount(0);
 });
+
+test("deleting an entry removes it from the list and chart", async ({
+	page,
+}) => {
+	await goToEmptyBodyWeightPage(page);
+
+	await page.locator(".fab .btn-circle.btn-primary").click();
+	await page.getByLabel("Gewicht (kg)").fill("80");
+	await page.getByRole("button", { name: "Speichern" }).click();
+	await expect(page.getByText("80 kg")).toBeVisible();
+
+	await page.getByRole("button", { name: "Eintrag löschen" }).click();
+	await expect(page.getByText("Eintrag löschen?")).toBeVisible();
+	await page.getByRole("button", { name: "Löschen", exact: true }).click();
+
+	await expect(page.getByText("80 kg")).toHaveCount(0);
+	await expect(page.getByText("Noch keine Einträge vorhanden")).toHaveCount(2);
+});

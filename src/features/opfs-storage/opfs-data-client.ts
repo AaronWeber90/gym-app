@@ -12,6 +12,7 @@ import { fetchWorkouts } from "../workout/utils/fetch-workouts";
 import { createBodyWeightEntry } from "./utils/create-body-weight-entry";
 import { createSession } from "./utils/create-session";
 import { createWorkout } from "./utils/create-workout";
+import { deleteBodyWeightEntry } from "./utils/delete-body-weight-entry";
 import { exportAllData } from "./utils/export-all-data";
 import { getBodyWeightEntries } from "./utils/get-body-weight-entries";
 import { getWorkoutSessions } from "./utils/get-workout-sessions";
@@ -33,6 +34,7 @@ export const opfsDataClient: DataClient = {
 	getBodyWeightEntries,
 	createBodyWeightEntry,
 	saveBodyWeightEntry,
+	deleteBodyWeightEntry,
 	exportData: exportAllData,
 	importData: importAllData,
 };

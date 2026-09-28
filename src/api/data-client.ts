@@ -34,6 +34,7 @@ export type DataClient = {
 	getBodyWeightEntries(): Promise<BodyWeightEntry[]>;
 	createBodyWeightEntry(input: CreateBodyWeightInput): Promise<BodyWeightEntry>;
 	saveBodyWeightEntry(entry: BodyWeightEntry): Promise<BodyWeightEntry>;
+	deleteBodyWeightEntry(id: string): Promise<void>;
 	exportData(): Promise<ExportData>;
 	importData(data: ExportData): Promise<number>;
 };
