@@ -71,3 +71,15 @@ export type CreateSessionInput = {
 	workoutId: string;
 	exercises: ExerciseData[];
 };
+
+export type BodyWeightEntry = {
+	id: string;
+	weight: number;
+	date: string;
+	created_at: string;
+};
+
+export type CreateBodyWeightInput = {
+	weight: number;
+	date?: string;
+};

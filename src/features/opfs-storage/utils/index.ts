@@ -1,8 +1,12 @@
+export { createBodyWeightEntry } from "./create-body-weight-entry";
 export { exportAllData } from "./export-all-data";
+export { getBodyWeightEntries } from "./get-body-weight-entries";
 export { getDir } from "./get-dir";
 export { getFile } from "./get-file";
+export { getRootBodyWeightDir } from "./get-root-body-weight-dir";
 export { getRootDir } from "./get-root-dir";
 export { getRootWorkoutsDir } from "./get-root-workouts-dir";
 export { importAllData } from "./import-all-data";
 export { readAllFiles } from "./read-all-files";
+export { saveBodyWeightEntry } from "./save-body-weight-entry";
 export { validateImportData } from "./validate-import-data";

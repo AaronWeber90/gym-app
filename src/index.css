@@ -3,6 +3,8 @@
 
 .fab-overwrite {
 	bottom: calc(4rem + env(safe-area-inset-bottom));
+	/* below daisyUI's .modal (z-index: 999) so open modals stay on top of the FAB */
+	z-index: 10;
 }
 
 @layer utilities {

@@ -15,6 +15,7 @@ import "./index.css";
 import { Button } from "./ui/button";
 import { CalendarDays } from "./ui/icons/calender-days";
 import { FolderIcon } from "./ui/icons/folder";
+import { ScaleIcon } from "./ui/icons/scale";
 import { SettingsIcon } from "./ui/icons/settings";
 
 const root = document.getElementById("root");
@@ -36,6 +37,7 @@ const Workouts = lazy(() => import("./pages/workouts"));
 const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
 const Overview = lazy(() => import("./pages/overview"));
 const Settings = lazy(() => import("./pages/settings"));
+const BodyWeight = lazy(() => import("./pages/body-weight"));
 
 const isAppleDevice = () =>
 	/iPhone|iPad|iPod/i.test(navigator.userAgent) ||
@@ -96,6 +98,17 @@ const Layout: Component<RouteSectionProps> = (props) => {
 					<CalendarDays class="size-[1.2em]" />
 					<span class="dock-label">Overview</span>
 				</Button>
+				<Button
+					onClick={() => {
+						navigate("/body-weight");
+					}}
+					variant={
+						location.pathname.includes("/body-weight") ? "dock-active" : "dock"
+					}
+				>
+					<ScaleIcon class="size-[1.2em]" />
+					<span class="dock-label">Körpergewicht</span>
+				</Button>
 			</div>
 		</div>
 	);
@@ -120,6 +133,7 @@ render(
 				<Route path="/file-explorer" component={OpfsExplorer} />
 				<Route path="/settings" component={Settings} />
 				<Route path="/overview" component={Overview} />
+				<Route path="/body-weight" component={BodyWeight} />
 			</HashRouter>
 		</QueryClientProvider>
 	),

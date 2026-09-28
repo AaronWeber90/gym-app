@@ -1,4 +1,6 @@
 import type {
+	BodyWeightEntry,
+	CreateBodyWeightInput,
 	CreateSessionInput,
 	CreateWorkoutInput,
 	ExportData,
@@ -29,6 +31,9 @@ export type DataClient = {
 	deleteSession(workoutId: string, sessionId: string): Promise<void>;
 	getOverviewSessions(): Promise<OverviewSession[]>;
 	getStorageUsage(): Promise<StorageUsage>;
+	getBodyWeightEntries(): Promise<BodyWeightEntry[]>;
+	createBodyWeightEntry(input: CreateBodyWeightInput): Promise<BodyWeightEntry>;
+	saveBodyWeightEntry(entry: BodyWeightEntry): Promise<BodyWeightEntry>;
 	exportData(): Promise<ExportData>;
 	importData(data: ExportData): Promise<number>;
 };
