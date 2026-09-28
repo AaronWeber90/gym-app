@@ -1,0 +1,1 @@
+import{S as e,_ as t}from"./index-BS1_gKmH.js";var n=e(`<div class="text-center text-base-content/50 py-8">`),r=e=>(()=>{var r=n();return t(r,()=>e.message),r})(),i=e(`<ul class="list bg-base-100 rounded-box shadow-md divide-y divide-base-300">`),a=e=>(()=>{var n=i();return t(n,()=>e.children),n})();export{r as n,a as t};
