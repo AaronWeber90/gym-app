@@ -3,6 +3,7 @@ import { createSettingsPageState } from "../features/settings/hooks/create-setti
 import { formatBytes } from "../features/settings/utils/format-bytes";
 import { Header } from "../features/workouts/components/header";
 import { Button } from "../ui/button";
+import { GithubIcon } from "../ui/icons/github";
 import { Section } from "../ui/section";
 
 const PERCENT = 100;
@@ -82,6 +83,25 @@ export function Settings() {
 						/>
 					</label>
 					{importResult() && <p class="text-sm mt-1">{importResult()}</p>}
+				</div>
+			</Section>
+
+			<Section>
+				<div class="flex flex-col gap-2">
+					<h2 class="card-title text-lg">Feedback</h2>
+					<p class="text-sm text-base-content/60">
+						Zum Erstellen eines Issues musst du bei GitHub angemeldet sein und
+						Zugriff auf das private Repository haben.
+					</p>
+					<a
+						class="link link-primary inline-flex items-center gap-2"
+						href="https://github.com/AaronWeber90/gym-app/issues/new"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<GithubIcon />
+						Fehler oder Feedback melden
+					</a>
 				</div>
 			</Section>
 		</div>

@@ -16,4 +16,16 @@ test("settings page state exposes key accessible information", async ({
 
 	await expect(versionRow.getByText("Version")).toBeVisible();
 	await expect(versionRow.locator("span").nth(1)).toHaveText(/\S+/);
+
+	const feedbackLink = page.getByRole("link", {
+		name: "Fehler oder Feedback melden",
+	});
+	await expect(feedbackLink).toBeVisible();
+	await expect(feedbackLink).toHaveAttribute(
+		"href",
+		"https://github.com/AaronWeber90/gym-app/issues/new",
+	);
+	await expect(feedbackLink).toHaveAttribute("target", "_blank");
+	await expect(feedbackLink).toHaveAttribute("rel", "noopener noreferrer");
+	await expect(feedbackLink.locator('svg[aria-hidden="true"]')).toBeVisible();
 });
