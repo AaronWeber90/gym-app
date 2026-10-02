@@ -1,5 +1,5 @@
+import type { SessionData } from "@api";
 import { getDir, getRootDir } from "../../opfs-storage/utils";
-import type { SessionData } from "./types";
 
 export const fetchPreviousSession = async (
 	workoutId: string,
@@ -20,13 +20,17 @@ export const fetchPreviousSession = async (
 
 	const currentDate = new Date(currentSessionDate).getTime();
 	let bestSession: SessionData | null = null;
-	let bestDate = -Infinity;
+	let bestDate = Number.NEGATIVE_INFINITY;
 
 	for await (const [fileName, fileHandle] of parentDir.entries()) {
-		if (fileHandle.kind !== "file" || !fileName.endsWith(".json")) continue;
+		if (fileHandle.kind !== "file" || !fileName.endsWith(".json")) {
+			continue;
+		}
 
 		const sessionId = fileName.replace(".json", "");
-		if (sessionId === currentSessionId) continue;
+		if (sessionId === currentSessionId) {
+			continue;
+		}
 
 		try {
 			const file = await (fileHandle as FileSystemFileHandle).getFile();

@@ -7,7 +7,7 @@ type CreateWorkoutModalProps = {
 	onCreated?: () => void | Promise<void>;
 };
 
-const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
+export const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 	const [showModal, setShowModal] = createSignal(false);
 	const [newWorkoutName, setNewWorkoutName] = createSignal("");
 
@@ -18,7 +18,9 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 
 	const handleAddWorkout = async () => {
 		const name = newWorkoutName().trim();
-		if (!name) return;
+		if (!name) {
+			return;
+		}
 
 		try {
 			await dataClient.createWorkout({ name });
@@ -73,5 +75,3 @@ const CreateWorkoutModal = (props: CreateWorkoutModalProps) => {
 		</>
 	);
 };
-
-export default CreateWorkoutModal;

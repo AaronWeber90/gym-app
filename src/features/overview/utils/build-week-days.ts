@@ -1,17 +1,19 @@
 import type { Workout } from "@api";
-import { weekDayNames } from "./constants";
+import { DAYS_PER_WEEK, weekDayNames } from "./constants";
 import type { DayWorkout, WeekDay } from "./types";
 
 export function buildWeekDays(weekStart: Date, workouts: Workout[]): WeekDay[] {
 	const days: WeekDay[] = [];
 
-	for (let i = 0; i < 7; i++) {
+	for (let i = 0; i < DAYS_PER_WEEK; i++) {
 		const date = new Date(weekStart);
 		date.setDate(weekStart.getDate() + i);
 
 		const dayWorkouts: DayWorkout[] = workouts
 			.flatMap((w) => {
-				if (!w.sessions || w.sessions.length === 0) return [];
+				if (!w.sessions || w.sessions.length === 0) {
+					return [];
+				}
 				return w.sessions
 					.filter((session) => {
 						const sessionDate = new Date(session.date);

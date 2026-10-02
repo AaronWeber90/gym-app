@@ -17,12 +17,8 @@ const sizeClass = {
 	lg: "badge-lg",
 } as const;
 
-export const Badge: Component<BadgeProps> = (props) => {
-	return (
-		<span
-			class={`badge ${variantClass[props.variant]} ${sizeClass[props.size]}`}
-		>
-			{props.children}
-		</span>
-	);
-};
+export const Badge: Component<BadgeProps> = (props) => (
+	<span class={`badge ${variantClass[props.variant]} ${sizeClass[props.size]}`}>
+		{props.children}
+	</span>
+);

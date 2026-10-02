@@ -17,6 +17,8 @@ import { childWorkoutsQueryKey } from "../../workout/hooks/create-child-workouts
 import { createSortableList, debounce } from "../utils";
 import { appendSet, mapSessionExercises } from "../utils/exercise-transforms";
 
+const SAVE_DEBOUNCE_MS = 500;
+
 type SessionParams = { id: string; sessionId: string };
 type SessionAccessor = () => SessionData | undefined;
 type ExercisesAccessor = () => ExerciseData[];
@@ -78,7 +80,9 @@ const moveItem = (list: ExerciseData[], fromIndex: number, toIndex: number) => {
 const persistSession = async (deps: PersistDeps) => {
 	const { params, session, exercises, queryClient } = deps;
 	const s = session();
-	if (!s) return;
+	if (!s) {
+		return;
+	}
 
 	try {
 		const trimmedExercises = exercises().map((ex) => ({
@@ -117,7 +121,7 @@ const createSessionQueries = (params: SessionParams) => {
 	const sessionQuery = createQuery(() => ({
 		queryKey: ["workoutSession", params.id, params.sessionId],
 		queryFn: () => dataClient.getSession(params.id, params.sessionId),
-		enabled: !!params.id && !!params.sessionId,
+		enabled: Boolean(params.id) && Boolean(params.sessionId),
 	}));
 
 	const session = () => sessionQuery.data;
@@ -127,10 +131,12 @@ const createSessionQueries = (params: SessionParams) => {
 		queryKey: ["previousSession", params.id, params.sessionId],
 		queryFn: () => {
 			const date = session()?.date;
-			if (!date) throw new Error("Session date not available");
+			if (!date) {
+				throw new Error("Session date not available");
+			}
 			return dataClient.getPreviousSession(params.id, params.sessionId, date);
 		},
-		enabled: !!session()?.date,
+		enabled: Boolean(session()?.date),
 	}));
 
 	const previousExerciseMap = createMemo(() => {
@@ -151,7 +157,7 @@ const createExerciseStore = (deps: ExerciseStoreDeps) => {
 
 	const persist = () =>
 		persistSession({ params, session, exercises, queryClient });
-	const debouncedSave = debounce(persist, 500);
+	const debouncedSave = debounce(persist, SAVE_DEBOUNCE_MS);
 
 	const updateExerciseName = (index: number, name: string) => {
 		setExercises(renameExercise(exercises(), index, name));
@@ -221,7 +227,9 @@ export const createSessionPageState = () => {
 	createEffect(
 		on(sessionId, () => {
 			const s = session();
-			if (s?.exercises) store.setExercises(mapSessionExercises(s.exercises));
+			if (s?.exercises) {
+				store.setExercises(mapSessionExercises(s.exercises));
+			}
 		}),
 	);
 

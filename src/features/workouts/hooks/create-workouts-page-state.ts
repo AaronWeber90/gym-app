@@ -8,7 +8,9 @@ export const createWorkoutsPageState = () => {
 
 	const sortedWorkouts = createMemo(() => {
 		const items = workouts();
-		if (!items || items.length === 0) return items;
+		if (!items || items.length === 0) {
+			return items;
+		}
 		return sortWorkouts(items, sortOrder());
 	});
 

@@ -11,8 +11,10 @@ import { SortIcon } from "../ui/icons/sort";
 import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
 
-const CreateWorkoutModal = lazy(
-	() => import("../features/workout/components/create-workout-modal"),
+const CreateWorkoutModal = lazy(() =>
+	import("../features/workout/components/create-workout-modal").then((m) => ({
+		default: m.CreateWorkoutModal,
+	})),
 );
 
 const SortDropdown = (props: {
@@ -79,7 +81,7 @@ const SortDropdown = (props: {
 	);
 };
 
-const Workouts = () => {
+export const Workouts = () => {
 	const { sortedWorkouts, sortOrder, setSortOrder, handleCreated } =
 		createWorkoutsPageState();
 
@@ -125,5 +127,3 @@ const Workouts = () => {
 		</>
 	);
 };
-
-export default Workouts;

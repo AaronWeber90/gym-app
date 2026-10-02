@@ -35,7 +35,9 @@ export const createSettingsPageState = () => {
 	const handleImport = async (e: Event) => {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
-		if (!file) return;
+		if (!file) {
+			return;
+		}
 
 		setImporting(true);
 		setImportResult(null);

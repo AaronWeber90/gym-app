@@ -9,11 +9,13 @@ import { ListGroup } from "../ui/list-group";
 import { ListItem } from "../ui/list-item";
 import { formatDate } from "../utils/format-date";
 
-const SessionModal = lazy(
-	() => import("../features/workout/components/create-session-modal"),
+const SessionModal = lazy(() =>
+	import("../features/workout/components/create-session-modal").then((m) => ({
+		default: m.SessionModal,
+	})),
 );
 
-const Workout = () => {
+export const Workout = () => {
 	const {
 		currentWorkout,
 		childWorkouts,
@@ -87,5 +89,3 @@ const Workout = () => {
 		</div>
 	);
 };
-
-export default Workout;

@@ -7,10 +7,13 @@ import {
 	calculatePersonalRecords,
 	calculateWeeklyInsights,
 } from "../utils/calculate-overview-insights";
+import { DAYS_PER_WEEK } from "../utils/constants";
 import { overviewSessionsQueryKey } from "../utils/fetch-overview-sessions";
 import { formatWeekRange } from "../utils/format-week-range";
 import { getWeekStart } from "../utils/get-week-start";
 import { isToday } from "../utils/is-today";
+
+const PERSONAL_RECORD_LIMIT = 5;
 
 export const createOverviewPageState = () => {
 	const { workouts } = createWorkoutResource();
@@ -24,7 +27,7 @@ export const createOverviewPageState = () => {
 	const weekDays = createMemo(() => {
 		const today = new Date();
 		const weekStart = getWeekStart(today);
-		weekStart.setDate(weekStart.getDate() + weekOffset() * 7);
+		weekStart.setDate(weekStart.getDate() + weekOffset() * DAYS_PER_WEEK);
 		return buildWeekDays(weekStart, workouts() ?? []);
 	});
 
@@ -45,7 +48,10 @@ export const createOverviewPageState = () => {
 	});
 
 	const personalRecords = createMemo(() =>
-		calculatePersonalRecords(overviewSessionsQuery.data ?? [], 5),
+		calculatePersonalRecords(
+			overviewSessionsQuery.data ?? [],
+			PERSONAL_RECORD_LIMIT,
+		),
 	);
 
 	const previousWeek = () => setWeekOffset((o) => o - 1);

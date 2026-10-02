@@ -1,5 +1,5 @@
 import { A } from "@solidjs/router";
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import { WeeklyStats } from "../features/overview/components/weekly-stats";
 import { createOverviewPageState } from "../features/overview/hooks/create-overview-page-state";
 import { monthNames } from "../features/overview/utils/constants";
@@ -120,7 +120,7 @@ const WorkoutLink = (props: { workout: WorkoutEntry }) => (
 		class="block"
 	>
 		<div class="flex items-center gap-3 p-3 bg-primary text-primary-content rounded-lg hover:bg-primary-focus transition-colors group">
-			<div class="w-2 h-2 bg-primary-content rounded-full flex-shrink-0"></div>
+			<div class="w-2 h-2 bg-primary-content rounded-full flex-shrink-0" />
 			<div class="font-medium text-sm flex-1 min-w-0">{props.workout.name}</div>
 			<svg
 				class="w-5 h-5 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity"
@@ -167,9 +167,9 @@ const WeekDayHeader = (props: { day: WeekDay; active: boolean }) => (
 				<div class="text-xs text-base-content/50">
 					{monthNames[props.day.date.getMonth()]}
 				</div>
-				{props.active && (
+				<Show when={props.active}>
 					<div class="badge badge-primary badge-sm mt-1">Heute</div>
-				)}
+				</Show>
 			</div>
 		</div>
 	</div>
@@ -221,7 +221,7 @@ const WeekDaysSection = (props: {
 	</Section>
 );
 
-const WorkoutCalendar = () => {
+export const WorkoutCalendar = () => {
 	const state = createOverviewPageState();
 
 	return (
@@ -241,5 +241,3 @@ const WorkoutCalendar = () => {
 		</>
 	);
 };
-
-export default WorkoutCalendar;

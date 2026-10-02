@@ -6,7 +6,9 @@ export const createCurrentWorkout = (id: () => string) => {
 
 	const currentWorkout = createMemo(() => {
 		const data = workouts();
-		if (!data) return undefined;
+		if (!data) {
+			return;
+		}
 		return data.find((workout) => workout.id === id());
 	});
 

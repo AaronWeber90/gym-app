@@ -12,7 +12,9 @@ export const getWorkoutSessions = async (
 		const sessions: WorkoutSessionSummary[] = [];
 
 		for await (const [name, handle] of workoutDir.entries()) {
-			if (handle.kind !== "file" || !name.endsWith(".json")) continue;
+			if (handle.kind !== "file" || !name.endsWith(".json")) {
+				continue;
+			}
 			try {
 				const file = await (handle as FileSystemFileHandle).getFile();
 				const session = JSON.parse(await file.text()) as SessionData;

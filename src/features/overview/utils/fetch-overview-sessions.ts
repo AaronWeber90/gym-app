@@ -1,5 +1,5 @@
+import type { SessionData } from "@api";
 import { getDir, getRootDir } from "../../opfs-storage/utils";
-import type { SessionData } from "../../session/utils";
 import type { OverviewSession } from "./calculate-overview-insights";
 
 export const overviewSessionsQueryKey = ["overviewSessions"] as const;
@@ -60,7 +60,9 @@ const collectWorkoutSessions = async (
 	const sessions: OverviewSession[] = [];
 
 	for await (const [sessionFileName, sessionHandle] of sessionDir.entries()) {
-		if (!isJsonFileHandle(sessionFileName, sessionHandle)) continue;
+		if (!isJsonFileHandle(sessionFileName, sessionHandle)) {
+			continue;
+		}
 
 		try {
 			const sessionData = await readSessionFile(sessionHandle);
@@ -83,7 +85,9 @@ export const fetchOverviewSessions = async (): Promise<OverviewSession[]> => {
 		const sessions: OverviewSession[] = [];
 
 		for await (const [fileName, fileHandle] of workoutsDir.entries()) {
-			if (!isJsonFileHandle(fileName, fileHandle)) continue;
+			if (!isJsonFileHandle(fileName, fileHandle)) {
+				continue;
+			}
 
 			try {
 				const workoutData = await readWorkoutMeta(fileHandle);

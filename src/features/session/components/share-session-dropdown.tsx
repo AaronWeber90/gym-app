@@ -1,11 +1,10 @@
+import type { ExerciseData, SessionData } from "@api";
 import { createSignal } from "solid-js";
 import { Dropdown } from "../../../ui/dropdown";
 import { ShareIcon } from "../../../ui/icons/share";
-import {
-	type ExerciseData,
-	formatSessionForAi,
-	type SessionData,
-} from "../utils";
+import { formatSessionForAi } from "../utils";
+
+const COPIED_FEEDBACK_MS = 1500;
 
 type ShareSessionDropdownProps = {
 	session: Pick<SessionData, "name" | "date">;
@@ -19,7 +18,7 @@ export const ShareSessionDropdown = (props: ShareSessionDropdownProps) => {
 		const formatted = formatSessionForAi(props.session, props.exercises);
 		await navigator.clipboard.writeText(formatted);
 		setCopied(true);
-		setTimeout(() => setCopied(false), 1500);
+		setTimeout(() => setCopied(false), COPIED_FEEDBACK_MS);
 	};
 
 	return (

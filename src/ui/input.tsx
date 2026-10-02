@@ -28,7 +28,9 @@ export const Input = (props: InputProps) => {
 		/>
 	);
 
-	if (!local.label) return input;
+	if (!local.label) {
+		return input;
+	}
 
 	return (
 		<div class="flex flex-col gap-1">

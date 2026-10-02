@@ -1,2 +1,2 @@
-// imported directly (not via the @api barrel) to avoid a circular import through client.ts -> opfs-data-client.ts
+// biome-ignore lint/style/noRestrictedImports: @api barrel would create a cycle via client.ts -> opfs-data-client.ts
 export { validateExportData as validateImportData } from "../../../api/validate-export-data";

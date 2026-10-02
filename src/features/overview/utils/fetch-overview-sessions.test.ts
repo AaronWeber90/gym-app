@@ -46,7 +46,7 @@ const makeSessionsDir = (
 	session: unknown,
 ): FileSystemDirectoryHandle =>
 	createDirectoryHandle({
-		entries: async function* () {
+		async *entries() {
 			yield [fileName, asJsonFileHandle(fileName, session)];
 		},
 	});
@@ -88,7 +88,7 @@ describe("fetchOverviewSessions", () => {
 		const pullSessionsDir = makeSessionsDir("s2.json", pullSession);
 
 		const workoutsDir = createDirectoryHandle({
-			entries: async function* () {
+			async *entries() {
 				yield [
 					"w1.json",
 					asJsonFileHandle("w1.json", { id: "w1", name: "Push" }),
@@ -99,8 +99,12 @@ describe("fetchOverviewSessions", () => {
 				];
 			},
 			getDirectoryHandle: async (id: string) => {
-				if (id === "w1") return pushSessionsDir;
-				if (id === "w2") return pullSessionsDir;
+				if (id === "w1") {
+					return pushSessionsDir;
+				}
+				if (id === "w2") {
+					return pullSessionsDir;
+				}
 				throw new Error("Missing dir");
 			},
 		});
@@ -124,7 +128,7 @@ describe("fetchOverviewSessions", () => {
 		const sessionsDir = makeSessionsDir("canonical.json", mismatchedIdSession);
 
 		const workoutsDir = createDirectoryHandle({
-			entries: async function* () {
+			async *entries() {
 				yield [
 					"w1.json",
 					asJsonFileHandle("w1.json", { id: "w1", name: "Push" }),
@@ -144,7 +148,7 @@ describe("fetchOverviewSessions", () => {
 
 describe("fetchOverviewSessions error handling", () => {
 	it("returns empty array when root access fails", async () => {
-		const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+		const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 		mockedGetDir.mockRejectedValue(new Error("OPFS unavailable"));
 
 		const result = await fetchOverviewSessions();

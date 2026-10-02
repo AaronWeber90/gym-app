@@ -1,6 +1,12 @@
+import type { SetData } from "@api";
 import { createSignal, Show } from "solid-js";
-import type { SetData } from "../utils";
-import { normalizeWeightInput } from "../utils/normalize-weight-input";
+import {
+	normalizeWeightInput,
+	WEIGHT_STEP,
+} from "../utils/normalize-weight-input";
+
+const MAX_WEIGHT_INPUT_CHARS = 6;
+const MAX_REPS_INPUT_CHARS = 4;
 
 type SetRowProps = {
 	set: SetData;
@@ -42,7 +48,7 @@ const WeightCell = (props: WeightCellProps) => {
 
 	const stepWeight = (direction: 1 | -1) => {
 		const current = normalizeWeightInput(inputValue());
-		const next = Math.max(0, current + direction * 0.5);
+		const next = Math.max(0, current + direction * WEIGHT_STEP);
 		const normalized = Number(next.toFixed(2));
 		setInputValue(String(normalized).replace(".", ","));
 		props.onUpdate(normalized);
@@ -57,10 +63,12 @@ const WeightCell = (props: WeightCellProps) => {
 				value={inputValue()}
 				min={0}
 				max={9999}
-				step={0.5}
+				step={WEIGHT_STEP}
 				onInput={(e) => {
 					const rawValue = e.currentTarget.value;
-					if (rawValue.replace(/[^0-9,.-]/g, "").length > 6) {
+					if (
+						rawValue.replace(/[^0-9,.-]/g, "").length > MAX_WEIGHT_INPUT_CHARS
+					) {
 						e.currentTarget.value = rawValue.slice(0, -1);
 						return;
 					}
@@ -102,8 +110,11 @@ const RepsCell = (props: RepsCellProps) => (
 			min={0}
 			max={9999}
 			onInput={(e) => {
-				if (e.currentTarget.value.length > 4) {
-					e.currentTarget.value = e.currentTarget.value.slice(0, 4);
+				if (e.currentTarget.value.length > MAX_REPS_INPUT_CHARS) {
+					e.currentTarget.value = e.currentTarget.value.slice(
+						0,
+						MAX_REPS_INPUT_CHARS,
+					);
 					return;
 				}
 				props.onUpdate(Number.parseInt(e.currentTarget.value, 10) || 0);

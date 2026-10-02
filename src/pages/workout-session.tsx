@@ -1,9 +1,9 @@
+import type { ExerciseData, SessionData } from "@api";
 import { type Accessor, Index, Show } from "solid-js";
 import { normalizeExerciseName } from "../features/exercises/utils";
 import { ExerciseBlock } from "../features/session/components/exercise-block";
 import { ShareSessionDropdown } from "../features/session/components/share-session-dropdown";
 import { createSessionPageState } from "../features/session/hooks/create-session-page-state";
-import type { ExerciseData, SessionData } from "../features/session/utils";
 import { Header } from "../features/workouts/components/header";
 import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
 import { formatDate } from "../utils/format-date";
@@ -115,7 +115,7 @@ const SessionView = (props: { session: SessionData; state: SessionState }) => (
 	</div>
 );
 
-const WorkoutSession = () => {
+export const WorkoutSession = () => {
 	const state = createSessionPageState();
 
 	return (
@@ -133,5 +133,3 @@ const WorkoutSession = () => {
 		</Show>
 	);
 };
-
-export default WorkoutSession;

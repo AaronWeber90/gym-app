@@ -1,3 +1,4 @@
+// biome-ignore-all lint/style/noMagicNumbers: SVG layout offsets in px
 import type { BodyWeightEntry } from "@api";
 import { createSignal, For, Show } from "solid-js";
 import { formatDate } from "../../../utils/format-date";
@@ -61,8 +62,12 @@ type ChartAxesProps = {
 // keeps date labels inside the chart bounds regardless of how many ticks survived the spacing filter
 const xTickAnchor = (x: number, layout: ChartLayout) => {
 	const relative = (x - layout.plotLeft) / (layout.plotRight - layout.plotLeft);
-	if (relative < 0.15) return "start";
-	if (relative > 0.85) return "end";
+	if (relative < 0.15) {
+		return "start";
+	}
+	if (relative > 0.85) {
+		return "end";
+	}
 	return "middle";
 };
 
@@ -118,7 +123,9 @@ const ChartPoints = (props: ChartPointsProps) => (
 					aria-label={label}
 					onClick={select}
 					onKeyDown={(e) => {
-						if (e.key !== "Enter" && e.key !== " ") return;
+						if (e.key !== "Enter" && e.key !== " ") {
+							return;
+						}
 						e.preventDefault();
 						select();
 					}}

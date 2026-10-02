@@ -5,7 +5,9 @@ import { Header } from "../features/workouts/components/header";
 import { Button } from "../ui/button";
 import { Section } from "../ui/section";
 
-export default function Settings() {
+const PERCENT = 100;
+
+export function Settings() {
 	const {
 		storage,
 		exporting,
@@ -35,7 +37,7 @@ export default function Settings() {
 									<span class="text-base-content/60">Belegt</span>
 									<span class="font-mono text-sm">
 										{formatBytes(s().usage)} (
-										{((s().usage / s().quota) * 100).toFixed(2)}%)
+										{((s().usage / s().quota) * PERCENT).toFixed(2)}%)
 									</span>
 								</div>
 								<div class="flex justify-between items-center">

@@ -1,0 +1,280 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": ["**", "!!**/dist"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended",
+			"a11y": {
+				"noNoninteractiveElementInteractions": "error"
+			},
+			"complexity": {
+				"noDivRegex": "error",
+				"noExcessiveCognitiveComplexity": "error",
+				"noExcessiveLinesPerFunction": "error",
+				"noExcessiveNestedTestSuites": "error",
+				"noForEach": "error",
+				"noImplicitCoercions": "error",
+				"noRedundantDefaultExport": "error",
+				"noUselessCatchBinding": "error",
+				"noUselessReturn": "error",
+				"noUselessStringConcat": "error",
+				"noUselessUndefined": "error",
+				"noVoid": "error",
+				"useArrayFind": "error",
+				"useMaxParams": "error",
+				"useSimplifiedLogicExpression": "error",
+				"useWhile": "error"
+			},
+			"correctness": {
+				"noGlobalDirnameFilename": "error",
+				"noNodejsModules": "error",
+				"noProcessGlobal": "error",
+				"noSolidDestructuredProps": "error",
+				"noUndeclaredDependencies": "error",
+				"noUndeclaredVariables": "error",
+				"noUnresolvedImports": "error",
+				"noUnusedInstantiation": "error",
+				"useJsonImportAttributes": "error",
+				"useSingleJsDocAsterisk": "error",
+				"useUniqueElementIds": "error"
+				// "useImportExtensions": "error", // verworfen: Vite/moduleResolution bundler, Endungen unnötig
+				// "noRestrictedElements": "error", // verworfen: kein Element, das projektweit verboten werden muss
+			},
+			"performance": {
+				"noAwaitInLoops": "error",
+				"noDelete": "error",
+				"noNamespaceImport": "error",
+				"noSyncScripts": "error",
+				"useSolidForComponent": "error",
+				"useTopLevelRegex": "error"
+				// "noJsxPropsBind": "error", // verworfen: React-Problem, Solid-Komponenten laufen nur einmal
+				// "noBarrelFile": "error", // verworfen: Barrel-Konvention (AGENTS.md), Zyklen via noImportCycles
+				// "noReExportAll": "error", // zurückgestellt (src/api/index.ts export *)
+			},
+			"security": {
+				"noSecrets": "error"
+			},
+			"suspicious": {
+				"noAlert": "error",
+				"noBitwiseOperators": "error",
+				"noConsole": {
+					"level": "error",
+					"options": { "allow": ["error", "warn"] }
+				},
+				"noConstantBinaryExpressions": "error",
+				"noDeprecatedImports": "error",
+				"noDuplicatedSpreadProps": "error",
+				"noEmptyBlockStatements": "error",
+				"noEmptySource": "error",
+				"noEqualsToNull": "error",
+				"noEvolvingTypes": "error",
+				"noForIn": "error",
+				"noImportCycles": "error",
+				"noLeakedRender": "error",
+				"noMisplacedAssertion": "error",
+				"noNestedPromises": "error",
+				"noParametersOnlyUsedInRecursion": "error",
+				"noReturnAssign": "error",
+				"noShadow": "error",
+				"noSkippedTests": "error",
+				"noUnassignedVariables": "error",
+				"noUnnecessaryConditions": "error",
+				"noUnusedExpressions": "error",
+				"noVar": "error",
+				"useArraySortCompare": "error",
+				"useAwait": "error",
+				"useErrorMessage": "error",
+				"useGuardForIn": "error",
+				"useNumberToFixedDigitsArgument": "error",
+				"useStaticResponseMethods": "error",
+				"useStrictMode": "error"
+				// "noUnknownAttribute": "error", // verworfen: React-spezifisch, class/kebab-case korrekt in Solid
+			},
+			"style": {
+				"noCommonJs": "error",
+				"noDefaultExport": "error",
+				"noDoneCallback": "error",
+				"noEnum": "error",
+				"noExcessiveClassesPerFile": "error",
+				"noExcessiveLinesPerFile": "error",
+				"noExportedImports": "error",
+				"noIncrementDecrement": {
+					"level": "error",
+					"options": { "allowForLoopAfterthoughts": true }
+				},
+				"noInferrableTypes": "error",
+				"noMagicNumbers": "error",
+				"noMultiAssign": "error",
+				"noMultilineString": "error",
+				"noNamespace": "error",
+				"noNegationElse": "error",
+				"noNestedTernary": "error",
+				"noParameterAssign": "error",
+				"noParameterProperties": "error",
+				"noProcessEnv": "error",
+				"noShoutyConstants": "error",
+				"noSubstr": "error",
+				"noUnusedTemplateLiteral": "error",
+				"noUselessElse": "error",
+				"noYodaExpression": "error",
+				"useAsConstAssertion": "error",
+				"useAtIndex": "error",
+				"useBlockStatements": "error",
+				"useCollapsedElseIf": "error",
+				"useCollapsedIf": "error",
+				"useConsistentArrayType": "error",
+				"useConsistentArrowReturn": "error",
+				"useConsistentBuiltinInstantiation": "error",
+				"useConsistentCurlyBraces": "error",
+				"useConsistentEnumValueType": "error",
+				"useConsistentMemberAccessibility": "error",
+				"useConsistentMethodSignatures": "error",
+				"useConsistentObjectDefinitions": "error",
+				"useConsistentTypeDefinitions": {
+					"level": "error",
+					"options": { "style": "type" }
+				},
+				"useDefaultParameterLast": "error",
+				"useDefaultSwitchClause": "error",
+				"useEnumInitializers": "error",
+				"useErrorCause": "error",
+				"useExplicitLengthCheck": "error",
+				"useFilenamingConvention": "error",
+				"useForOf": "error",
+				"useFragmentSyntax": "error",
+				"useGlobalThis": "error",
+				"useGroupedAccessorPairs": "error",
+				"useNodeAssertStrict": "error",
+				"useNumberNamespace": "error",
+				"useNumericSeparators": "error",
+				"useObjectSpread": "error",
+				"useReadonlyClassProperties": "error",
+				"useSelfClosingElements": "error",
+				"useShorthandAssign": "error",
+				"useSingleVarDeclarator": "error",
+				"useSpreadOverApply": "error",
+				"useSymbolDescription": "error",
+				"useThrowNewError": "error",
+				"useThrowOnlyError": "error",
+				"useTrimStartEnd": "error",
+				"useUnifiedTypeSignatures": "error",
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"patterns": [
+							{
+								"group": ["**/api", "**/api/**"],
+								"message": "Über den @api-Barrel importieren."
+							}
+						]
+					}
+				}
+				// "noJsxLiterals": "error", // verworfen: kein i18n, UI nur Deutsch
+				// "noTernary": "error", // verworfen: passt nicht zu JSX, noNestedTernary reicht
+				// "useNamingConvention": "error", // verworfen: created_at ist Speicherformat, fremde APIs
+				// "noContinue": "error", // verworfen: Guard-Clauses mit continue erwünscht
+				// "noImplicitBoolean": "error", // verworfen: Auto-Fix macht popover={true} kaputt
+				// "useDestructuring": "error", // verworfen: widerspricht Solid-Props / splitProps
+				// "useExportsLast": "error", // verworfen: exportierte Typen dürfen oben stehen
+				// "noRestrictedGlobals": "error", // verworfen: kein Mehrwert, Defaults (event, error) ohne Treffer
+				// "noRestrictedTypes": "error", // verworfen: noBannedTypes/noExplicitAny aus recommended reichen
+			}
+		},
+		"domains": {
+			"solid": "recommended",
+			"project": "recommended",
+			"test": "recommended"
+		}
+	},
+	"overrides": [
+		{
+			// build configs run in Node
+			"includes": [
+				"vite.config.ts",
+				"vitest.config.ts",
+				"playwright.config.ts"
+			],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noNodejsModules": "off"
+					},
+					"style": {
+						"noDefaultExport": "off",
+						"noProcessEnv": "off"
+					}
+				}
+			}
+		},
+		{
+			// test names, selectors and inline matchers trigger false positives
+			"includes": ["**/*.test.ts", "e2e/**"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"useTopLevelRegex": "off"
+					},
+					"security": {
+						"noSecrets": "off"
+					},
+					"style": {
+						"noMagicNumbers": "off"
+					}
+				}
+			}
+		},
+		{
+			// UI steps must run sequentially
+			"includes": ["e2e/**"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"noAwaitInLoops": "off"
+					}
+				}
+			}
+		},
+		{
+			// mocks mimic promise-based OPFS APIs without awaiting
+			"includes": ["**/*.test.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"useAwait": "off"
+					}
+				}
+			}
+		}
+	],
+	"javascript": {
+		"globals": ["__APP_VERSION__"],
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	}
+}

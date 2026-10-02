@@ -9,7 +9,7 @@ export const getSessionsAndLastTrainedDate = async (
 			create: false,
 		});
 
-		let mostRecentDate = null;
+		let mostRecentDate: Date | null = null;
 		const sessions: WorkoutSession[] = [];
 
 		for await (const [fileName, fileHandle] of childWorkoutsDir.entries()) {

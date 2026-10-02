@@ -52,7 +52,7 @@ root/workouts/
   {workoutId}/{sessionId}.json  ← session data with exercises (SessionData type)
 ```
 
-Core types: `Workout` in [src/api/types.ts](src/api/types.ts), `SessionData`/`ExerciseData`/`SetData` in [src/features/session/utils/types.ts](src/features/session/utils/types.ts).
+Core types: `Workout`, `SessionData`/`ExerciseData`/`SetData` and all other domain types live in [src/api/types.ts](src/api/types.ts) and are imported via `@api`.
 
 ### Project Structure
 

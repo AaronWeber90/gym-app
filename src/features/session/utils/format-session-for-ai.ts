@@ -1,8 +1,8 @@
+import type { ExerciseData, SessionData } from "@api";
 import { formatDate } from "../../../utils/format-date";
-import type { ExerciseData, SessionData } from "./types";
 
 const formatSet = (weight: number, reps: number, rpe?: number) => {
-	const rpeSuffix = rpe != null ? `@${rpe}` : "";
+	const rpeSuffix = typeof rpe === "number" ? `@${rpe}` : "";
 	return `${weight}kgx${reps}${rpeSuffix}`;
 };
 
@@ -28,7 +28,9 @@ export const formatSessionForAi = (
 		},
 	)}`;
 
-	if (exercises.length === 0) return `${title}\nKeine Übungen`;
+	if (exercises.length === 0) {
+		return `${title}\nKeine Übungen`;
+	}
 
 	return `${title}\n${exercises
 		.map((exercise, index) => formatExercise(exercise, index))

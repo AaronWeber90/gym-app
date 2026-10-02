@@ -12,16 +12,19 @@ export async function importAllData(data: unknown): Promise<number> {
 
 		// Create all intermediate directories
 		for (let i = 0; i < parts.length - 1; i++) {
+			// biome-ignore lint/performance/noAwaitInLoops: each level needs the parent handle
 			dir = await dir.getDirectoryHandle(parts[i], { create: true });
 		}
 
 		const fileName = parts.at(-1);
-		if (!fileName) continue;
+		if (!fileName) {
+			continue;
+		}
 		const fileHandle = await dir.getFileHandle(fileName, { create: true });
 		const writable = await fileHandle.createWritable();
 		await writable.write(entry.content);
 		await writable.close();
-		count++;
+		count += 1;
 	}
 
 	return count;

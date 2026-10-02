@@ -7,10 +7,12 @@ type WorkoutSubtitleProps = {
 };
 
 export const WorkoutSubtitle: Component<WorkoutSubtitleProps> = (props) => {
-	if (!props.lastTrainedAt) return <>Noch nicht trainiert</>;
+	if (!props.lastTrainedAt) {
+		return <>Noch nicht trainiert</>;
+	}
 	const isToday =
 		new Date(props.lastTrainedAt).toDateString() === new Date().toDateString();
-	if (isToday)
+	if (isToday) {
 		return (
 			<>
 				Zuletzt trainiert{" "}
@@ -19,5 +21,6 @@ export const WorkoutSubtitle: Component<WorkoutSubtitleProps> = (props) => {
 				</Badge>
 			</>
 		);
+	}
 	return <>Zuletzt trainiert: {formatDate(props.lastTrainedAt)}</>;
 };

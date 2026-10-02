@@ -1,3 +1,5 @@
+// biome-ignore-all lint/suspicious/noAlert: debug page, native dialogs are fine
+// biome-ignore-all lint/suspicious/noConsole: debug page logs deletions
 import { createQuery, useQueryClient } from "@tanstack/solid-query";
 import { For, Show } from "solid-js";
 import { formatDate } from "../utils/format-date";
@@ -137,10 +139,11 @@ async function readDirectoryEntries(
 				fullPath,
 				processedDirs,
 			});
-			if (entry) entries.push(entry);
+			if (entry) {
+				entries.push(entry);
+			}
 		} else {
-			const entry = await processFileEntry(name, dirHandle, fullPath);
-			if (entry) entries.push(entry);
+			entries.push(await processFileEntry(name, dirHandle, fullPath));
 		}
 	}
 	return entries;
@@ -194,7 +197,7 @@ const FileIcon = () => (
 );
 
 // --- Components ---
-const OpfsExplorer = () => {
+export const OpfsExplorer = () => {
 	const queryClient = useQueryClient();
 	const entriesQuery = createQuery(() => ({
 		queryKey: ["opfs-structure"],
@@ -209,7 +212,9 @@ const OpfsExplorer = () => {
 		const confirmed = confirm(
 			"Are you sure you want to delete ALL data? This action cannot be undone.",
 		);
-		if (!confirmed) return;
+		if (!confirmed) {
+			return;
+		}
 
 		try {
 			const root = await navigator.storage.getDirectory();
@@ -284,5 +289,3 @@ const FileTree = (props: { entries: OpfsEntry[] }) => (
 		)}
 	</For>
 );
-
-export default OpfsExplorer;

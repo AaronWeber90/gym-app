@@ -46,7 +46,7 @@ const normalizeExercises = (
 const buildInitialExercises = (
 	previousExercises?: ExerciseInput[],
 ): ExerciseInput[] => {
-	if (previousExercises?.length) {
+	if (previousExercises && previousExercises.length > 0) {
 		return normalizeExercises(previousExercises).map((ex) => ({
 			name: ex.name,
 			sets: ex.sets.map((s) => ({ weight: 0, reps: s.reps })),
@@ -55,9 +55,9 @@ const buildInitialExercises = (
 	return [{ name: "", sets: [{ weight: 0, reps: 1 }] }];
 };
 
-const SessionModal = (props: SessionModalProps) => {
+export const SessionModal = (props: SessionModalProps) => {
 	const navigate = useNavigate();
-	const isEdit = () => !!props.session;
+	const isEdit = () => Boolean(props.session);
 
 	const handleCreateSession = async () => {
 		try {
@@ -69,6 +69,7 @@ const SessionModal = (props: SessionModalProps) => {
 			navigate(`/workouts/${props.parentId}/${session.id}`);
 		} catch (err) {
 			console.error("Failed to create workout session:", err);
+			// biome-ignore lint/suspicious/noAlert: no inline error UI in this modal yet
 			alert("Fehler beim Erstellen der Trainingseinheit");
 		}
 	};
@@ -88,5 +89,3 @@ const SessionModal = (props: SessionModalProps) => {
 		</Show>
 	);
 };
-
-export default SessionModal;

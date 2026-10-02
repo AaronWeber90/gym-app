@@ -15,7 +15,9 @@ export const ConfirmDeleteButton = (props: ConfirmDeleteButtonProps) => {
 	const [isSubmitting, setIsSubmitting] = createSignal(false);
 
 	const closeModal = () => {
-		if (isSubmitting()) return;
+		if (isSubmitting()) {
+			return;
+		}
 		setShowModal(false);
 	};
 

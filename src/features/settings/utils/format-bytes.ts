@@ -1,5 +1,12 @@
+const BYTES_PER_KB = 1024;
+const BYTES_PER_MB = BYTES_PER_KB * BYTES_PER_KB;
+
 export function formatBytes(bytes: number): string {
-	if (bytes < 1024) return `${bytes} B`;
-	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+	if (bytes < BYTES_PER_KB) {
+		return `${bytes} B`;
+	}
+	if (bytes < BYTES_PER_MB) {
+		return `${(bytes / BYTES_PER_KB).toFixed(1)} KB`;
+	}
+	return `${(bytes / BYTES_PER_MB).toFixed(1)} MB`;
 }

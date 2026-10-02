@@ -1,7 +1,5 @@
 import type { ExportedFile } from "@api";
 
-export type { ExportData, ExportedFile } from "@api";
-
 export async function readAllFiles(
 	dir: FileSystemDirectoryHandle,
 	basePath: string,

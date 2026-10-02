@@ -2,7 +2,9 @@ import { monthNames } from "./constants";
 import type { WeekDay } from "./types";
 
 export function formatWeekRange(days: WeekDay[]): string {
-	if (days.length === 0) return "";
+	if (days.length === 0) {
+		return "";
+	}
 
 	const start = days[0].date;
 	const end = days[6].date;

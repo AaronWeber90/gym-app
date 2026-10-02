@@ -54,22 +54,29 @@ const updateBestPersonalRecord = (
 };
 
 const comparePersonalRecords = (a: PersonalRecord, b: PersonalRecord) => {
-	if (a.weight !== b.weight) return b.weight - a.weight;
-	if (a.reps !== b.reps) return b.reps - a.reps;
+	if (a.weight !== b.weight) {
+		return b.weight - a.weight;
+	}
+	if (a.reps !== b.reps) {
+		return b.reps - a.reps;
+	}
 	return new Date(b.date).getTime() - new Date(a.date).getTime();
 };
 
 const isInDateRange = (dateIso: string, start: Date, end: Date) => {
 	const value = new Date(dateIso).getTime();
-	if (Number.isNaN(value)) return false;
+	if (Number.isNaN(value)) {
+		return false;
+	}
 
 	const startAt = new Date(start);
 	startAt.setHours(0, 0, 0, 0);
 
-	const endAt = new Date(end);
-	endAt.setHours(23, 59, 59, 999);
+	const endExclusive = new Date(end);
+	endExclusive.setHours(0, 0, 0, 0);
+	endExclusive.setDate(endExclusive.getDate() + 1);
 
-	return value >= startAt.getTime() && value <= endAt.getTime();
+	return value >= startAt.getTime() && value < endExclusive.getTime();
 };
 
 export const calculateWeeklyInsights = (
@@ -89,29 +96,32 @@ export const calculateWeeklyInsights = (
 		}),
 	).size;
 
-	const totalSets = weeklySessions.reduce((sum, session) => {
-		return (
+	const totalSets = weeklySessions.reduce(
+		(sum, session) =>
 			sum +
-			session.exercises.reduce((exerciseSum, exercise) => {
-				return exerciseSum + exercise.sets.length;
-			}, 0)
-		);
-	}, 0);
+			session.exercises.reduce(
+				(exerciseSum, exercise) => exerciseSum + exercise.sets.length,
+				0,
+			),
+		0,
+	);
 
-	const totalVolume = weeklySessions.reduce((sum, session) => {
-		return (
+	const totalVolume = weeklySessions.reduce(
+		(sum, session) =>
 			sum +
-			session.exercises.reduce((exerciseSum, exercise) => {
-				return (
+			session.exercises.reduce(
+				(exerciseSum, exercise) =>
 					exerciseSum +
 					exercise.sets.reduce((setSum, set) => {
-						if (set.weight <= 0 || set.reps <= 0) return setSum;
+						if (set.weight <= 0 || set.reps <= 0) {
+							return setSum;
+						}
 						return setSum + set.weight * set.reps;
-					}, 0)
-				);
-			}, 0)
-		);
-	}, 0);
+					}, 0),
+				0,
+			),
+		0,
+	);
 
 	return {
 		totalSessions: weeklySessions.length,
@@ -132,10 +142,14 @@ export const calculatePersonalRecords = (
 		for (const exercise of session.exercises) {
 			const trimmedName = exercise.name.trim();
 			const normalizedName = normalizeExerciseName(trimmedName);
-			if (!normalizedName) continue;
+			if (!normalizedName) {
+				continue;
+			}
 
 			for (const set of exercise.sets) {
-				if (set.weight <= 0 || set.reps <= 0) continue;
+				if (set.weight <= 0 || set.reps <= 0) {
+					continue;
+				}
 
 				updateBestPersonalRecord(
 					byExercise,

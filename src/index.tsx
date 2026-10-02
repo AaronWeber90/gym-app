@@ -31,20 +31,39 @@ globalThis.addEventListener("vite:preloadError", (event) => {
 	globalThis.location.reload();
 });
 
-const Workout = lazy(() => import("./pages/workout"));
-const WorkoutSession = lazy(() => import("./pages/workout-session"));
-const Workouts = lazy(() => import("./pages/workouts"));
-const OpfsExplorer = lazy(() => import("./pages/opfs-explorer"));
-const Overview = lazy(() => import("./pages/overview"));
-const Settings = lazy(() => import("./pages/settings"));
-const BodyWeight = lazy(() => import("./pages/body-weight"));
+const Workout = lazy(() =>
+	import("./pages/workout").then((m) => ({ default: m.Workout })),
+);
+const WorkoutSession = lazy(() =>
+	import("./pages/workout-session").then((m) => ({
+		default: m.WorkoutSession,
+	})),
+);
+const Workouts = lazy(() =>
+	import("./pages/workouts").then((m) => ({ default: m.Workouts })),
+);
+const OpfsExplorer = lazy(() =>
+	import("./pages/opfs-explorer").then((m) => ({ default: m.OpfsExplorer })),
+);
+const Overview = lazy(() =>
+	import("./pages/overview").then((m) => ({ default: m.WorkoutCalendar })),
+);
+const Settings = lazy(() =>
+	import("./pages/settings").then((m) => ({ default: m.Settings })),
+);
+const BodyWeight = lazy(() =>
+	import("./pages/body-weight").then((m) => ({ default: m.BodyWeight })),
+);
+
+const IOS_DEVICE_PATTERN = /iPhone|iPad|iPod/i;
+const MAC_PATTERN = /Macintosh/i;
 
 const isAppleDevice = () =>
-	/iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+	IOS_DEVICE_PATTERN.test(navigator.userAgent) ||
 	// iPad on iOS 13+ reports as "MacIntel" desktop Safari
 	("maxTouchPoints" in navigator &&
 		navigator.maxTouchPoints > 1 &&
-		/Macintosh/i.test(navigator.userAgent));
+		MAC_PATTERN.test(navigator.userAgent));
 
 const Layout: Component<RouteSectionProps> = (props) => {
 	const navigate = useNavigate();
@@ -117,7 +136,7 @@ const Layout: Component<RouteSectionProps> = (props) => {
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			staleTime: Infinity,
+			staleTime: Number.POSITIVE_INFINITY,
 		},
 	},
 });

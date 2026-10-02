@@ -5,7 +5,7 @@ import { createBodyWeightPageState } from "../features/body-weight/hooks/create-
 import { Header } from "../features/workouts/components/header";
 import { Section } from "../ui/section";
 
-export default function BodyWeight() {
+export function BodyWeight() {
 	const {
 		entries,
 		formTarget,

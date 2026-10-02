@@ -18,14 +18,18 @@ export const createWorkoutPageState = () => {
 
 	const latestExercises = createMemo(() => {
 		const sessions = childWorkouts();
-		if (!sessions?.length) return undefined;
+		if (!sessions || sessions.length === 0) {
+			return;
+		}
 		const latestId = sessions[0].id;
 		const cached = queryClient.getQueryData<{ exercises?: unknown[] }>([
 			"workoutSession",
 			params.id,
 			latestId,
 		]);
-		if (!cached?.exercises?.length) return undefined;
+		if (!cached?.exercises || cached.exercises.length === 0) {
+			return;
+		}
 		return cached.exercises as {
 			name: string;
 			sets: { weight: number; reps: number }[];

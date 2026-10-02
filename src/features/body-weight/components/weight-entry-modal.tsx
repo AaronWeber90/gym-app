@@ -78,7 +78,9 @@ export const WeightEntryModal = (props: WeightEntryModalProps) => {
 
 	// reset fields to the edited entry (or "now" for a new one) whenever the modal opens
 	createEffect(() => {
-		if (!props.open) return;
+		if (!props.open) {
+			return;
+		}
 		const defaults = resolveFormDefaults(props.entry);
 		setWeight(defaults.weight);
 		setDate(defaults.date);
@@ -87,7 +89,9 @@ export const WeightEntryModal = (props: WeightEntryModalProps) => {
 
 	const handleSubmit = async () => {
 		const parsedWeight = normalizeWeightInput(weight());
-		if (!parsedWeight || parsedWeight <= 0 || !date() || !time()) return;
+		if (!parsedWeight || parsedWeight <= 0 || !date() || !time()) {
+			return;
+		}
 
 		try {
 			await persistEntry(

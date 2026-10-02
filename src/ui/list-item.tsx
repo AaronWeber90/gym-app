@@ -8,20 +8,18 @@ type ListItemProps = {
 	subtitle: JSX.Element;
 };
 
-export const ListItem: Component<ListItemProps> = (props) => {
-	return (
-		<A href={props.href}>
-			<li class="flex items-center justify-between p-3 hover:bg-base-200 transition">
-				<div class="flex items-center gap-3">
-					{props.icon}
-					<div>
-						<div class="font-medium">{props.title}</div>
-						<div class="flex items-center gap-2 text-xs font-semibold opacity-60">
-							{props.subtitle}
-						</div>
+export const ListItem: Component<ListItemProps> = (props) => (
+	<A href={props.href}>
+		<li class="flex items-center justify-between p-3 hover:bg-base-200 transition">
+			<div class="flex items-center gap-3">
+				{props.icon}
+				<div>
+					<div class="font-medium">{props.title}</div>
+					<div class="flex items-center gap-2 text-xs font-semibold opacity-60">
+						{props.subtitle}
 					</div>
 				</div>
-			</li>
-		</A>
-	);
-};
+			</div>
+		</li>
+	</A>
+);

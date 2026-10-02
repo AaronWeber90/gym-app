@@ -9,7 +9,9 @@ export const createChildWorkoutsResource = (parentId: () => string) => {
 
 	const fetchChildWorkouts = async () => {
 		const id = parentId();
-		if (!id) return [];
+		if (!id) {
+			return [];
+		}
 		const sessions = await dataClient.getWorkoutSessions(id);
 		for (const session of sessions) {
 			queryClient.setQueryData(
@@ -23,7 +25,7 @@ export const createChildWorkoutsResource = (parentId: () => string) => {
 	const childWorkoutsQuery = createQuery(() => ({
 		queryKey: childWorkoutsQueryKey(parentId()),
 		queryFn: fetchChildWorkouts,
-		enabled: !!parentId(),
+		enabled: Boolean(parentId()),
 		throwOnError: true,
 	}));
 

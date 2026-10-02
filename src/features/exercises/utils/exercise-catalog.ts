@@ -1,3 +1,4 @@
+// biome-ignore-all lint/style/noExcessiveLinesPerFile: data catalog
 export type MuscleGroup =
 	| "chest"
 	| "back"

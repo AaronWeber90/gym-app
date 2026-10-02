@@ -1,6 +1,8 @@
+import type { ExerciseData, SetData } from "@api";
 import {
 	createMemo,
 	createUniqueId,
+	For,
 	Index,
 	onCleanup,
 	onMount,
@@ -11,7 +13,6 @@ import { GripDotsIcon } from "../../../ui/icons/grip-dots";
 import { KebabMenuIcon } from "../../../ui/icons/kebab-menu";
 import { Input } from "../../../ui/input";
 import { getExerciseSuggestions } from "../../exercises/utils";
-import type { ExerciseData, SetData } from "../utils";
 import { SetRow } from "./set-row";
 
 type SetsTableProps = {
@@ -154,15 +155,16 @@ const ExerciseHeader = (props: ExerciseHeaderProps) => {
 				</ul>
 			</div>
 			<datalist id={datalistId}>
-				{getExerciseSuggestions().map((exercise) => (
-					<option value={exercise} />
-				))}
+				<For each={getExerciseSuggestions()}>
+					{(exercise) => <option value={exercise} />}
+				</For>
 			</datalist>
 		</>
 	);
 };
 
 export const ExerciseBlock = (props: ExerciseBlockProps) => {
+	// biome-ignore lint/suspicious/noUnassignedVariables: Solid assigns refs via ref={...}
 	let containerRef!: HTMLDivElement;
 
 	const isComplete = createMemo(

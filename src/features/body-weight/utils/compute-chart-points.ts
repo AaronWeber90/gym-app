@@ -46,31 +46,38 @@ const EMPTY_LAYOUT: ChartLayout = {
 	plotBottom: 0,
 };
 
+// a single point in time is drawn in the horizontal center
+const CENTER_RATIO = 0.5;
+
 const entriesRange = (count: number): number[] =>
 	Array.from({ length: count }, (_, index) => index);
 
 // picks up to 3 entry indices (first/middle/last) to label the time axis without crowding it
 const pickTickIndices = (count: number): number[] => {
-	if (count <= 2) return entriesRange(count);
+	if (count <= 2) {
+		return entriesRange(count);
+	}
 	return [...new Set([0, Math.floor((count - 1) / 2), count - 1])];
 };
 
 // drops ticks that would render closer together than minSpacing, always keeping the last one
 const withMinSpacing = (ticks: XTick[], minSpacing: number): XTick[] => {
-	if (ticks.length <= 1) return ticks;
+	if (ticks.length <= 1) {
+		return ticks;
+	}
 	const kept: XTick[] = [ticks[0]];
+	const lastX = () => kept.at(-1)?.x ?? Number.NEGATIVE_INFINITY;
 	ticks.slice(1).forEach((candidate, i) => {
 		const isLast = i === ticks.length - 2;
-		const gap = candidate.x - kept[kept.length - 1].x;
+		const gap = candidate.x - lastX();
 		if (gap >= minSpacing) {
 			kept.push(candidate);
 			return;
 		}
-		if (!isLast) return;
-		while (
-			kept.length > 0 &&
-			candidate.x - kept[kept.length - 1].x < minSpacing
-		) {
+		if (!isLast) {
+			return;
+		}
+		while (kept.length > 0 && candidate.x - lastX() < minSpacing) {
 			kept.pop();
 		}
 		kept.push(candidate);
@@ -105,7 +112,7 @@ const buildScales = (
 	const span = maxTime - minTime;
 
 	const toX = (time: number) => {
-		const ratio = span === 0 ? 0.5 : (time - minTime) / span;
+		const ratio = span === 0 ? CENTER_RATIO : (time - minTime) / span;
 		return plotLeft + ratio * (plotRight - plotLeft);
 	};
 	const toY = (weight: number) => {
@@ -115,11 +122,7 @@ const buildScales = (
 	return { toX, toY };
 };
 
-// entries must be sorted ascending by date; x is time-proportional so gaps between weigh-ins stay visible
-export const computeChartPoints = (
-	entries: BodyWeightEntry[],
-	options: ComputeChartPointsOptions,
-): ChartLayout => {
+const buildPlotBounds = (options: ComputeChartPointsOptions): PlotBounds => {
 	const {
 		width,
 		height,
@@ -127,10 +130,25 @@ export const computeChartPoints = (
 		paddingRight = 24,
 		paddingTop = 16,
 		paddingBottom = 16,
-		minTickSpacing = 40,
 	} = options;
+	return {
+		plotLeft: paddingLeft,
+		plotRight: width - paddingRight,
+		plotTop: paddingTop,
+		plotBottom: height - paddingBottom,
+	};
+};
 
-	if (entries.length === 0) return EMPTY_LAYOUT;
+// entries must be sorted ascending by date; x is time-proportional so gaps between weigh-ins stay visible
+export const computeChartPoints = (
+	entries: BodyWeightEntry[],
+	options: ComputeChartPointsOptions,
+): ChartLayout => {
+	const { minTickSpacing = 40 } = options;
+
+	if (entries.length === 0) {
+		return EMPTY_LAYOUT;
+	}
 
 	const { minWeight, maxWeight } = buildWeightRange(
 		entries.map((entry) => entry.weight),
@@ -139,12 +157,7 @@ export const computeChartPoints = (
 	const minTime = Math.min(...times);
 	const maxTime = Math.max(...times);
 
-	const bounds: PlotBounds = {
-		plotLeft: paddingLeft,
-		plotRight: width - paddingRight,
-		plotTop: paddingTop,
-		plotBottom: height - paddingBottom,
-	};
+	const bounds = buildPlotBounds(options);
 	const { toX, toY } = buildScales(
 		bounds,
 		{ minTime, maxTime },

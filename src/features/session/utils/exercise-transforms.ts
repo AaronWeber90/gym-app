@@ -1,4 +1,4 @@
-import type { ExerciseData } from "./types";
+import type { ExerciseData } from "@api";
 
 export const mapSessionExercises = (
 	exercises: ExerciseData[],
@@ -9,7 +9,7 @@ export const mapSessionExercises = (
 			? ex.sets.map((set) => ({
 					weight: set.weight,
 					reps: set.reps,
-					...(set.rpe != null ? { rpe: set.rpe } : {}),
+					...(typeof set.rpe === "number" ? { rpe: set.rpe } : {}),
 				}))
 			: Array.from({ length: Number(ex.sets) || 1 }, () => ({
 					weight: 0,

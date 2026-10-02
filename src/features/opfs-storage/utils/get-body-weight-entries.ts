@@ -7,7 +7,9 @@ export const getBodyWeightEntries = async (): Promise<BodyWeightEntry[]> => {
 		const entries: BodyWeightEntry[] = [];
 
 		for await (const [name, handle] of bodyWeightDir.entries()) {
-			if (handle.kind !== "file" || !name.endsWith(".json")) continue;
+			if (handle.kind !== "file" || !name.endsWith(".json")) {
+				continue;
+			}
 			try {
 				const file = await (handle as FileSystemFileHandle).getFile();
 				const entry = JSON.parse(await file.text()) as BodyWeightEntry;

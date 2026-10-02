@@ -1,5 +1,5 @@
+import type { SessionData } from "@api";
 import { getDir, getRootDir } from "../../opfs-storage/utils";
-import type { SessionData } from "./types";
 
 export const fetchSession = async (
 	workoutId: string,
