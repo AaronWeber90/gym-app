@@ -6,16 +6,16 @@ Offline-first gym tracking PWA built with **SolidJS**. All data lives in the bro
 
 ## Commands
 
-| Task | Command |
-|------|---------|
-| Dev server | `pnpm dev` (port 3000) |
-| Build | `pnpm build` |
-| Test | `pnpm test` |
-| Test (watch) | `pnpm test:watch` |
-| Typecheck | `pnpm typecheck` |
-| Format | `pnpm format` |
-| Lint | `pnpm lint` |
-| Deploy | `pnpm gh:deploy` |
+| Task         | Command                |
+| ------------ | ---------------------- |
+| Dev server   | `pnpm dev` (port 3000) |
+| Build        | `pnpm build`           |
+| Test         | `pnpm test`            |
+| Test (watch) | `pnpm test:watch`      |
+| Typecheck    | `pnpm typecheck`       |
+| Format       | `pnpm format`          |
+| Lint         | `pnpm lint`            |
+| Deploy       | `pnpm gh:deploy`       |
 
 ## CI / Delivery
 
@@ -89,11 +89,10 @@ Keep dependencies minimal. Before reaching for a third-party package, build the 
 
 Two tiers:
 
-| Tier | Tool | Environment | Focus |
-|------|------|-------------|-------|
-| Unit / logic | **Vitest** (node) | Node — no DOM | Data utilities, pure functions, OPFS mocks |
-| UI / integration | **Vitest + Playwright** | Real browser | Component behaviour, user flows, OPFS in real context |
-
+| Tier             | Tool                    | Environment   | Focus                                                 |
+| ---------------- | ----------------------- | ------------- | ----------------------------------------------------- |
+| Unit / logic     | **Vitest** (node)       | Node — no DOM | Data utilities, pure functions, OPFS mocks            |
+| UI / integration | **Vitest + Playwright** | Real browser  | Component behaviour, user flows, OPFS in real context |
 - Node tests: run in `node` environment. OPFS APIs are mocked via `vi.stubGlobal('navigator', ...)`. Co-located alongside source files (`foo.test.ts`).
 - UI/integration tests: always use a real browser via Playwright. Prefer integration-level tests over unit tests for UI — test user-visible behaviour, not implementation details. Place in `e2e/` or alongside the component as `foo.browser.test.ts`.
 - Structure Playwright e2e specs under `e2e/states/` and `e2e/journeys/`.
