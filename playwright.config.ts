@@ -1,4 +1,5 @@
 import process from "node:process";
+// biome-ignore lint/correctness/noUnresolvedImports: devices is re-exported through playwright/test and playwright-core; TypeScript resolves it.
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({

@@ -1,4 +1,6 @@
-import { expect, type Page, test } from "@playwright/test";
+// biome-ignore lint/correctness/noUnresolvedImports: Page is re-exported through playwright/test and playwright-core; TypeScript resolves it.
+import type { Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 type ExerciseFixture = {
 	name: string;

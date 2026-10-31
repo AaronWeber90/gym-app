@@ -1,3 +1,4 @@
+// biome-ignore lint/correctness/noUnresolvedImports: Page is re-exported through playwright/test and playwright-core; TypeScript resolves it.
 import { expect, type Page, test } from "@playwright/test";
 
 async function resetBodyWeightDirectory(page: Page) {
