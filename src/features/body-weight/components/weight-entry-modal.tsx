@@ -10,6 +10,8 @@ import {
 	toTimeInputValue,
 } from "../utils/date-time-input";
 
+const BODY_WEIGHT_STEP = 0.1;
+
 type WeightEntryModalProps = {
 	open: boolean;
 	entry: BodyWeightEntry | null;
@@ -88,7 +90,7 @@ export const WeightEntryModal = (props: WeightEntryModalProps) => {
 	});
 
 	const handleSubmit = async () => {
-		const parsedWeight = normalizeWeightInput(weight());
+		const parsedWeight = normalizeWeightInput(weight(), BODY_WEIGHT_STEP);
 		if (!parsedWeight || parsedWeight <= 0 || !date() || !time()) {
 			return;
 		}

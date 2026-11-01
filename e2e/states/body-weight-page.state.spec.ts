@@ -51,10 +51,10 @@ test("adding an entry defaults to now and shows up in the list and chart", async
 	await expect(dateInput).not.toHaveValue("");
 	await expect(timeInput).not.toHaveValue("");
 
-	await page.getByLabel("Gewicht (kg)").fill("82,5");
+	await page.getByLabel("Gewicht (kg)").fill("82,1");
 	await page.getByRole("button", { name: "Speichern" }).click();
 
-	await expect(page.getByText("82.5 kg")).toBeVisible();
+	await expect(page.getByText("82.1 kg")).toBeVisible();
 	await expect(
 		page.locator("svg[aria-label='Gewichtsverlauf'] circle"),
 	).toHaveCount(1);
@@ -70,10 +70,10 @@ test("editing an existing entry updates its weight", async ({ page }) => {
 
 	await page.getByText("80 kg").click();
 	await expect(page.getByText("Eintrag bearbeiten")).toBeVisible();
-	await page.getByLabel("Gewicht (kg)").fill("79");
+	await page.getByLabel("Gewicht (kg)").fill("79.9");
 	await page.getByRole("button", { name: "Speichern" }).click();
 
-	await expect(page.getByText("79 kg")).toBeVisible();
+	await expect(page.getByText("79.9 kg")).toBeVisible();
 	await expect(page.getByText("80 kg")).toHaveCount(0);
 });
 

@@ -1,6 +1,9 @@
 export const WEIGHT_STEP = 0.5;
 
-export const normalizeWeightInput = (value: string | number) => {
+export const normalizeWeightInput = (
+	value: string | number,
+	step = WEIGHT_STEP,
+) => {
 	if (typeof value === "number") {
 		return Number.isFinite(value) ? value : 0;
 	}
@@ -16,6 +19,6 @@ export const normalizeWeightInput = (value: string | number) => {
 		return 0;
 	}
 
-	const rounded = Math.round(parsed / WEIGHT_STEP) * WEIGHT_STEP;
+	const rounded = Math.round(parsed / step) * step;
 	return Number(rounded.toFixed(2));
 };
