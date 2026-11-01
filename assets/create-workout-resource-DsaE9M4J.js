@@ -1,0 +1,1 @@
+import{i as e,o as t}from"./index-BGRDBbow.js";import{n}from"./header-Dzm8dEKb.js";var r=[`workouts`],i=()=>{let i=e(),a=t(()=>({queryKey:r,queryFn:()=>n.getWorkouts(),throwOnError:!0}));return{workouts:()=>a.data,error:()=>a.error,isLoading:()=>a.isLoading,refetch:()=>i.invalidateQueries({queryKey:r})}};export{r as n,i as t};
