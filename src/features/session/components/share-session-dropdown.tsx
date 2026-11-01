@@ -7,7 +7,8 @@ import { formatSessionForAi } from "../utils";
 const COPIED_FEEDBACK_MS = 1500;
 
 type ShareSessionDropdownProps = {
-	session: Pick<SessionData, "name" | "date">;
+	session: Pick<SessionData, "date">;
+	workoutName?: string;
 	exercises: ExerciseData[];
 };
 
@@ -15,7 +16,10 @@ export const ShareSessionDropdown = (props: ShareSessionDropdownProps) => {
 	const [copied, setCopied] = createSignal(false);
 
 	const handleCopyForAi = async () => {
-		const formatted = formatSessionForAi(props.session, props.exercises);
+		const formatted = formatSessionForAi(
+			{ date: props.session.date, workoutName: props.workoutName },
+			props.exercises,
+		);
 		await navigator.clipboard.writeText(formatted);
 		setCopied(true);
 		setTimeout(() => setCopied(false), COPIED_FEEDBACK_MS);
@@ -29,7 +33,7 @@ export const ShareSessionDropdown = (props: ShareSessionDropdownProps) => {
 		>
 			<li>
 				<button type="button" onClick={handleCopyForAi}>
-					{copied() ? "Kopiert!" : "Für KI kopieren"}
+					{copied() ? "Kopiert!" : "Kopieren"}
 				</button>
 			</li>
 		</Dropdown>

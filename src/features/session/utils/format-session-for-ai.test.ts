@@ -5,7 +5,7 @@ describe("formatSessionForAi", () => {
 	it("formats a compact multiline summary", () => {
 		const result = formatSessionForAi(
 			{
-				name: "Push Day",
+				workoutName: "Push Day",
 				date: "2026-08-05T12:00:00.000Z",
 			},
 			[
@@ -31,7 +31,7 @@ describe("formatSessionForAi", () => {
 	it("appends RPE with @ when set", () => {
 		const result = formatSessionForAi(
 			{
-				name: "Push Day",
+				workoutName: "Push Day",
 				date: "2026-08-05T12:00:00.000Z",
 			},
 			[
@@ -53,7 +53,7 @@ describe("formatSessionForAi", () => {
 	it("prints fallback line when there are no exercises", () => {
 		const result = formatSessionForAi(
 			{
-				name: "",
+				workoutName: "",
 				date: "2026-01-10T12:00:00.000Z",
 			},
 			[],

@@ -1,9 +1,11 @@
 import type { ExerciseData, SessionData } from "@api";
+import { useParams } from "@solidjs/router";
 import { type Accessor, Index, Show } from "solid-js";
 import { normalizeExerciseName } from "../features/exercises/utils";
 import { ExerciseBlock } from "../features/session/components/exercise-block";
 import { ShareSessionDropdown } from "../features/session/components/share-session-dropdown";
 import { createSessionPageState } from "../features/session/hooks/create-session-page-state";
+import { createCurrentWorkout } from "../features/workout/hooks/create-current-workout";
 import { Header } from "../features/workouts/components/header";
 import { ConfirmDeleteButton } from "../ui/confirm-delete-button";
 import { formatDate } from "../utils/format-date";
@@ -76,7 +78,11 @@ const ExerciseList = (props: { state: SessionState }) => (
 	</div>
 );
 
-const SessionView = (props: { session: SessionData; state: SessionState }) => (
+const SessionView = (props: {
+	session: SessionData;
+	state: SessionState;
+	workoutName?: string;
+}) => (
 	<div>
 		<Header
 			title={formatDate(props.session.date, {
@@ -88,6 +94,7 @@ const SessionView = (props: { session: SessionData; state: SessionState }) => (
 				<div class="flex items-center gap-1">
 					<ShareSessionDropdown
 						session={props.session}
+						workoutName={props.workoutName}
 						exercises={props.state.exercises()}
 					/>
 					<ConfirmDeleteButton
@@ -117,6 +124,8 @@ const SessionView = (props: { session: SessionData; state: SessionState }) => (
 
 export const WorkoutSession = () => {
 	const state = createSessionPageState();
+	const params = useParams<{ id: string }>();
+	const workout = createCurrentWorkout(() => params.id);
 
 	return (
 		<Show
@@ -128,7 +137,13 @@ export const WorkoutSession = () => {
 			}
 		>
 			<Show when={state.session()} fallback={<div class="min-h-screen" />}>
-				{(s) => <SessionView session={s()} state={state} />}
+				{(s) => (
+					<SessionView
+						session={s()}
+						state={state}
+						workoutName={workout()?.name}
+					/>
+				)}
 			</Show>
 		</Show>
 	);

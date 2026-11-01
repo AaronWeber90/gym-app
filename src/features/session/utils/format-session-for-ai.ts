@@ -16,10 +16,10 @@ const formatExercise = (exercise: ExerciseData, index: number) => {
 };
 
 export const formatSessionForAi = (
-	session: Pick<SessionData, "name" | "date">,
+	session: Pick<SessionData, "date"> & { workoutName?: string },
 	exercises: ExerciseData[],
 ) => {
-	const title = `${session.name.trim() || "Session"} - ${formatDate(
+	const title = `${session.workoutName?.trim() || "Session"} - ${formatDate(
 		session.date,
 		{
 			day: "2-digit",
