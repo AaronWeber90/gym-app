@@ -15,12 +15,16 @@ type BodyWeightChartProps = {
 const MIN_CHART_WIDTH = 320;
 // wider charts get more entries; scroll horizontally instead of squeezing points together
 const PIXELS_PER_ENTRY = 36;
-const CHART_HEIGHT = 160;
-const PADDING_LEFT = 22;
-const PADDING_RIGHT = 12;
-const PADDING_TOP = 12;
-const PADDING_BOTTOM = 20;
+const CHART_HEIGHT = 190;
+const PADDING_LEFT = 40;
+const PADDING_RIGHT = 28;
+const PADDING_TOP = 44;
+const PADDING_BOTTOM = 32;
 const TOOLTIP_HALF_WIDTH = 34;
+const TOOLTIP_HEIGHT = 24;
+const TOOLTIP_GAP = 16;
+// invisible click target around each point so neighbouring points are easy to hit
+const HIT_RADIUS = 14;
 
 const clampX = (x: number, width: number) =>
 	Math.min(Math.max(x, TOOLTIP_HALF_WIDTH), width - TOOLTIP_HALF_WIDTH);
@@ -77,7 +81,7 @@ const ChartAxes = (props: ChartAxesProps) => (
 		<For each={props.layout.yTicks}>
 			{(tick) => (
 				<text
-					x={props.layout.plotLeft - 2}
+					x={props.layout.plotLeft - 12}
 					y={tick.y}
 					text-anchor="end"
 					dominant-baseline="middle"
@@ -90,7 +94,7 @@ const ChartAxes = (props: ChartAxesProps) => (
 			{(tick) => (
 				<text
 					x={tick.x}
-					y={props.layout.plotBottom + 12}
+					y={props.layout.plotBottom + 20}
 					text-anchor={xTickAnchor(tick.x, props.layout)}
 				>
 					{formatDate(tick.date, { day: "2-digit", month: "2-digit" })}
@@ -112,24 +116,33 @@ const ChartPoints = (props: ChartPointsProps) => (
 			const label = `${point.entry.weight} kg am ${formatDate(point.entry.date, { day: "2-digit", month: "2-digit" })}`;
 			const select = () => props.onSelect(index());
 			return (
-				// biome-ignore lint/a11y/useSemanticElements: <button> is not a valid SVG element
-				<circle
-					cx={point.x}
-					cy={point.y}
-					r={props.selectedIndex === index() ? 7 : 5}
-					class="fill-primary cursor-pointer"
-					role="button"
-					tabIndex={0}
-					aria-label={label}
-					onClick={select}
-					onKeyDown={(e) => {
-						if (e.key !== "Enter" && e.key !== " ") {
-							return;
-						}
-						e.preventDefault();
-						select();
-					}}
-				/>
+				<g>
+					<circle
+						cx={point.x}
+						cy={point.y}
+						r={props.selectedIndex === index() ? 7 : 5}
+						class="fill-primary pointer-events-none"
+					/>
+					{/* biome-ignore lint/a11y/useSemanticElements: <button> is not a valid SVG element */}
+					<circle
+						cx={point.x}
+						cy={point.y}
+						r={HIT_RADIUS}
+						fill="transparent"
+						class="cursor-pointer outline-none"
+						role="button"
+						tabIndex={0}
+						aria-label={label}
+						onClick={select}
+						onKeyDown={(e) => {
+							if (e.key !== "Enter" && e.key !== " ") {
+								return;
+							}
+							e.preventDefault();
+							select();
+						}}
+					/>
+				</g>
 			);
 		}}
 	</For>
@@ -140,40 +153,43 @@ type ChartTooltipProps = {
 	width: number;
 };
 
-const ChartTooltip = (props: ChartTooltipProps) => (
-	<g>
-		<rect
-			x={clampX(props.point.x, props.width) - TOOLTIP_HALF_WIDTH}
-			y={Math.max(props.point.y - 30, 0)}
-			width={TOOLTIP_HALF_WIDTH * 2}
-			height="24"
-			rx="4"
-			class="fill-base-100 stroke-base-300"
-			stroke-width="1"
-		/>
-		<text
-			x={clampX(props.point.x, props.width)}
-			y={Math.max(props.point.y - 15, 14)}
-			text-anchor="middle"
-			class="fill-base-content"
-			font-size="10"
-		>
-			{props.point.entry.weight} kg
-		</text>
-		<text
-			x={clampX(props.point.x, props.width)}
-			y={Math.max(props.point.y - 4, 24)}
-			text-anchor="middle"
-			class="fill-base-content/60"
-			font-size="8"
-		>
-			{formatDate(props.point.entry.date, {
-				day: "2-digit",
-				month: "2-digit",
-			})}
-		</text>
-	</g>
-);
+const ChartTooltip = (props: ChartTooltipProps) => {
+	const top = () => Math.max(props.point.y - TOOLTIP_GAP - TOOLTIP_HEIGHT, 0);
+	return (
+		<g class="pointer-events-none">
+			<rect
+				x={clampX(props.point.x, props.width) - TOOLTIP_HALF_WIDTH}
+				y={top()}
+				width={TOOLTIP_HALF_WIDTH * 2}
+				height={TOOLTIP_HEIGHT}
+				rx="4"
+				class="fill-base-100 stroke-base-300"
+				stroke-width="1"
+			/>
+			<text
+				x={clampX(props.point.x, props.width)}
+				y={top() + 11}
+				text-anchor="middle"
+				class="fill-base-content"
+				font-size="10"
+			>
+				{props.point.entry.weight} kg
+			</text>
+			<text
+				x={clampX(props.point.x, props.width)}
+				y={top() + 21}
+				text-anchor="middle"
+				class="fill-base-content/60"
+				font-size="8"
+			>
+				{formatDate(props.point.entry.date, {
+					day: "2-digit",
+					month: "2-digit",
+				})}
+			</text>
+		</g>
+	);
+};
 
 export const BodyWeightChart = (props: BodyWeightChartProps) => {
 	const [selectedIndex, setSelectedIndex] = createSignal<number | null>(null);
