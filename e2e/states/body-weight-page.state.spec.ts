@@ -56,7 +56,9 @@ test("adding an entry defaults to now and shows up in the list and chart", async
 
 	await expect(page.getByText("82.1 kg")).toBeVisible();
 	await expect(
-		page.locator("svg[aria-label='Gewichtsverlauf'] circle"),
+		page
+			.getByLabel("Gewichtsverlauf")
+			.getByRole("button", { name: /^82\.1 kg am / }),
 	).toHaveCount(1);
 });
 
