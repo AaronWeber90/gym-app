@@ -1,0 +1,1 @@
+var e=.5,t=(t,n=e)=>{if(typeof t==`number`)return Number.isFinite(t)?t:0;let r=t.trim();if(!r)return 0;let i=r.replace(`,`,`.`),a=Number.parseFloat(i);if(!Number.isFinite(a))return 0;let o=Math.round(a/n)*n;return Number(o.toFixed(2))};export{t as n,e as t};
